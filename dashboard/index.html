@@ -8,22 +8,18 @@
   <meta name="theme-color" content="#06080C">
   <link rel="icon" type="image/svg+xml" href="assets/solana-logo.svg">
 
-  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Chart.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Skip link -->
   <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:99999;padding:8px 16px;background:var(--accent);color:#fff;font-weight:600;border-radius:4px;">Skip to main content</a>
 
-  <!-- Loading overlay -->
   <div id="app-loading" class="loading-overlay" aria-hidden="true">
     <div class="loader-card">
       <img src="assets/solana-logo.svg" alt="Solana" class="loader-logo">
@@ -32,280 +28,191 @@
     </div>
   </div>
 
-  <!-- Toast container -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
   <div class="app-shell">
 
-    <!-- Sticky top navigation -->
     <header class="topbar" role="banner">
-      <div class="brand">
+      <div class="topbar-brand">
         <img src="assets/solana-logo.svg" alt="" class="brand-logo" aria-hidden="true">
-        <div class="brand-text">
-          <span class="brand-title">Solana Ecosystem</span>
-          <span class="brand-sub">Intelligence Report</span>
-        </div>
+        <span class="brand-title">Solana Ecosystem</span>
       </div>
 
-      <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="topnav-menu">
+      <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
-
-      <nav id="topnav-menu" class="topnav" aria-label="Primary">
-        <a href="#overview" class="topnav-link active">Overview</a>
-        <a href="#trends" class="topnav-link">Trends</a>
-        <a href="#validators" class="topnav-link">Validators</a>
-        <a href="#economy" class="topnav-link">Economy</a>
-        <a href="#roadmap" class="topnav-link">Roadmap</a>
-      </nav>
 
       <div class="topbar-actions">
         <span id="health-pill" class="health-pill" title="Cluster status" aria-live="polite">
           <span class="dot dot-ok" aria-hidden="true"></span><span id="health-pill-text">Operational</span>
         </span>
-        <span id="updated-at" class="updated-at">Updated —</span>
-        <button id="export-csv-btn" class="btn btn-ghost" title="Download validator data as CSV" aria-label="Export CSV">CSV</button>
-        <button id="export-json-btn" class="btn btn-ghost" title="Download raw report.json" aria-label="Export JSON">JSON</button>
-        <button id="refresh-btn" class="btn btn-primary" title="Reload latest telemetry" aria-label="Refresh data">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 0 1-9-12zM18 12v3a3 3 0 0 1-3-6z"/></svg>
-          <span>Refresh</span>
-        </button>
+        <span id="updated-at" class="updated-at"></span>
+        <button id="export-json-btn" class="btn btn-ghost" title="Export JSON" aria-label="Export JSON">JSON</button>
+        <button id="export-csv-btn" class="btn btn-ghost" title="Export CSV" aria-label="Export CSV">CSV</button>
+        <button id="refresh-btn" class="btn btn-primary" title="Refresh data" aria-label="Refresh data">Refresh</button>
       </div>
     </header>
 
     <main class="main" id="main-content" role="main">
-      <!-- ===================== HERO ===================== -->
-      <section id="overview" class="section hero">
-        <div class="hero-layout">
-          <div class="hero-copy">
-            <span class="eyebrow" id="hero-eyebrow">AUTO-UPDATING REPORT</span>
-            <h1 id="hero-title">Live ecosystem health, at a glance.</h1>
-            <p id="hero-sub" class="hero-sub">Automated on-chain telemetry, validator analytics, and economic indicators — refreshed directly from the Solana mainnet, no API keys required.</p>
-            <div class="hero-meta">
-              <span class="meta-chip" id="meta-epoch">Epoch —</span>
-              <span class="meta-chip" id="meta-slot">Block —</span>
-              <span class="meta-chip" id="meta-health">—</span>
+
+      <!-- Section Tabs -->
+      <nav class="section-tabs" role="tablist" aria-label="Dashboard sections">
+        <button class="section-tab active" role="tab" aria-selected="true" data-tab="overview" id="tab-overview">Overview</button>
+        <button class="section-tab" role="tab" aria-selected="false" data-tab="network" id="tab-network">Network</button>
+        <button class="section-tab" role="tab" aria-selected="false" data-tab="validators" id="tab-validators">Validators</button>
+        <button class="section-tab" role="tab" aria-selected="false" data-tab="defi" id="tab-defi">DeFi</button>
+        <button class="section-tab" role="tab" aria-selected="false" data-tab="economy" id="tab-economy">Economy</button>
+      </nav>
+
+      <!-- Tab: Overview -->
+      <div class="tab-content active" id="tab-content-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <section class="section kpi-grid" id="kpi-grid"></section>
+        <section class="section kpi-grid-secondary" id="kpi-grid-secondary"></section>
+        <section id="trends" class="section">
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="card-head"><span class="card-title">Total Value Locked — 90 Days</span></div>
+              <div class="chart-wrap"><canvas id="chart-tvl" role="img" aria-label="TVL chart"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="card-head"><span class="card-title">SOL Price — 30 Days</span></div>
+              <div class="chart-wrap"><canvas id="chart-price" role="img" aria-label="SOL price chart"></canvas></div>
             </div>
           </div>
+        </section>
+      </div>
 
-          <div class="hero-status-card">
-            <div class="status-orb" id="status-orb"><span class="dot dot-ok" aria-hidden="true"></span></div>
-            <div class="status-copy">
-              <span class="status-label">Cluster Status</span>
-              <div class="status-value" id="status-value">—</div>
-              <div class="status-detail" id="status-detail">—</div>
+      <!-- Tab: Network -->
+      <div class="tab-content" id="tab-content-network" role="tabpanel" aria-labelledby="tab-network">
+        <section class="section network-panel" id="network-panel">
+          <div class="network-panel-head">
+            <span class="network-panel-title">Network Performance</span>
+            <span class="network-panel-status"><span class="dot dot-ok"></span> Healthy</span>
+          </div>
+          <div class="network-stats">
+            <div class="network-stat"><span class="network-stat-label">Epoch</span><strong class="network-stat-value" id="net-epoch">—</strong><span class="network-stat-sub" id="net-epoch-pct"></span></div>
+            <div class="network-stat"><span class="network-stat-label">Block Height</span><strong class="network-stat-value" id="net-block">—</strong></div>
+            <div class="network-stat"><span class="network-stat-label">Average TPS</span><strong class="network-stat-value" id="net-tps">—</strong><span class="network-stat-sub" id="net-tps-sub"></span></div>
+            <div class="network-stat"><span class="network-stat-label">Slot Time</span><strong class="network-stat-value" id="net-slot-time">—</strong><span class="network-stat-sub" id="net-slot-sub"></span></div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="card-head"><span class="card-title">DEX Volume — Solana (30 Days)</span></div>
+              <div class="chart-wrap"><canvas id="chart-tps" role="img" aria-label="DEX volume chart"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="card-head"><span class="card-title">Network Throughput (TPS)</span></div>
+              <div class="chart-wrap"><canvas id="chart-validators" role="img" aria-label="TPS chart"></canvas></div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      <!-- ================= KPI CARDS ================= -->
-      <section class="section kpi-grid" id="kpi-grid">
-        <!-- 8 KPI cards populated by JS: sol-price, tps, slot, validators, tvl, dex, stablecoins, rev -->
-      </section>
-
-      <!-- ================= EPOCH / NETWORK PANEL ================= -->
-      <section class="section epoch-panel">
-        <div class="card epoch-card">
-          <div class="card-head"><span class="card-title">Epoch Progress</span><span id="epoch-pill" class="chip chip-accent">—</span></div>
-          <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
-          <div class="epoch-stats">
-            <div class="epoch-stat"><span>Slot</span><strong id="epoch-slot">—</strong></div>
-            <div class="epoch-stat"><span>Epoch Index</span><strong id="epoch-index">—</strong></div>
-            <div class="epoch-stat"><span>Total Slots</span><strong id="epoch-total">—</strong></div>
-            <div class="epoch-stat"><span>Remaining</span><strong id="epoch-remaining">—</strong></div>
+      <!-- Tab: Validators -->
+      <div class="tab-content" id="tab-content-validators" role="tabpanel" aria-labelledby="tab-validators">
+        <section class="section">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="validator-search" placeholder="Search validators by name or pubkey..." aria-label="Search validators">
           </div>
-        </div>
-
-        <div class="card network-card">
-          <div class="card-head"><span class="card-title">Throughput</span><span class="chip chip-up" id="tps-delta-chip">—</span></div>
-          <div class="big-number" id="tps-big">—</div>
-          <div class="stat-rows">
-            <div class="stat-row"><span>15m Avg</span><strong id="tps-avg">—</strong></div>
-            <div class="stat-row"><span>Non-vote TPS</span><strong id="tps-nonvote">—</strong></div>
-            <div class="stat-row"><span>Slot Time</span><strong id="tps-slot">—</strong></div>
-            <div class="stat-row"><span>Transactions</span><strong id="tps-tx" class="mono">—</strong></div>
+          <div class="filter-chips">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="top10">Top 10</button>
+            <button class="filter-chip" data-filter="nakamoto">Nakamoto</button>
+            <button class="filter-chip" data-filter="zero">0% Commission</button>
+            <button class="filter-chip" data-filter="high">High Commission</button>
           </div>
-        </div>
-      </section>
-
-      <!-- ================= TRENDS / CHARTS ================= -->
-      <section id="trends" class="section trends">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">HISTORICAL</span>
-            <h2>Trends</h2>
-          </div>
-          <span class="section-note">Trailing on-chain snapshots &amp; market data</span>
-        </div>
-        <div class="charts-grid">
-          <div class="card chart-card">
-            <div class="card-head"><span class="card-title">Network Throughput (TPS)</span><span class="chip chip-neutral" id="tps-chart-note">—</span></div>
-            <div class="chart-wrap"><canvas id="chart-tps" role="img" aria-label="Network throughput chart"></canvas></div>
-          </div>
-          <div class="card chart-card">
-            <div class="card-head"><span class="card-title">SOL Price (USD)</span><span class="chip chip-neutral" id="price-chart-note">—</span></div>
-            <div class="chart-wrap"><canvas id="chart-price" role="img" aria-label="SOL price chart"></canvas></div>
-          </div>
-          <div class="card chart-card">
-            <div class="card-head"><span class="card-title">DeFi Total Value Locked (30d)</span><span class="chip chip-neutral" id="tvl-chart-note">—</span></div>
-            <div class="chart-wrap"><canvas id="chart-tvl" role="img" aria-label="DeFi TVL chart"></canvas></div>
-          </div>
-          <div class="card chart-card">
-            <div class="card-head"><span class="card-title">Active Validators</span><span class="chip chip-neutral" id="val-chart-note">—</span></div>
-            <div class="chart-wrap"><canvas id="chart-validators" role="img" aria-label="Active validators chart"></canvas></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= ECONOMY ================= -->
-      <section id="economy" class="section economy">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">MARKET &amp; CAPITAL</span>
-            <h2>Economic Indicators</h2>
-          </div>
-          <span class="section-note">DeFi flows, REV &amp; token supply</span>
-        </div>
-
-        <div class="economy-grid">
-          <div class="card econ-card">
-            <div class="card-head"><span class="card-title">Validators</span></div>
-            <div class="econ-grid-inner">
-              <div class="econ-item"><span class="econ-label">Active</span><strong id="econ-active">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Delinquent</span><strong id="econ-delinq">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Total Stake</span><strong id="econ-stake" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Nakamoto Coef.</span><strong id="econ-nakamoto">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Top-10 Stake</span><strong id="econ-top10">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Delinq. Stake</span><strong id="econ-delinq-stake">—</strong></div>
+        </section>
+        <section class="section two-col">
+          <div class="validator-panel">
+            <div class="validator-head">
+              <span class="validator-title">Validator Status</span>
+              <span class="validator-status-badge"><span class="dot dot-ok"></span> <span id="val-delinq-pct">—</span>% delinquent</span>
             </div>
-            <div class="mini-progress"><div class="mini-progress-track"><div id="stake-fill" class="mini-progress-fill"></div></div><span id="stake-pct" class="mini-progress-label">—</span></div>
-            <span class="econ-caption">Shares of total activated stake vs. circulating supply</span>
-          </div>
-
-          <div class="card econ-card">
-            <div class="card-head"><span class="card-title">Supply</span></div>
-            <div class="econ-grid-inner">
-              <div class="econ-item"><span class="econ-label">Total SOL</span><strong id="supply-total" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Circulating</span><strong id="supply-circ" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Staked</span><strong id="supply-staked" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Staked %</span><strong id="supply-staked-pct">—</strong></div>
+            <div class="validator-stats">
+              <div class="network-stat"><span class="network-stat-label">Active Validators</span><strong class="network-stat-value" id="val-active">—</strong></div>
+              <div class="network-stat"><span class="network-stat-label">Delinquent</span><strong class="network-stat-value warn" id="val-delinquent">—</strong></div>
+              <div class="network-stat"><span class="network-stat-label">Active Stake</span><strong class="network-stat-value" id="val-stake-pct">—</strong></div>
+              <div class="network-stat"><span class="network-stat-label">Total Validators</span><strong class="network-stat-value" id="val-total">—</strong></div>
             </div>
-            <div class="mini-progress"><div class="mini-progress-track"><div id="circ-fill" class="mini-progress-fill"></div></div><span id="circ-pct" class="mini-progress-label">—</span></div>
-            <span class="econ-caption">Circulating vs. non-circulating issuance</span>
-          </div>
-
-          <div class="card econ-card">
-            <div class="card-head"><span class="card-title">Fees &amp; Revenue</span></div>
-            <div class="econ-grid-inner">
-              <div class="econ-item"><span class="econ-label">REV / day</span><strong id="econ-rev" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Median Fee</span><strong id="econ-medfee" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Base Fee</span><strong id="econ-basefee" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Capital Eff.</span><strong id="econ-velocity">—</strong></div>
+            <div class="commission-dist">
+              <div class="commission-dist-title">Commission Distribution</div>
+              <div class="commission-bar" id="commission-bar"></div>
+              <div class="commission-labels"><span>0%</span><span>1-5%</span><span>5-10%</span><span>≥10%</span></div>
             </div>
-            <p class="econ-rev-note" id="econ-rev-note">—</p>
-          </div>
-
-          <div class="card econ-card">
-            <div class="card-head"><span class="card-title">Capital Flows</span></div>
-            <div class="econ-grid-inner">
-              <div class="econ-item"><span class="econ-label">DeFi TVL</span><strong id="econ-tvl" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">24h DEX Volume</span><strong id="econ-dex" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">Stablecoin MCap</span><strong id="econ-stables" class="mono">—</strong></div>
-              <div class="econ-item"><span class="econ-label">24h Market Cap</span><strong id="econ-mcap" class="mono">—</strong></div>
-            </div>
-            <p class="econ-rev-note" id="econ-liquid">—</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= VALIDATORS ================= -->
-      <section id="validators" class="section validators">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">DECENTRALIZATION</span>
-            <h2>Top Validator Nodes</h2>
-          </div>
-          <div class="table-tools">
-            <input type="text" id="validator-search" class="input search" placeholder="Search node or pubkey…" aria-label="Search validators">
-            <select id="validator-filter" class="input select" aria-label="Filter validators">
-              <option value="all">All validators</option>
-              <option value="top10">Top 10 by stake</option>
-              <option value="nakamoto">Nakamoto set</option>
-              <option value="zero">0% commission</option>
-              <option value="high">≥10% commission</option>
-            </select>
-          </div>
-        </div>
-        <div class="sort-hint">Click a column header to sort.</div>
-        <div class="table-wrap card">
-          <table class="table" id="validator-table">
-            <thead>
-              <tr>
-                <th data-sort="rank" class="sortable num"># <span class="sort-icon"></span></th>
-                <th data-sort="name" class="sortable">Node <span class="sort-icon"></span></th>
-                <th data-sort="stake" class="sortable num">Stake (SOL) <span class="sort-icon"></span></th>
-                <th data-sort="share" class="sortable num">Share <span class="sort-icon"></span></th>
-                <th data-sort="commission" class="sortable num">Commission <span class="sort-icon"></span></th>
-                <th class="num">Last Vote</th>
-                <th class="num">Status</th>
-              </tr>
-            </thead>
-            <tbody id="validator-tbody"><!-- populated --></tbody>
-          </table>
-          <div class="table-footer">
-            <span id="validator-count" class="table-count">—</span>
-            <div class="table-pager">
-              <button id="page-prev" class="btn btn-ghost btn-sm">‹</button>
-              <span id="page-info" class="page-info">—</span>
-              <button id="page-next" class="btn btn-ghost btn-sm">›</button>
+            <div class="validators-list">
+              <div class="validators-list-title">Top Validators by Stake</div>
+              <div id="top-validators-list"></div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- ================= ROADMAP ================= -->
-      <section id="roadmap" class="section roadmap">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">PROTOCOL DEVELOPMENT</span>
-            <h2>Upgrades &amp; Roadmap</h2>
+          <div class="roadmap-panel">
+            <div class="roadmap-panel-title">Upcoming Developments</div>
+            <div id="roadmap-list"></div>
           </div>
-          <span class="section-note">Tracked protocol &amp; SIMD milestones</span>
-        </div>
-        <div class="roadmap-grid" id="roadmap-grid">
-          <!-- populated -->
-        </div>
-      </section>
+        </section>
+      </div>
 
-      <!-- ================= NEWS ================= -->
-      <section class="section news">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">ECOSYSTEM</span>
-            <h2>Announcements</h2>
+      <!-- Tab: DeFi -->
+      <div class="tab-content" id="tab-content-defi" role="tabpanel" aria-labelledby="tab-defi">
+        <section class="section two-col">
+          <div class="defi-panel">
+            <div class="defi-panel-head">
+              <span class="defi-panel-title">Top DeFi Protocols</span>
+              <span class="defi-panel-count" id="defi-count">— protocols tracked</span>
+            </div>
+            <table class="defi-table">
+              <thead>
+                <tr><th>#</th><th>Protocol</th><th class="num">TVL</th></tr>
+              </thead>
+              <tbody id="defi-tbody"></tbody>
+            </table>
           </div>
-          <span class="section-note" id="news-note">—</span>
-        </div>
-        <div class="news-grid" id="news-grid">
-          <!-- populated -->
-        </div>
-      </section>
+          <div class="stablecoin-panel" id="stablecoin-panel">
+            <div class="card-head" style="width:100%;margin-bottom:12px;"><span class="card-title">Stablecoin Supply</span></div>
+            <span id="stablecoin-content">Awaiting initial refresh</span>
+          </div>
+        </section>
+      </div>
 
-      <!-- ================= ANOMALIES ================= -->
-      <section class="section anomalies">
-        <div class="card anomalies-card">
-          <div class="card-head">
-            <span class="card-title">Anomaly Detection</span>
-            <span id="anomaly-chip" class="chip chip-ok">—</span>
+      <!-- Tab: Economy -->
+      <div class="tab-content" id="tab-content-economy" role="tabpanel" aria-labelledby="tab-economy">
+        <section id="economy" class="section">
+          <div class="economy-grid">
+            <div class="econ-card">
+              <div class="econ-grid-inner">
+                <div class="econ-item"><span class="econ-label">Market Cap</span><strong id="econ-mcap">—</strong></div>
+                <div class="econ-item"><span class="econ-label">24h Trading Volume</span><strong id="econ-dex">—</strong></div>
+                <div class="econ-item"><span class="econ-label">Circulating Supply</span><strong id="supply-circ" class="mono">—</strong></div>
+                <div class="econ-item"><span class="econ-label">All Time High</span><strong id="econ-ach">—</strong></div>
+              </div>
+            </div>
+            <div class="econ-card">
+              <div class="econ-grid-inner">
+                <div class="econ-item"><span class="econ-label">Price</span><strong id="econ-price">—</strong></div>
+                <div class="econ-item"><span class="econ-label">24h Change</span><strong id="econ-change">—</strong></div>
+                <div class="econ-item"><span class="econ-label">DeFi TVL</span><strong id="econ-tvl">—</strong></div>
+                <div class="econ-item"><span class="econ-label">Real TVL Volume</span><strong id="econ-realtvl">—</strong></div>
+              </div>
+            </div>
+            <div class="econ-card" style="grid-column: 1 / -1;">
+              <div class="econ-grid-inner">
+                <div class="econ-item"><span class="econ-label">Median Tx Fee</span><strong id="econ-medfee">—</strong></div>
+                <div class="econ-item"><span class="econ-label">Avg Tx Fee</span><strong id="econ-basefee">—</strong></div>
+              </div>
+            </div>
           </div>
-          <div id="anomaly-body" class="anomaly-body">
-            <p class="all-clear">No statistical anomalies detected across throughput, slot latency, validator delinquency, or market moves.</p>
+        </section>
+        <section class="section">
+          <div class="refresh-panel">
+            <div class="refresh-panel-title">Data Refresh History</div>
+            <div id="refresh-history"></div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      <!-- ================= FOOTER ================= -->
+      <!-- Footer -->
       <footer class="footer">
         <div class="footer-row">
           <div class="footer-brand">
@@ -316,13 +223,31 @@
         </div>
         <div class="footer-sources">
           <span class="footer-label">Data Sources</span>
-          <div id="sources-list" class="sources-list"><!-- populated --></div>
+          <div id="sources-list" class="sources-list"></div>
         </div>
         <p class="footer-note" id="footer-disclaimer"></p>
         <p class="footer-copy">© 2026 · Superteam Canada Bounty Submission · Python 3.11 stdlib · GitHub Actions automation</p>
       </footer>
 
     </main>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top" id="scroll-top-btn" aria-label="Scroll to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
+  <!-- Modal for Details -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modal-title">Details</span>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
   </div>
 
   <script src="app.js"></script>

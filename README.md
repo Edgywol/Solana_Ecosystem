@@ -14,7 +14,7 @@
 - **Zero External Dependencies:** Built with **Python 3.11+ Standard Library only** (`urllib`, `json`, `sqlite3`, `datetime`, `dataclasses`). **No `pip install`, no node_modules, no API keys needed.**
 - **Direct On-Chain Telemetry:** JSON-RPC client directly against Solana mainnet-beta with automatic gzip decompression and multi-endpoint failover.
 - **Explainable Anomaly & Risk Engine:** Statistically evaluates current telemetry against trailing SQLite baselines to detect TPS shocks, slot latency delays, validator delinquency jumps, and TVL drawdowns.
-- **Institutional Fintech UX:** Trading-terminal density, persistent left sidebar, live ticker strip, Chart.js embedded sparklines, and responsive mobile-first architecture.
+- **Professional, Original UI:** Clean institutional dark design built from scratch — generous whitespace, clear hierarchy, status pill, KPI cards with inline SVG sparklines, four Chart.js trend charts, and a sortable/filterable/paginated validator table with CSV export. No third-party template or skin is copied (see `DESIGN.md`).
 - **Complete Automation Loop:** Scheduled GitHub Action (`refresh.yml`) running every 6 hours and on-demand via `workflow_dispatch`, committing refreshed snapshots and auto-deploying to GitHub Pages.
 
 ---
@@ -53,7 +53,7 @@
 |               STORAGE & FEEDS               |   |            INTERACTIVE DASHBOARD            |
 |                                             |   |                                             |
 |   - data/snapshots.db (SQLite Timeseries)   |   |   - dashboard/index.html (Vanilla UI)       |
-|   - data/report.json  (Machine-Readable)    |-->|   - dashboard/styles.css (Dark Terminal UX) |
+|   - data/report.json  (Machine-Readable)    |-->|   - dashboard/styles.css (Clean Dark Theme) |
 |   - data/report.md    (Human-Readable)      |   |   - dashboard/app.js     (Chart.js CDN)     |
 +---------------------------------------------+   +---------------------------------------------+
                        ^

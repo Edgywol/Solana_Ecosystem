@@ -1,6 +1,6 @@
 /**
- * Solana Ecosystem Intelligence — Clean Dashboard Engine (v2.0)
- * Professional, zero-dependency vanilla JS rendering.
+ * Solana Ecosystem Intelligence — Dashboard Engine (v4.0)
+ * Interactive, zero-dependency vanilla JS dashboard.
  */
 (function () {
   'use strict';
@@ -9,12 +9,12 @@
      STATE
      =================================================================== */
   let report = null;
+  let allValidators = [];
   let filteredValidators = [];
-  let currentPage = 1;
-  const PAGE_SIZE = 20;
-  let sortKey = 'rank';
-  let sortAsc = true;
   let charts = {};
+  let refreshLog = [];
+  let activeFilter = 'all';
+  let searchQuery = '';
 
   const REPORT_PATHS = [
     './data/report.json',
@@ -36,91 +36,50 @@
     refreshBtn: $('refresh-btn'),
     exportCsv: $('export-csv-btn'),
     exportJson: $('export-json-btn'),
-
-    heroTitle: $('hero-title'),
-    heroSub: $('hero-sub'),
-    heroEyebrow: $('hero-eyebrow'),
-    metaEpoch: $('meta-epoch'),
-    metaSlot: $('meta-slot'),
-    metaHealth: $('meta-health'),
-    statusOrb: $('status-orb'),
-    statusValue: $('status-value'),
-    statusDetail: $('status-detail'),
-
     kpiGrid: $('kpi-grid'),
-
-    epochPill: $('epoch-pill'),
-    progressFill: $('progress-fill'),
-    epochSlot: $('epoch-slot'),
-    epochIndex: $('epoch-index'),
-    epochTotal: $('epoch-total'),
-    epochRemaining: $('epoch-remaining'),
-
-    tpsBig: $('tps-big'),
-    tpsDeltaChip: $('tps-delta-chip'),
-    tpsAvg: $('tps-avg'),
-    tpsNonvote: $('tps-nonvote'),
-    tpsSlot: $('tps-slot'),
-    tpsTx: $('tps-tx'),
-
+    kpiGridSecondary: $('kpi-grid-secondary'),
+    netEpoch: $('net-epoch'),
+    netEpochPct: $('net-epoch-pct'),
+    netBlock: $('net-block'),
+    netTps: $('net-tps'),
+    netTpsSub: $('net-tps-sub'),
+    netSlotTime: $('net-slot-time'),
+    netSlotSub: $('net-slot-sub'),
     chartTps: $('chart-tps'),
     chartPrice: $('chart-price'),
     chartTvl: $('chart-tvl'),
     chartValidators: $('chart-validators'),
-    tpsChartNote: $('tps-chart-note'),
-    priceChartNote: $('price-chart-note'),
-    tvlChartNote: $('tvl-chart-note'),
-    valChartNote: $('val-chart-note'),
-
-    econActive: $('econ-active'),
-    econDelinq: $('econ-delinq'),
-    econStake: $('econ-stake'),
-    econNakamoto: $('econ-nakamoto'),
-    econTop10: $('econ-top10'),
-    econDelinqStake: $('econ-delinq-stake'),
-    stakeFill: $('stake-fill'),
-    stakePct: $('stake-pct'),
-
-    supplyTotal: $('supply-total'),
+    valActive: $('val-active'),
+    valDelinquent: $('val-delinquent'),
+    valDelinqPct: $('val-delinq-pct'),
+    valStakePct: $('val-stake-pct'),
+    valTotal: $('val-total'),
+    commissionBar: $('commission-bar'),
+    topValidatorsList: $('top-validators-list'),
+    validatorSearch: $('validator-search'),
+    roadmapList: $('roadmap-list'),
+    defiTbody: $('defi-tbody'),
+    defiCount: $('defi-count'),
+    stablecoinContent: $('stablecoin-content'),
+    econMcap: $('econ-mcap'),
+    econDex: $('econ-dex'),
     supplyCirc: $('supply-circ'),
-    supplyStaked: $('supply-staked'),
-    supplyStakedPct: $('supply-staked-pct'),
-    circFill: $('circ-fill'),
-    circPct: $('circ-pct'),
-
-    econRev: $('econ-rev'),
+    econAch: $('econ-ach'),
+    econPrice: $('econ-price'),
+    econChange: $('econ-change'),
+    econTvl: $('econ-tvl'),
+    econRealtvl: $('econ-realtvl'),
     econMedfee: $('econ-medfee'),
     econBasefee: $('econ-basefee'),
-    econVelocity: $('econ-velocity'),
-    econRevNote: $('econ-rev-note'),
-
-    econTvl: $('econ-tvl'),
-    econDex: $('econ-dex'),
-    econStables: $('econ-stables'),
-    econMcap: $('econ-mcap'),
-    econLiquid: $('econ-liquid'),
-
-    valSearch: $('validator-search'),
-    valFilter: $('validator-filter'),
-    valTbody: $('validator-tbody'),
-    valCount: $('validator-count'),
-    pageInfo: $('page-info'),
-    pagePrev: $('page-prev'),
-    pageNext: $('page-next'),
-    valTable: $('validator-table'),
-
-    roadmapGrid: $('roadmap-grid'),
-    newsGrid: $('news-grid'),
-    newsNote: $('news-note'),
-
-    anomalyChip: $('anomaly-chip'),
-    anomalyBody: $('anomaly-body'),
-
+    refreshHistory: $('refresh-history'),
     footerVersion: $('footer-version'),
     sourcesList: $('sources-list'),
     footerDisclaimer: $('footer-disclaimer'),
-
-    topnavLinks: document.querySelectorAll('.topnav-link'),
+    scrollTopBtn: $('scroll-top-btn'),
+    modalOverlay: $('modal-overlay'),
+    modalTitle: $('modal-title'),
+    modalBody: $('modal-body'),
+    modalClose: $('modal-close'),
   };
 
   /* ===================================================================
@@ -161,7 +120,7 @@
   function truncatePubkey(key, start, end) {
     start = start || 6; end = end || 6;
     if (!key || key.length <= start + end) return key || '—';
-    return key.slice(0, start) + '…' + key.slice(-end);
+    return key.slice(0, start) + '\u2026' + key.slice(-end);
   }
 
   function timeAgo(isoStr) {
@@ -176,26 +135,10 @@
   }
 
   /* ===================================================================
-     FETCH
-     =================================================================== */
-  async function fetchReport() {
-    for (const path of REPORT_PATHS) {
-      try {
-        const r = await fetch(path + '?_t=' + Date.now());
-        if (r.ok) {
-          const d = await r.json();
-          if (d && d.status) return d;
-        }
-      } catch (e) { /* try next */ }
-    }
-    throw new Error('Could not load report data from any path');
-  }
-
-  /* ===================================================================
      TOAST
      =================================================================== */
   function toast(msg, icon) {
-    icon = icon || '✓';
+    icon = icon || '\u2713';
     if (!el.toast) return;
     const t = document.createElement('div');
     t.className = 'toast';
@@ -208,14 +151,30 @@
   }
 
   /* ===================================================================
-     RENDER HELPERS
+     MODAL
      =================================================================== */
-  function setText(el, val) {
-    if (el) el.textContent = val || '—';
+  function showModal(title, content) {
+    if (!el.modalOverlay || !el.modalTitle || !el.modalBody) return;
+    el.modalTitle.textContent = title;
+    el.modalBody.innerHTML = content;
+    el.modalOverlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
   }
 
-  function setHTML(el, val) {
-    if (el) el.innerHTML = val || '—';
+  function hideModal() {
+    if (!el.modalOverlay) return;
+    el.modalOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  /* ===================================================================
+     HELPERS
+     =================================================================== */
+  function setText(element, val) {
+    if (element) element.textContent = val || '—';
+  }
+  function setHTML(element, val) {
+    if (element) element.innerHTML = val || '—';
   }
 
   /* ===================================================================
@@ -227,43 +186,45 @@
     const v = r.validators || {};
     const e = r.economics || {};
 
-    const cards = [
+    const primaryCards = [
       {
         label: 'SOL Price',
         value: fmtUSD(p.price_usd),
         delta: fmtDelta(p.change_24h_pct),
         sub: '24h change',
-        spark: (r.live_cards && r.live_cards.sol_price && r.live_cards.sol_price.sparkline) || null,
-        sparkColor: '#2FE6A2',
+        detail: '<p><strong>Current:</strong> ' + fmtUSD(p.price_usd) + '</p><p><strong>24h Change:</strong> ' + (p.change_24h_pct != null ? p.change_24h_pct.toFixed(2) + '%' : '\u2014') + '</p><p><strong>Market Cap:</strong> ' + fmtUSD(p.market_cap_usd, true) + '</p><p><strong>24h Volume:</strong> ' + fmtUSD(p.volume_24h_usd, true) + '</p>',
       },
       {
         label: 'Network TPS',
         value: fmtNum(Math.round(n.current_tps)),
         delta: fmtDelta((r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.delta_pct) || 0),
         sub: '15m avg: ' + fmtNum(Math.round(n.avg_tps_15m)),
-        spark: (r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.sparkline) || null,
-        sparkColor: '#9945FF',
+        detail: '<p><strong>Current TPS:</strong> ' + fmtNum(Math.round(n.current_tps)) + '</p><p><strong>15m Average:</strong> ' + fmtNum(Math.round(n.avg_tps_15m)) + '</p><p><strong>Non-vote TPS:</strong> ' + fmtNum(Math.round(n.non_vote_tps)) + '</p><p><strong>Total Transactions:</strong> ' + fmtNum(n.total_transactions) + '</p>',
       },
       {
         label: 'Slot Time',
         value: Math.round(n.avg_slot_time_ms) + 'ms',
         delta: { text: 'target 400ms', cls: n.avg_slot_time_ms > 450 ? 'delta-down' : 'delta-up' },
         sub: 'current slot: ' + fmtNum(n.current_slot),
+        detail: '<p><strong>Avg Slot Time:</strong> ' + Math.round(n.avg_slot_time_ms) + 'ms</p><p><strong>Target:</strong> 400ms</p><p><strong>Current Slot:</strong> ' + fmtNum(n.current_slot) + '</p><p><strong>Epoch Progress:</strong> ' + (n.epoch_progress_pct || 0).toFixed(1) + '%</p>',
       },
       {
         label: 'Active Validators',
         value: fmtNum(v.active_validators),
         delta: { text: v.delinquent_validators + ' delinquent', cls: v.delinquent_validators > 10 ? 'delta-down' : 'delta-up' },
         sub: 'Nakamoto: ' + v.nakamoto_coefficient + ' nodes',
-        spark: (r.live_cards && r.live_cards.active_validators && r.live_cards.active_validators.sparkline) || null,
-        sparkColor: '#14F195',
+        detail: '<p><strong>Active:</strong> ' + fmtNum(v.active_validators) + '</p><p><strong>Delinquent:</strong> ' + fmtNum(v.delinquent_validators) + '</p><p><strong>Nakamoto Coefficient:</strong> ' + v.nakamoto_coefficient + '</p><p><strong>Top 10 Stake %:</strong> ' + (v.top_10_stake_pct != null ? v.top_10_stake_pct.toFixed(2) + '%' : '\u2014') + '</p>',
       },
       {
         label: 'DeFi TVL',
         value: fmtUSD(e.tvl_usd, true),
         delta: fmtDelta(e.tvl_change_24h_pct),
         sub: '24h change',
+        detail: '<p><strong>Total Value Locked:</strong> ' + fmtUSD(e.tvl_usd, true) + '</p><p><strong>24h Change:</strong> ' + (e.tvl_change_24h_pct != null ? e.tvl_change_24h_pct.toFixed(2) + '%' : '\u2014') + '</p><p><strong>DEX Volume:</strong> ' + fmtUSD(e.dex_volume_24h_usd, true) + '</p>',
       },
+    ];
+
+    const secondaryCards = [
       {
         label: '24h DEX Volume',
         value: fmtUSD(e.dex_volume_24h_usd, true),
@@ -284,117 +245,237 @@
       },
     ];
 
-    el.kpiGrid.innerHTML = cards.map(function (c, i) {
+    function renderCard(c) {
       var d = c.delta || { text: '', cls: '' };
-      var sparkHtml = '';
-      if (c.spark && c.spark.length > 1) {
-        var min = Math.min.apply(null, c.spark);
-        var max = Math.max.apply(null, c.spark);
-        var range = max - min || 1;
-        var pts = c.spark.map(function (s, j) {
-          var x = (j / (c.spark.length - 1)) * 100;
-          var y = 100 - ((s - min) / range) * 100;
-          return x + ',' + y;
-        }).join(' ');
-        sparkHtml = '<svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none" width="100%" height="34">'
-          + '<polyline fill="none" stroke="' + c.sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-opacity=".85" points="' + pts + '"/>'
-          + '<polyline fill="' + c.sparkColor + '" fill-opacity="0.12" stroke="none" points="' + pts + ' 100,34 0,34"/>'
-          + '</svg>';
+      var attrs = '';
+      if (c.detail) {
+        attrs = ' data-click-title="' + c.label + '" data-click-content="' + encodeURIComponent(c.detail) + '"';
       }
-      return '<div class="kpi-card">'
+      return '<div class="kpi-card"' + attrs + '>'
         + '<div class="kpi-label">' + c.label + '</div>'
         + '<div class="kpi-value">' + c.value + '</div>'
         + '<div class="kpi-delta ' + (d.cls || '') + '">' + d.text + '<span class="kpi-sub">' + (c.sub || '') + '</span></div>'
-        + (sparkHtml || '') + '</div>';
-    }).join('');
-  }
-
-  /* ===================================================================
-     RENDER EPOCH & NETWORK
-     =================================================================== */
-  function renderEpoch(r) {
-    const n = r.network || {};
-    setText(el.epochPill, 'Epoch ' + n.epoch);
-    if (el.progressFill) el.progressFill.style.width = (n.epoch_progress_pct || 0) + '%';
-    setText(el.epochSlot, fmtNum(n.current_slot));
-    setText(el.epochIndex, fmtNum(n.epoch_slot_index));
-    setText(el.epochTotal, fmtNum(n.epoch_slots_total));
-    setText(el.epochRemaining, (n.epoch_time_remaining_hours || 0).toFixed(1) + 'h');
-
-    setText(el.tpsBig, fmtNum(Math.round(n.current_tps)));
-    const d = fmtDelta((r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.delta_pct) || 0);
-    setText(el.tpsDeltaChip, d.text);
-    el.tpsDeltaChip.className = 'chip ' + (d.cls === 'delta-up' ? 'chip-up' : 'chip-warn');
-    setText(el.tpsAvg, fmtNum(Math.round(n.avg_tps_15m)));
-    setText(el.tpsNonvote, fmtNum(Math.round(n.non_vote_tps)));
-    setText(el.tpsSlot, Math.round(n.avg_slot_time_ms) + 'ms');
-    setText(el.tpsTx, fmtNum(n.total_transactions));
-  }
-
-  /* ===================================================================
-     RENDER HERO
-     =================================================================== */
-  function renderHero(r) {
-    const h = r.health || {};
-    const n = r.network || {};
-    setText(el.heroEyebrow, r.status === 'success' ? 'AUTO-UPDATING REPORT' : 'DEGRADED');
-    setText(el.heroTitle, 'Live ecosystem health, at a glance.');
-    setText(el.heroSub, 'Automated on-chain telemetry, validator analytics, and economic indicators — refreshed directly from the Solana mainnet, no API keys required.');
-    setText(el.metaEpoch, 'Epoch ' + n.epoch + ' — ' + (n.epoch_progress_pct || 0).toFixed(1) + '%');
-    setText(el.metaSlot, 'Block ' + fmtNum(n.block_height));
-    setText(el.metaHealth, h.cluster_status || 'Operational');
-
-    const healthy = h.is_healthy !== false;
-    setText(el.statusValue, healthy ? 'All Systems Operational' : 'Degraded');
-    setText(el.statusDetail, h.summary || '');
-    el.statusOrb.className = 'status-orb' + (healthy ? '' : ' warn');
-    el.statusOrb.innerHTML = '<span class="dot dot-' + (healthy ? 'ok' : 'warn') + '"></span>';
-
-    // Health pill
-    el.healthPill.className = 'health-pill' + (healthy ? '' : ' warn');
-    setText(el.healthPillText, healthy ? 'Operational' : 'Degraded');
-    el.healthPill.innerHTML = '<span class="dot dot-' + (healthy ? 'ok' : 'warn') + '"></span><span id="health-pill-text">' + (healthy ? 'Operational' : 'Degraded') + '</span>';
-  }
-
-  /* ===================================================================
-     RENDER ECONOMY
-     =================================================================== */
-  function renderEconomy(r) {
-    const v = r.validators || {};
-    const s = r.supply || {};
-    const e = r.economics || {};
-    const p = r.price || {};
-
-    setText(el.econActive, fmtNum(v.active_validators));
-    setText(el.econDelinq, fmtNum(v.delinquent_validators));
-    setText(el.econStake, fmtSOL(v.total_active_stake_sol) + ' SOL');
-    setText(el.econNakamoto, v.nakamoto_coefficient);
-    setText(el.econTop10, v.top_10_stake_pct != null ? v.top_10_stake_pct.toFixed(2) + '%' : '—');
-    setText(el.econDelinqStake, (v.delinquent_stake_pct != null ? v.delinquent_stake_pct.toFixed(2) + '%' : '—'));
-    if (el.stakeFill) el.stakeFill.style.width = Math.min((s.staked_pct || 0), 100) + '%';
-    setText(el.stakePct, (s.staked_pct || 0).toFixed(1) + '% staked');
-
-    setText(el.supplyTotal, fmtSOL(s.total_sol) + ' SOL');
-    setText(el.supplyCirc, fmtSOL(s.circulating_sol) + ' SOL');
-    setText(el.supplyStaked, fmtSOL(s.staked_sol) + ' SOL');
-    setText(el.supplyStakedPct, (s.staked_pct || 0).toFixed(1) + '%');
-    if (s.total_sol && s.total_sol > 0) {
-      var circPct = (s.circulating_sol / s.total_sol) * 100;
-      if (el.circFill) el.circFill.style.width = Math.min(circPct, 100) + '%';
-      setText(el.circPct, circPct.toFixed(1) + '% circulating');
+        + '</div>';
     }
 
-    setText(el.econRev, fmtUSD(e.rev_24h_usd, true) + '/day');
-    setText(el.econMedfee, fmtUSD(e.median_fee_usd));
-    setText(el.econBasefee, e.base_fee_sol != null ? e.base_fee_sol + ' SOL' : '—');
-    setText(el.econVelocity, (e.capital_efficiency_ratio || 0).toFixed(2) + 'x');
-    setText(el.econRevNote, e.rev_methodology || '');
+    el.kpiGrid.innerHTML = primaryCards.map(renderCard).join('');
+    if (el.kpiGridSecondary) {
+      el.kpiGridSecondary.innerHTML = secondaryCards.map(renderCard).join('');
+    }
 
-    setText(el.econTvl, fmtUSD(e.tvl_usd, true));
-    setText(el.econDex, fmtUSD(e.dex_volume_24h_usd, true));
-    setText(el.econStables, fmtUSD(e.stablecoin_mcap_usd, true));
+    document.querySelectorAll('.kpi-card[data-click-title]').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var title = card.getAttribute('data-click-title');
+        var content = decodeURIComponent(card.getAttribute('data-click-content'));
+        showModal(title, content);
+      });
+    });
+  }
+
+  /* ===================================================================
+     RENDER NETWORK PANEL
+     =================================================================== */
+  function renderNetworkPanel(r) {
+    const n = r.network || {};
+    setText(el.netEpoch, n.epoch);
+    setText(el.netEpochPct, (n.epoch_progress_pct || 0).toFixed(1) + '% through epoch');
+    setText(el.netBlock, fmtNum(n.block_height));
+    setText(el.netTps, fmtNum(Math.round(n.current_tps)));
+    setText(el.netTpsSub, 'avg 15m: ' + fmtNum(Math.round(n.avg_tps_15m)));
+    setText(el.netSlotTime, Math.round(n.avg_slot_time_ms) + 'ms');
+    setText(el.netSlotSub, n.avg_slot_time_ms > 450 ? 'above target' : 'on target');
+  }
+
+  /* ===================================================================
+     RENDER VALIDATOR STATUS
+     =================================================================== */
+  function renderValidatorStatus(r) {
+    const v = r.validators || {};
+    setText(el.valActive, fmtNum(v.active_validators));
+    setText(el.valDelinquent, fmtNum(v.delinquent_validators));
+    const total = v.active_validators + v.delinquent_validators;
+    setText(el.valDelinqPct, total > 0 ? ((v.delinquent_validators / total) * 100).toFixed(1) : '0');
+    setText(el.valStakePct, (v.stake_concentration_pct != null ? v.stake_concentration_pct.toFixed(1) : '\u2014') + '%');
+    setText(el.valTotal, fmtNum(total));
+
+    const validators = Array.isArray(v.top_validators) ? v.top_validators : [];
+    if (validators.length && el.commissionBar) {
+      const z = validators.filter(function(x){return x.commission===0}).length;
+      const l = validators.filter(function(x){return x.commission>0&&x.commission<=5}).length;
+      const m = validators.filter(function(x){return x.commission>5&&x.commission<10}).length;
+      const h = validators.filter(function(x){return x.commission>=10}).length;
+      const t = validators.length;
+      el.commissionBar.innerHTML =
+        '<div class="commission-segment seg-zero" style="width:'+(z/t*100)+'%" title="0%: '+z+'"></div>'+
+        '<div class="commission-segment seg-low" style="width:'+(l/t*100)+'%" title="1-5%: '+l+'"></div>'+
+        '<div class="commission-segment seg-med" style="width:'+(m/t*100)+'%" title="5-10%: '+m+'"></div>'+
+        '<div class="commission-segment seg-high" style="width:'+(h/t*100)+'%" title="\u226510%: '+h+'"></div>';
+    }
+
+    renderTopValidators(validators.slice(0, 5));
+  }
+
+  function renderTopValidators(validators) {
+    if (!el.topValidatorsList) return;
+    if (!validators.length) {
+      el.topValidatorsList.innerHTML = '<p style="color:var(--text-3);padding:8px 0;">No validator data available.</p>';
+      return;
+    }
+    el.topValidatorsList.innerHTML = validators.map(function (x) {
+      return '<div class="validator-row" data-vote="' + (x.vote_pubkey || '') + '">'
+        + '<div class="validator-rank">#' + (x.rank != null ? x.rank : '\u2014') + '</div>'
+        + '<div class="validator-info">'
+        + '<div class="validator-name">' + (x.name || 'Validator') + '</div>'
+        + '<div class="validator-pubkey">' + truncatePubkey(x.vote_pubkey) + '</div>'
+        + '</div>'
+        + '<div class="validator-stake">' + fmtSOL(x.activated_stake_sol) + ' SOL</div>'
+        + '<div class="validator-commission">' + (x.commission != null ? x.commission + '%' : '\u2014') + '</div>'
+        + '</div>';
+    }).join('');
+
+    el.topValidatorsList.querySelectorAll('.validator-row').forEach(function(row) {
+      row.addEventListener('click', function() {
+        var votePubkey = row.getAttribute('data-vote');
+        var v = allValidators.find(function(x) { return x.vote_pubkey === votePubkey; });
+        if (v) {
+          showModal('Validator: ' + (v.name || 'Unknown'),
+            '<div style="display:grid;gap:12px;">'
+            + '<p><strong>Rank:</strong> #' + (v.rank || '\u2014') + '</p>'
+            + '<p><strong>Name:</strong> ' + (v.name || '\u2014') + '</p>'
+            + '<p><strong>Vote Pubkey:</strong> <code style="font-size:11px;word-break:break-all;">' + (v.vote_pubkey || '\u2014') + '</code></p>'
+            + '<p><strong>Activated Stake:</strong> ' + fmtSOL(v.activated_stake_sol) + ' SOL</p>'
+            + '<p><strong>Stake %:</strong> ' + (v.stake_percentage != null ? v.stake_percentage.toFixed(2) + '%' : '\u2014') + '</p>'
+            + '<p><strong>Commission:</strong> ' + (v.commission != null ? v.commission + '%' : '\u2014') + '</p>'
+            + '<p><strong>Last Vote:</strong> ' + fmtNum(v.last_vote) + '</p>'
+            + '<p><strong>Status:</strong> ' + (v.status || '\u2014') + '</p>'
+            + '</div>'
+          );
+        }
+      });
+    });
+  }
+
+  /* ===================================================================
+     RENDER ROADMAP
+     =================================================================== */
+  function renderRoadmap(r) {
+    const news = r.ecosystem_news || {};
+    const upgrades = Array.isArray(news.upgrades) ? news.upgrades : [];
+    if (!upgrades.length) {
+      if (el.roadmapList) setHTML(el.roadmapList, '<p style="color:var(--text-3);padding:12px 0;">No upgrade data available.</p>');
+      return;
+    }
+    if (el.roadmapList) {
+      el.roadmapList.innerHTML = upgrades.map(function (u) {
+        return '<div class="roadmap-item">'
+          + '<div class="roadmap-item-head">'
+          + '<span class="roadmap-item-title">' + (u.title || '') + '</span>'
+          + '<span class="roadmap-item-timeline">' + (u.target_timeline || '') + '</span>'
+          + '</div>'
+          + '<div class="roadmap-item-desc">' + (u.description || '') + '</div>'
+          + '<div class="roadmap-item-status">' + (u.status || '\u2014') + '</div>'
+          + '</div>';
+      }).join('');
+    }
+  }
+
+  /* ===================================================================
+     RENDER DEFI TABLE
+     =================================================================== */
+  function renderDeFiTable(r) {
+    const e = r.economics || {};
+    const protocols = Array.isArray(e.top_defi_protocols) ? e.top_defi_protocols : [];
+    setText(el.defiCount, protocols.length + ' protocols tracked');
+    if (!protocols.length) {
+      setHTML(el.defiTbody, '<tr><td colspan="3" style="text-align:center;color:var(--text-3);padding:24px;">No DeFi data available.</td></tr>');
+      return;
+    }
+    el.defiTbody.innerHTML = protocols.map(function (p, i) {
+      return '<tr data-protocol="' + (p.name || '') + '">'
+        + '<td class="num">' + (i + 1) + '</td>'
+        + '<td>' + (p.name || '\u2014') + '</td>'
+        + '<td class="num">' + fmtUSD(p.tvl_usd, true) + '</td>'
+        + '</tr>';
+    }).join('');
+
+    el.defiTbody.querySelectorAll('tr[data-protocol]').forEach(function(row) {
+      row.addEventListener('click', function() {
+        var name = row.getAttribute('data-protocol');
+        var p = protocols.find(function(x) { return x.name === name; });
+        if (p) {
+          showModal('Protocol: ' + p.name,
+            '<div style="display:grid;gap:12px;">'
+            + '<p><strong>Name:</strong> ' + (p.name || '\u2014') + '</p>'
+            + '<p><strong>TVL:</strong> ' + fmtUSD(p.tvl_usd, true) + '</p>'
+            + '<p><strong>Type:</strong> ' + (p.type || '\u2014') + '</p>'
+            + '</div>'
+          );
+        }
+      });
+    });
+  }
+
+  /* ===================================================================
+     RENDER STABLECOIN PANEL
+     =================================================================== */
+  function renderStablecoinPanel(r) {
+    const e = r.economics || {};
+    const supply = e.stablecoin_mcap_usd;
+    const tvl = e.tvl_usd;
+    if (!supply && !tvl) {
+      setHTML(el.stablecoinContent, '<p style="color:var(--text-3);">No stablecoin data available.</p>');
+      return;
+    }
+    setHTML(el.stablecoinContent,
+      '<div class="stablecoin-stats">'
+      + '<div class="stablecoin-stat"><span class="stablecoin-label">Total Supply</span><strong>' + fmtUSD(supply, true) + '</strong></div>'
+      + '<div class="stablecoin-stat"><span class="stablecoin-label">DeFi TVL</span><strong>' + fmtUSD(tvl, true) + '</strong></div>'
+      + '<div class="stablecoin-stat"><span class="stablecoin-label">Capital Efficiency</span><strong>' + (e.capital_efficiency_ratio || 0).toFixed(2) + 'x</strong></div>'
+      + '</div>'
+    );
+  }
+
+  /* ===================================================================
+     RENDER ECONOMIC INDICATORS
+     =================================================================== */
+  function renderEconomy(r) {
+    const p = r.price || {};
+    const e = r.economics || {};
+    const s = r.supply || {};
     setText(el.econMcap, fmtUSD(p.market_cap_usd, true));
-    setText(el.econLiquid, 'DEX volume / TVL: ' + (e.dex_volume_24h_usd && e.tvl_usd ? (e.dex_volume_24h_usd / e.tvl_usd).toFixed(2) + 'x' : '—'));
+    setText(el.econDex, fmtUSD(e.dex_volume_24h_usd, true));
+    setText(el.supplyCirc, fmtSOL(s.circulating_sol) + ' SOL');
+    setText(el.econAch, fmtUSD(p.ath_usd));
+    setText(el.econPrice, fmtUSD(p.price_usd));
+    setText(el.econChange, p.change_24h_pct != null ? (p.change_24h_pct >= 0 ? '+' : '') + p.change_24h_pct.toFixed(2) + '%' : '\u2014');
+    setText(el.econTvl, fmtUSD(e.tvl_usd, true));
+    setText(el.econRealtvl, fmtUSD(e.dex_volume_24h_usd, true));
+    setText(el.econMedfee, fmtUSD(e.median_fee_usd));
+    setText(el.econBasefee, e.base_fee_sol != null ? e.base_fee_sol + ' SOL' : '\u2014');
+    if (el.econChange && p.change_24h_pct != null) {
+      el.econChange.style.color = p.change_24h_pct >= 0 ? 'var(--green)' : 'var(--red)';
+    }
+  }
+
+  /* ===================================================================
+     RENDER REFRESH HISTORY
+     =================================================================== */
+  function renderRefreshHistory(r) {
+    refreshLog.unshift({
+      time: r.generated_at || new Date().toISOString(),
+      epoch: r.network ? r.network.epoch : '\u2014',
+      status: r.status || 'success'
+    });
+    if (refreshLog.length > 10) refreshLog = refreshLog.slice(0, 10);
+    if (el.refreshHistory) {
+      el.refreshHistory.innerHTML = refreshLog.map(function (entry) {
+        return '<div class="refresh-log-entry">'
+          + '<span class="refresh-log-time">' + timeAgo(entry.time) + '</span>'
+          + '<span class="refresh-log-epoch">Epoch ' + entry.epoch + '</span>'
+          + '<span class="refresh-log-status ' + (entry.status === 'success' ? 'status-ok' : 'status-warn') + '">' + entry.status + '</span>'
+          + '</div>';
+      }).join('');
+    }
   }
 
   /* ===================================================================
@@ -411,15 +492,15 @@
   }
 
   /* ===================================================================
-     CHARTS (Chart.js)
+     CHARTS
      =================================================================== */
-  const CHART_COLORS = {
-    purple: '#9945FF',
+  var CHART_COLORS = {
+    accent: '#9945FF',
     teal: '#14F195',
-    text: '#9AA4B6',
-    grid: 'rgba(255,255,255,0.05)',
+    text: '#94A3B8',
+    grid: 'rgba(255,255,255,0.06)',
     fillTps: 'rgba(153,69,255,0.18)',
-    fillPrice: 'rgba(47,230,162,0.16)',
+    fillPrice: 'rgba(20,241,149,0.16)',
     fillTvl: 'rgba(20,241,149,0.14)',
   };
 
@@ -427,7 +508,20 @@
     return {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1E2636',
+          titleColor: '#F1F5F9',
+          bodyColor: '#94A3B8',
+          borderColor: 'rgba(255,255,255,0.14)',
+          borderWidth: 1,
+          padding: 10,
+          cornerRadius: 6,
+          displayColors: false,
+        },
+      },
       scales: {
         x: { grid: { display: false }, ticks: { color: CHART_COLORS.text, maxTicksLimit: 6, maxRotation: 0 } },
         y: { grid: { color: CHART_COLORS.grid }, ticks: { color: CHART_COLORS.text, maxTicksLimit: 5 } },
@@ -439,15 +533,17 @@
     return values.map(function (s) {
       const d = new Date(s.timestamp);
       if (isNaN(d.getTime())) return '';
-      return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0') + ':' + d.getSeconds().toString().padStart(2, '0');
+      return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
     });
   }
 
-  function renderLineChart(canvas, labels, data, color, fill, noteEl, noteText, yPrefix) {
+  function renderLineChart(canvas, labels, data, color, fill, yPrefix) {
     if (!canvas || typeof Chart === 'undefined') return;
-    setText(noteEl, noteText);
-    const exists = charts[canvas.id];
-    if (exists) exists.destroy();
+    if (charts[canvas.id]) charts[canvas.id].destroy();
+    var opts = baseChartOpts();
+    if (yPrefix) {
+      opts.scales.y.ticks.callback = function (val) { return yPrefix + ' ' + val.toLocaleString(); };
+    }
     charts[canvas.id] = new Chart(canvas, {
       type: 'line',
       data: {
@@ -458,27 +554,19 @@
           backgroundColor: fill,
           borderWidth: 2,
           pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: color,
           tension: 0.3,
           fill: true,
         }],
       },
-      options: Object.assign(baseChartOpts(), {
-        scales: Object.assign({}, baseChartOpts().scales, {
-          y: Object.assign({}, baseChartOpts().scales.y, {
-            ticks: Object.assign({}, baseChartOpts().scales.y.ticks, {
-              callback: function (val) { return yPrefix ? yPrefix + ' ' + val.toLocaleString() : val; },
-            }),
-          }),
-        }),
-      }),
+      options: opts,
     });
   }
 
-  function renderBarChart(canvas, labels, values, color, note, noteText) {
+  function renderBarChart(canvas, labels, values, color) {
     if (!canvas || typeof Chart === 'undefined') return;
-    setText(note, noteText);
-    const exists = charts[canvas.id];
-    if (exists) exists.destroy();
+    if (charts[canvas.id]) charts[canvas.id].destroy();
     charts[canvas.id] = new Chart(canvas, {
       type: 'line',
       data: {
@@ -489,6 +577,8 @@
           backgroundColor: CHART_COLORS.fillTvl,
           borderWidth: 1.5,
           pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: color,
           tension: 0.3,
           fill: true,
         }],
@@ -498,210 +588,139 @@
   }
 
   function renderCharts(r) {
-    const ht = r.historical_trends || {};
-    const lc = r.live_cards || {};
+    var ht = r.historical_trends || {};
+    var lc = r.live_cards || {};
 
-    // TPS
-    const tpsSrc = (ht.tps && ht.tps.length) ? ht.tps : [];
+    var tpsSrc = (ht.tps && ht.tps.length) ? ht.tps : [];
     if (tpsSrc.length) {
-      renderLineChart(el.chartTps, timeLabels(tpsSrc), tpsSrc.map(s => s.value), CHART_COLORS.accent, CHART_COLORS.fillTps, el.tpsChartNote, 'trailing snapshots', '');
+      renderLineChart(el.chartTps, timeLabels(tpsSrc), tpsSrc.map(function(s){return s.value}), CHART_COLORS.accent, CHART_COLORS.fillTps, '');
     } else if (lc.network_tps && lc.network_tps.sparkline) {
-      renderLineChart(el.chartTps, lc.network_tps.sparkline.map((_, i) => i), lc.network_tps.sparkline, CHART_COLORS.accent, CHART_COLORS.fillTps, el.tpsChartNote, 'intra-session sparkline', '');
+      renderLineChart(el.chartTps, lc.network_tps.sparkline.map(function(_,i){return i}), lc.network_tps.sparkline, CHART_COLORS.accent, CHART_COLORS.fillTps, '');
     }
 
-    // SOL Price
-    const priceSrc = (ht.sol_price && ht.sol_price.length) ? ht.sol_price : (lc.sol_price && lc.sol_price.sparkline ? lc.sol_price.sparkline.map(function (v) { return { timestamp: new Date().toISOString(), value: v }; }) : []);
+    var priceSrc = (ht.sol_price && ht.sol_price.length) ? ht.sol_price : [];
     if (priceSrc.length) {
-      const labels = ht.sol_price && ht.sol_price.length ? timeLabels(priceSrc) : priceSrc.map((_, i) => i);
-      renderLineChart(el.chartPrice, labels, priceSrc.map(s => s.value), CHART_COLORS['teal'], CHART_COLORS.fillPrice, el.priceChartNote, 'USD spot', '$');
+      renderLineChart(el.chartPrice, timeLabels(priceSrc), priceSrc.map(function(s){return s.value}), CHART_COLORS.teal, CHART_COLORS.fillPrice, '$');
+    } else if (lc.sol_price && lc.sol_price.sparkline) {
+      renderLineChart(el.chartPrice, lc.sol_price.sparkline.map(function(_,i){return i}), lc.sol_price.sparkline, CHART_COLORS.teal, CHART_COLORS.fillPrice, '$');
     }
 
-    // TVL 30d
-    const tvl = ht.historical_tvl_30d || r.economics.historical_tvl_30d || [];
+    var tvl = ht.historical_tvl_30d || (r.economics && r.economics.historical_tvl_30d) || [];
     if (tvl.length) {
-      renderBarChart(el.chartTvl, tvl.map(d => d.date.slice(5)), tvl.map(d => +(d.tvl / 1e9).toFixed(2)), CHART_COLORS.teal, el.tvlChartNote, 'USD billion');
+      renderBarChart(el.chartTvl, tvl.map(function(d){return d.date.slice(5)}), tvl.map(function(d){return +(d.tvl / 1e9).toFixed(2)}), CHART_COLORS.teal);
     }
 
-    // Validators
-    const valSrc = (ht.validators && ht.validators.length) ? ht.validators : (lc.active_validators && lc.active_validators.sparkline ? lc.active_validators.sparkline.map(function (v) { return { timestamp: new Date().toISOString(), value: v }; }) : []);
+    var valSrc = (ht.validators && ht.validators.length) ? ht.validators : [];
     if (valSrc.length) {
-      const labels = ht.validators && ht.validators.length ? timeLabels(ht.validators) : valSrc.map((_, i) => i);
-      renderLineChart(el.chartValidators, labels, valSrc.map(s => s.value), CHART_COLORS.accent, CHART_COLORS.fillTps, el.valChartNote, 'active nodes', '');
+      renderLineChart(el.chartValidators, timeLabels(valSrc), valSrc.map(function(s){return s.value}), CHART_COLORS.accent, CHART_COLORS.fillTps, '');
+    } else if (lc.active_validators && lc.active_validators.sparkline) {
+      renderLineChart(el.chartValidators, lc.active_validators.sparkline.map(function(_,i){return i}), lc.active_validators.sparkline, CHART_COLORS.accent, CHART_COLORS.fillTps, '');
     }
   }
 
   /* ===================================================================
-     VALIDATORS TABLE
+     TAB NAVIGATION
      =================================================================== */
-  function getValidatorSource(r) {
-    const v = r.validators || {};
-    return Array.isArray(v.top_validators) ? v.top_validators.slice() : [];
+  function setupTabs() {
+    document.querySelectorAll('.section-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.section-tab').forEach(function(t) {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.tab-content').forEach(function(tc) {
+          tc.classList.remove('active');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        var content = document.getElementById('tab-content-' + tab.getAttribute('data-tab'));
+        if (content) content.classList.add('active');
+      });
+    });
   }
 
-  function applyValidatorFilters(r) {
-    const v = r.validators || {};
-    const nakamoto = v.nakamoto_coefficient || 18;
-    let list = getValidatorSource(r);
-    const filter = el.valFilter ? el.valFilter.value : 'all';
-    const q = el.valSearch ? el.valSearch.value.trim().toLowerCase() : '';
-
-    if (filter === 'top10') list = list.slice(0, 10);
-    else if (filter === 'nakamoto') list = list.slice(0, nakamoto);
-    else if (filter === 'zero') list = list.filter(x => Number(x.commission) === 0);
-    else if (filter === 'high') list = list.filter(x => Number(x.commission) >= 10);
-
-    if (q) list = list.filter(function (x) {
-      return (x.name && x.name.toLowerCase().indexOf(q) !== -1) ||
-        (x.vote_pubkey && x.vote_pubkey.toLowerCase().indexOf(q) !== -1) ||
-        (x.node_pubkey && x.node_pubkey.toLowerCase().indexOf(q) !== -1);
-    });
-
-    // Sort
-    list.sort(function (a, b) {
-      let va, vb;
-      if (sortKey === 'rank') { va = a.rank; vb = b.rank; }
-      else if (sortKey === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); return sortAsc ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0); }
-      else if (sortKey === 'stake') { va = a.activated_stake_sol; vb = b.activated_stake_sol; }
-      else if (sortKey === 'share') { va = a.stake_percentage; vb = b.stake_percentage; }
-      else if (sortKey === 'commission') { va = a.commission; vb = b.commission; }
-      else return 0;
-      return sortAsc ? va - vb : vb - va;
-    });
-
-    filteredValidators = list;
-    return list;
-  }
-
-  function renderValidatorTable(r) {
-    const list = applyValidatorFilters(r);
-    const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
-    if (currentPage > totalPages) currentPage = totalPages;
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const pageRows = list.slice(start, start + PAGE_SIZE);
-
-    setText(el.valCount, list.length + ' validator' + (list.length === 1 ? '' : 's') + ' shown');
-    setText(el.pageInfo, currentPage + ' / ' + totalPages);
-    el.pagePrev.disabled = currentPage <= 1;
-    el.pageNext.disabled = currentPage >= totalPages;
-
-    if (!pageRows.length) {
-      setHTML(el.valTbody, '<tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:28px;">No validators match your filters.</td></tr>');
-      return;
+  /* ===================================================================
+     VALIDATOR SEARCH & FILTER
+     =================================================================== */
+  function setupValidatorSearch() {
+    if (el.validatorSearch) {
+      el.validatorSearch.addEventListener('input', function() {
+        searchQuery = this.value.trim().toLowerCase();
+        applyFilters();
+      });
     }
-
-    el.valTbody.innerHTML = pageRows.map(function (x) {
-      const statusCls = x.status === 'delinquent' ? 'delinquent' : 'active';
-      return '<tr>'
-        + '<td class="num mono">' + (x.rank != null ? x.rank : '—') + '</td>'
-        + '<td><div class="val-name">' + (x.name || 'Validator') + '</div>'
-        + '<div class="val-pubkey" title="' + (x.vote_pubkey || '') + '">' + truncatePubkey(x.vote_pubkey) + '</div></td>'
-        + '<td class="num mono">' + fmtSOL(x.activated_stake_sol) + '</td>'
-        + '<td class="num mono">' + (x.stake_percentage != null ? x.stake_percentage.toFixed(2) + '%' : '—') + '</td>'
-        + '<td class="num mono">' + (x.commission != null ? x.commission + '%' : '—') + '</td>'
-        + '<td class="num mono">' + (x.last_vote != null ? fmtNum(x.last_vote) : '—') + '</td>'
-        + '<td class="num"><span class="val-status ' + statusCls + '">' + (x.status === 'delinquent' ? 'Delinquent' : 'Active') + '</span></td>'
-        + '</tr>';
-    }).join('');
-    updateSortIndicators();
+    document.querySelectorAll('.filter-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
+        chip.classList.add('active');
+        activeFilter = chip.getAttribute('data-filter');
+        applyFilters();
+      });
+    });
   }
 
-  function updateSortIndicators() {
-    document.querySelectorAll('.table th.sortable').forEach(function (th) {
-      th.classList.remove('asc', 'desc');
-      if (th.getAttribute('data-sort') === sortKey) {
-        th.classList.add(sortAsc ? 'asc' : 'desc');
+  function applyFilters() {
+    if (!report) return;
+    var validators = allValidators.slice();
+    if (searchQuery) {
+      validators = validators.filter(function(v) {
+        return (v.name && v.name.toLowerCase().indexOf(searchQuery) !== -1) ||
+               (v.vote_pubkey && v.vote_pubkey.toLowerCase().indexOf(searchQuery) !== -1);
+      });
+    }
+    if (activeFilter === 'top10') validators = validators.slice(0, 10);
+    else if (activeFilter === 'nakamoto') {
+      var nk = report.validators ? report.validators.nakamoto_coefficient || 18 : 18;
+      validators = validators.slice(0, nk);
+    } else if (activeFilter === 'zero') validators = validators.filter(function(v) { return v.commission === 0; });
+    else if (activeFilter === 'high') validators = validators.filter(function(v) { return v.commission >= 10; });
+
+    filteredValidators = validators;
+    renderTopValidators(validators.slice(0, 5));
+  }
+
+  /* ===================================================================
+     SCROLL TO TOP
+     =================================================================== */
+  function setupScrollToTop() {
+    if (!el.scrollTopBtn) return;
+    window.addEventListener('scroll', function() {
+      el.scrollTopBtn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+    el.scrollTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ===================================================================
+     MODAL SETUP
+     =================================================================== */
+  function setupModal() {
+    if (el.modalClose) el.modalClose.addEventListener('click', hideModal);
+    if (el.modalOverlay) el.modalOverlay.addEventListener('click', function(e) {
+      if (e.target === el.modalOverlay) hideModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && el.modalOverlay && el.modalOverlay.classList.contains('visible')) {
+        hideModal();
       }
     });
   }
 
-  function exportValidatorsCSV(r) {
-    const list = getValidatorSource(r);
-    const headers = ['rank', 'name', 'vote_pubkey', 'activated_stake_sol', 'stake_percentage', 'commission', 'last_vote', 'status'];
-    const rows = list.map(function (x) {
-      return headers.map(function (h) { return '"' + String(x[h] == null ? '' : x[h]).replace(/"/g, '""') + '"'; }).join(',');
+  /* ===================================================================
+     KEYBOARD NAVIGATION
+     =================================================================== */
+  function setupKeyboardNav() {
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (el.validatorSearch) {
+          var vt = document.querySelector('[data-tab="validators"]');
+          if (vt) vt.click();
+          el.validatorSearch.focus();
+        }
+      }
     });
-    const csv = headers.join(',') + '\n' + rows.join('\n');
-    download('solana-validators.csv', csv, 'text/csv');
-    toast('Validator CSV exported (' + list.length + ' rows)');
-  }
-
-  function download(name, content, mime) {
-    const blob = new Blob([content], { type: mime + ';charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-  }
-
-  /* ===================================================================
-     ROADMAP
-     =================================================================== */
-  function renderRoadmap(r) {
-    const news = r.ecosystem_news || {};
-    const upgrades = Array.isArray(news.upgrades) ? news.upgrades : [];
-    if (!upgrades.length) {
-      setHTML(el.roadmapGrid, '<p class="section-note">No upgrade data available.</p>');
-      return;
-    }
-    el.roadmapGrid.innerHTML = upgrades.map(function (u) {
-      const impactCls = (u.impact || '').toLowerCase().indexOf('critical') !== -1 ? 'impact-critical' : 'impact-high';
-      return '<div class="roadmap-card">'
-        + '<div class="roadmap-top"><span class="roadmap-cat">' + (u.category || 'Protocol') + '</span>'
-        + '<span class="roadmap-impact ' + impactCls + '">' + (u.impact || 'High') + '</span></div>'
-        + '<div class="roadmap-title">' + (u.title || '') + '</div>'
-        + '<div class="roadmap-desc">' + (u.description || '') + '</div>'
-        + '<div class="roadmap-bottom">'
-        + '<span class="roadmap-status">● ' + (u.status || '—') + ' · ' + (u.target_timeline || '') + '</span>'
-        + (u.documentation_url ? '<a class="roadmap-docs" href="' + u.documentation_url + '" target="_blank" rel="noopener">Docs →</a>' : '')
-        + '</div></div>';
-    }).join('');
-  }
-
-  /* ===================================================================
-     NEWS
-     =================================================================== */
-  function renderNews(r) {
-    const news = r.ecosystem_news || {};
-    setText(el.newsNote, news.source_type || '');
-    const ann = Array.isArray(news.recent_announcements) ? news.recent_announcements : [];
-    if (!ann.length) {
-      setHTML(el.newsGrid, '<p class="section-note">No announcements available.</p>');
-      return;
-    }
-    el.newsGrid.innerHTML = ann.map(function (a) {
-      return '<div class="news-card">'
-        + '<span class="news-tag">' + (a.tag || 'Ecosystem') + '</span>'
-        + '<div class="news-title">' + (a.title || '') + '</div>'
-        + '<div class="news-summary">' + (a.summary || '') + '</div>'
-        + '<div class="news-date">' + (a.date || '') + '</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  /* ===================================================================
-     ANOMALIES
-     =================================================================== */
-  function renderAnomalies(r) {
-    const alerts = Array.isArray(r.alerts) ? r.alerts : [];
-    const count = r.alerts_count != null ? r.alerts_count : alerts.length;
-    if (!count) {
-      el.anomalyChip.className = 'chip chip-ok';
-      setText(el.anomalyChip, '0 ACTIVE');
-      setHTML(el.anomalyBody, '<p class="all-clear">No statistical anomalies detected across throughput, slot latency, validator delinquency, or market moves.</p>');
-      return;
-    }
-    el.anomalyChip.className = 'chip ' + (count > 2 ? 'chip-bad' : 'chip-warn');
-    setText(el.anomalyChip, count + ' ACTIVE');
-    setHTML(el.anomalyBody, '<div class="anomaly-list">' + alerts.map(function (a) {
-      const sev = (a.severity || '').toLowerCase();
-      const icon = sev === 'critical' ? '⛔' : sev === 'warning' ? '⚠️' : 'ℹ️';
-      return '<div class="anomaly-item"><span class="anomaly-icon">' + icon + '</span>'
-        + '<div class="anomaly-text"><strong>' + (a.title || a.rule || 'Alert') + '</strong>'
-        + '<p>' + (a.message || a.description || '') + '</p></div></div>';
-    }).join('') + '</div>');
   }
 
   /* ===================================================================
@@ -709,109 +728,107 @@
      =================================================================== */
   function renderAll(r) {
     report = r;
-    currentPage = 1;
-    renderHero(r);
+    allValidators = Array.isArray(r.validators && r.validators.top_validators) ? r.validators.top_validators.slice() : [];
+    filteredValidators = allValidators.slice();
+
     renderKPI(r);
-    renderEpoch(r);
+    renderNetworkPanel(r);
+    renderValidatorStatus(r);
+    renderRoadmap(r);
+    renderDeFiTable(r);
+    renderStablecoinPanel(r);
     renderEconomy(r);
     renderCharts(r);
-    renderValidatorTable(r);
-    renderRoadmap(r);
-    renderNews(r);
-    renderAnomalies(r);
+    renderRefreshHistory(r);
     renderFooter(r);
 
+    var h = r.health || {};
+    var healthy = h.is_healthy !== false;
+    el.healthPill.className = 'health-pill' + (healthy ? '' : ' warn');
+    el.healthPill.innerHTML = '<span class="dot dot-' + (healthy ? 'ok' : 'warn') + '"></span><span id="health-pill-text">' + (healthy ? 'Operational' : 'Degraded') + '</span>';
+
     setText(el.updatedAt, 'Updated ' + timeAgo(r.generated_at));
-    document.title = 'Solana Ecosystem — Epoch ' + (r.network && r.network.epoch ? r.network.epoch : '') + ' · ' + (r.price ? fmtUSD(r.price.price_usd) : '') + ' · Dashboard';
+    document.title = 'Solana Ecosystem \u2014 Epoch ' + (r.network && r.network.epoch ? r.network.epoch : '') + ' \u00B7 ' + (r.price ? fmtUSD(r.price.price_usd) : '') + ' \u00B7 Dashboard';
+
+    applyFilters();
   }
 
   /* ===================================================================
      EVENTS
      =================================================================== */
   function setupEvents() {
-    // Refresh
     if (el.refreshBtn) el.refreshBtn.addEventListener('click', async function () {
       try {
+        el.refreshBtn.disabled = true;
+        el.refreshBtn.textContent = 'Refreshing...';
         const r = await fetchReport();
         renderAll(r);
         toast('Telemetry refreshed from mainnet');
       } catch (e) {
-        toast('Failed to refresh: ' + e.message, '⚠');
+        toast('Failed to refresh: ' + e.message, '\u26A0');
+      } finally {
+        el.refreshBtn.disabled = false;
+        el.refreshBtn.textContent = 'Refresh';
       }
     });
 
-    // Exports
     if (el.exportJson) el.exportJson.addEventListener('click', function () {
-      if (report) { download('solana-report.json', JSON.stringify(report, null, 2), 'application/json'); toast('report.json exported'); }
+      if (report) {
+        var blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'solana-report.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+        toast('report.json exported');
+      }
     });
+
     if (el.exportCsv) el.exportCsv.addEventListener('click', function () {
-      if (report) exportValidatorsCSV(report);
-    });
-
-    // Search & filter
-    if (el.valSearch) el.valSearch.addEventListener('input', function () { currentPage = 1; if (report) renderValidatorTable(report); });
-    if (el.valFilter) el.valFilter.addEventListener('change', function () { currentPage = 1; if (report) renderValidatorTable(report); });
-
-    // Pagination
-    if (el.pagePrev) el.pagePrev.addEventListener('click', function () { if (currentPage > 1) { currentPage--; renderValidatorTable(report); } });
-    if (el.pageNext) el.pageNext.addEventListener('click', function () { currentPage++; renderValidatorTable(report); });
-
-    // Sort
-    if (el.valTable) el.valTable.querySelectorAll('th.sortable').forEach(function (th) {
-      th.addEventListener('click', function () {
-        const key = th.getAttribute('data-sort');
-        if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true; }
-        if (report) renderValidatorTable(report);
+      if (!report) return;
+      var validators = Array.isArray(report.validators && report.validators.top_validators) ? report.validators.top_validators : [];
+      var headers = ['rank', 'name', 'vote_pubkey', 'activated_stake_sol', 'stake_percentage', 'commission', 'last_vote', 'status'];
+      var rows = validators.map(function (x) {
+        return headers.map(function (h) { return '"' + String(x[h] == null ? '' : x[h]).replace(/"/g, '""') + '"'; }).join(',');
       });
+      var csv = headers.join(',') + '\n' + rows.join('\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'solana-validators.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      toast('Validator CSV exported (' + validators.length + ' rows)');
     });
 
-    // Top nav active state
-    el.topnavLinks.forEach(function (link) {
-      link.addEventListener('click', function () {
-        el.topnavLinks.forEach(function (l) { l.classList.remove('active'); });
-        link.classList.add('active');
-      });
-    });
-
-    // Mobile hamburger toggle
     var hamburger = document.querySelector('.hamburger');
-    var topnav = document.querySelector('.topnav');
-    if (hamburger && topnav) {
+    var topbarActions = document.querySelector('.topbar-actions');
+    if (hamburger && topbarActions) {
       hamburger.addEventListener('click', function () {
-        var isOpen = topnav.classList.toggle('open');
+        var isOpen = topbarActions.classList.toggle('open');
         hamburger.setAttribute('aria-expanded', isOpen);
-        if (isOpen) {
-          var firstLink = topnav.querySelector('.topnav-link');
-          if (firstLink) firstLink.focus();
-        }
-      });
-      topnav.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && topnav.classList.contains('open')) {
-          topnav.classList.remove('open');
-          hamburger.setAttribute('aria-expanded', 'false');
-          hamburger.focus();
-        }
-      });
-      topnav.querySelectorAll('.topnav-link').forEach(function (link) {
-        link.addEventListener('click', function () {
-          topnav.classList.remove('open');
-          hamburger.setAttribute('aria-expanded', 'false');
-        });
       });
     }
+  }
 
-    // Scroll-based topbar enhancement
-    var topbar = document.querySelector('.topbar');
-    if (topbar) {
-      var scrollThreshold = 80;
-      window.addEventListener('scroll', function () {
-        if (window.scrollY > scrollThreshold) {
-          topbar.classList.add('scrolled');
-        } else {
-          topbar.classList.remove('scrolled');
+  /* ===================================================================
+     FETCH
+     =================================================================== */
+  async function fetchReport() {
+    for (var i = 0; i < REPORT_PATHS.length; i++) {
+      try {
+        var r = await fetch(REPORT_PATHS[i] + '?_t=' + Date.now());
+        if (r.ok) {
+          var d = await r.json();
+          if (d && d.status) return d;
         }
-      }, { passive: true });
+      } catch (e) { /* try next */ }
     }
+    throw new Error('Could not load report data from any path');
   }
 
   /* ===================================================================
@@ -819,17 +836,22 @@
      =================================================================== */
   function init() {
     setupEvents();
+    setupTabs();
+    setupValidatorSearch();
+    setupScrollToTop();
+    setupModal();
+    setupKeyboardNav();
+
     fetchReport()
       .then(renderAll)
       .catch(function (err) {
         console.error('Load failed:', err);
         setText(el.updatedAt, 'Offline');
-        toast('Could not load report data. Check that data/report.json exists.', '⚠');
+        toast('Could not load report data. Check that data/report.json exists.', '\u26A0');
       })
       .then(function () {
         setTimeout(function () {
           if (el.loading) el.loading.classList.add('hidden');
-          // Stagger section animations (respect reduced motion)
           if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
             var sections = document.querySelectorAll('.section');
             sections.forEach(function (sec, i) {
