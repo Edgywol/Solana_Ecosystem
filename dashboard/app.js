@@ -1,35 +1,21 @@
 /**
- * Quantix Solana Radar — Engine (v2.0).
- * High-performance Vanilla JS + Chart.js from CDN.
+ * Solana Ecosystem Intelligence — Clean Dashboard Engine (v2.0)
+ * Professional, zero-dependency vanilla JS rendering.
  */
-
 (function () {
   'use strict';
 
-  // Global State
-  let currentReport = null;
-  let chartInstances = {};
-  let currentTableFilter = 'all';
-  let validatorSearchQuery = '';
+  /* ===================================================================
+     STATE
+     =================================================================== */
+  let report = null;
+  let filteredValidators = [];
+  let currentPage = 1;
+  const PAGE_SIZE = 20;
+  let sortKey = 'rank';
+  let sortAsc = true;
+  let charts = {};
 
-  // DOM Elements
-  const loadingOverlay = document.getElementById('app-loading');
-  const refreshBtn = document.getElementById('refresh-btn');
-  const lastUpdatedEl = document.getElementById('last-updated-text');
-  const globalSearchInput = document.getElementById('global-search-input');
-  const validatorTbody = document.getElementById('validators-tbody');
-  const upgradesContainer = document.getElementById('upgrades-container');
-  const runAuditBtn = document.getElementById('run-audit-btn');
-  const copyRpcBtn = document.getElementById('copy-rpc-btn');
-  const shareBtn = document.getElementById('share-btn');
-  const toastContainer = document.getElementById('toast-container');
-  const exTabConsensus = document.getElementById('ex-tab-consensus');
-  const exTabEconomics = document.getElementById('ex-tab-economics');
-  const exTabHealth = document.getElementById('ex-tab-health');
-  const spendInput = document.getElementById('spend-input');
-  const receiveInput = document.getElementById('receive-input');
-
-  // Candidate report URLs
   const REPORT_PATHS = [
     './data/report.json',
     './report.json',
@@ -37,521 +23,829 @@
     '/data/report.json',
   ];
 
-  /**
-   * Show Toast Notification.
-   */
-  function showToast(message, icon = '✓') {
-    if (!toastContainer) return;
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<span style="color: var(--q-green); font-weight: bold;">${icon}</span><span>${message}</span>`;
-    toastContainer.appendChild(toast);
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
-      toast.style.transition = 'all 0.3s ease';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
+  /* ===================================================================
+     DOM REFS
+     =================================================================== */
+  const $ = (id) => document.getElementById(id);
+  const el = {
+    loading: $('app-loading'),
+    toast: $('toast-container'),
+    healthPill: $('health-pill'),
+    healthPillText: $('health-pill-text'),
+    updatedAt: $('updated-at'),
+    refreshBtn: $('refresh-btn'),
+    exportCsv: $('export-csv-btn'),
+    exportJson: $('export-json-btn'),
 
-  /**
-   * Number Formatting Utilities.
-   */
-  function formatUSD(num, compact = false) {
-    if (num === null || num === undefined || isNaN(num)) return '$0.00';
+    heroTitle: $('hero-title'),
+    heroSub: $('hero-sub'),
+    heroEyebrow: $('hero-eyebrow'),
+    metaEpoch: $('meta-epoch'),
+    metaSlot: $('meta-slot'),
+    metaHealth: $('meta-health'),
+    statusOrb: $('status-orb'),
+    statusValue: $('status-value'),
+    statusDetail: $('status-detail'),
+
+    kpiGrid: $('kpi-grid'),
+
+    epochPill: $('epoch-pill'),
+    progressFill: $('progress-fill'),
+    epochSlot: $('epoch-slot'),
+    epochIndex: $('epoch-index'),
+    epochTotal: $('epoch-total'),
+    epochRemaining: $('epoch-remaining'),
+
+    tpsBig: $('tps-big'),
+    tpsDeltaChip: $('tps-delta-chip'),
+    tpsAvg: $('tps-avg'),
+    tpsNonvote: $('tps-nonvote'),
+    tpsSlot: $('tps-slot'),
+    tpsTx: $('tps-tx'),
+
+    chartTps: $('chart-tps'),
+    chartPrice: $('chart-price'),
+    chartTvl: $('chart-tvl'),
+    chartValidators: $('chart-validators'),
+    tpsChartNote: $('tps-chart-note'),
+    priceChartNote: $('price-chart-note'),
+    tvlChartNote: $('tvl-chart-note'),
+    valChartNote: $('val-chart-note'),
+
+    econActive: $('econ-active'),
+    econDelinq: $('econ-delinq'),
+    econStake: $('econ-stake'),
+    econNakamoto: $('econ-nakamoto'),
+    econTop10: $('econ-top10'),
+    econDelinqStake: $('econ-delinq-stake'),
+    stakeFill: $('stake-fill'),
+    stakePct: $('stake-pct'),
+
+    supplyTotal: $('supply-total'),
+    supplyCirc: $('supply-circ'),
+    supplyStaked: $('supply-staked'),
+    supplyStakedPct: $('supply-staked-pct'),
+    circFill: $('circ-fill'),
+    circPct: $('circ-pct'),
+
+    econRev: $('econ-rev'),
+    econMedfee: $('econ-medfee'),
+    econBasefee: $('econ-basefee'),
+    econVelocity: $('econ-velocity'),
+    econRevNote: $('econ-rev-note'),
+
+    econTvl: $('econ-tvl'),
+    econDex: $('econ-dex'),
+    econStables: $('econ-stables'),
+    econMcap: $('econ-mcap'),
+    econLiquid: $('econ-liquid'),
+
+    valSearch: $('validator-search'),
+    valFilter: $('validator-filter'),
+    valTbody: $('validator-tbody'),
+    valCount: $('validator-count'),
+    pageInfo: $('page-info'),
+    pagePrev: $('page-prev'),
+    pageNext: $('page-next'),
+    valTable: $('validator-table'),
+
+    roadmapGrid: $('roadmap-grid'),
+    newsGrid: $('news-grid'),
+    newsNote: $('news-note'),
+
+    anomalyChip: $('anomaly-chip'),
+    anomalyBody: $('anomaly-body'),
+
+    footerVersion: $('footer-version'),
+    sourcesList: $('sources-list'),
+    footerDisclaimer: $('footer-disclaimer'),
+
+    topnavLinks: document.querySelectorAll('.topnav-link'),
+  };
+
+  /* ===================================================================
+     FORMATTERS
+     =================================================================== */
+  function fmtUSD(v, compact) {
+    if (v == null || isNaN(v)) return '—';
     if (compact) {
-      if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
-      if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
-      if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
-      return `$${num.toFixed(2)}`;
+      if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T';
+      if (v >= 1e9)  return '$' + (v / 1e9).toFixed(2) + 'B';
+      if (v >= 1e6)  return '$' + (v / 1e6).toFixed(2) + 'M';
+      if (v >= 1e3)  return '$' + (v / 1e3).toFixed(2) + 'K';
+      return '$' + v.toFixed(2);
     }
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+    return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  function formatNumber(num) {
-    if (num === null || num === undefined || isNaN(num)) return '0';
-    return new Intl.NumberFormat('en-US').format(num);
+  function fmtNum(n) {
+    if (n == null || isNaN(n)) return '—';
+    return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
   }
 
-  function formatDelta(delta) {
-    if (delta === null || delta === undefined || isNaN(delta)) return { text: '0.00%', cls: 'cyan' };
-    const prefix = delta > 0 ? '+' : '';
-    const cls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'cyan';
-    return { text: `${prefix}${delta.toFixed(2)}%`, cls };
+  function fmtDelta(d) {
+    if (d == null || isNaN(d)) return { text: '—', cls: '' };
+    const prefix = d > 0 ? '+' : '';
+    const cls = d >= 0 ? 'delta-up' : 'delta-down';
+    return { text: prefix + d.toFixed(2) + '%', cls };
   }
 
-  function truncatePubkey(key, start = 4, end = 4) {
-    if (!key) return 'N/A';
-    if (key.length <= start + end) return key;
-    return `${key.slice(0, start)}..${key.slice(-end)}`;
+  function fmtSOL(v) {
+    if (v == null || isNaN(v)) return '—';
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(2) + 'K';
+    return fmtNum(v);
   }
 
-  /**
-   * Fetch report data.
-   */
-  async function fetchReportData() {
-    let lastError = null;
+  function truncatePubkey(key, start, end) {
+    start = start || 6; end = end || 6;
+    if (!key || key.length <= start + end) return key || '—';
+    return key.slice(0, start) + '…' + key.slice(-end);
+  }
+
+  function timeAgo(isoStr) {
+    if (!isoStr) return '—';
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    return Math.floor(hrs / 24) + 'd ago';
+  }
+
+  /* ===================================================================
+     FETCH
+     =================================================================== */
+  async function fetchReport() {
     for (const path of REPORT_PATHS) {
       try {
-        const resp = await fetch(`${path}?_t=${Date.now()}`);
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data && data.status) {
-            return data;
-          }
+        const r = await fetch(path + '?_t=' + Date.now());
+        if (r.ok) {
+          const d = await r.json();
+          if (d && d.status) return d;
         }
-      } catch (err) {
-        lastError = err;
-      }
+      } catch (e) { /* try next */ }
     }
-    throw new Error(`Failed to load report data: ${lastError ? lastError.message : 'Unknown error'}`);
+    throw new Error('Could not load report data from any path');
   }
 
-  /**
-   * Render Ticker Strip.
-   */
-  function renderTicker(report) {
-    const price = report.price || {};
-    const net = report.network || {};
-    const val = report.validators || {};
-    const defi = report.economics || {};
-
-    const tickPrice = document.getElementById('tick-price');
-    const tickTps = document.getElementById('tick-tps');
-    const tickSlotTime = document.getElementById('tick-slot-time');
-    const tickEpoch = document.getElementById('tick-epoch');
-    const tickVal = document.getElementById('tick-validators');
-    const tickTvl = document.getElementById('tick-tvl');
-    const tickStables = document.getElementById('tick-stables');
-
-    if (tickPrice) tickPrice.textContent = formatUSD(price.price_usd);
-    if (tickTps) tickTps.textContent = formatNumber(Math.round(net.current_tps || 0));
-    if (tickSlotTime) tickSlotTime.textContent = `${Math.round(net.avg_slot_time_ms || 416)}ms`;
-    if (tickEpoch) tickEpoch.textContent = `${net.epoch || 1018} (${net.epoch_progress_pct || 93.5}%)`;
-    if (tickVal) tickVal.textContent = formatNumber(val.active_validators || 687);
-    if (tickTvl) tickTvl.textContent = formatUSD(defi.tvl_usd, true);
-    if (tickStables) tickStables.textContent = formatUSD(defi.stablecoin_mcap_usd, true);
+  /* ===================================================================
+     TOAST
+     =================================================================== */
+  function toast(msg, icon) {
+    icon = icon || '✓';
+    if (!el.toast) return;
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<span class="t-ic">' + icon + '</span><span>' + msg + '</span>';
+    el.toast.appendChild(t);
+    setTimeout(function () {
+      t.classList.add('leaving');
+      setTimeout(function () { t.remove && t.remove(); }, 250);
+    }, 2800);
   }
 
-  /**
-   * Render Live 3-Card Row with Mountain Area Charts.
-   */
-  function renderLiveCards(report) {
-    const price = report.price || {};
-    const net = report.network || {};
-    const val = report.validators || {};
-    const trends = report.historical_trends || {};
-
-    // 1. Price Card
-    const cardSolVal = document.getElementById('card-sol-val');
-    const cardSolDelta = document.getElementById('card-sol-delta');
-    if (cardSolVal) cardSolVal.textContent = `$${(price.price_usd || 76.80).toFixed(2)}`;
-    if (cardSolDelta) {
-      const d = formatDelta(price.change_24h_pct || 1.97);
-      cardSolDelta.textContent = d.text;
-      cardSolDelta.className = `quantix-delta-chip ${d.cls}`;
-    }
-
-    // 2. TPS Card
-    const cardTpsVal = document.getElementById('card-tps-val');
-    const cardTpsDelta = document.getElementById('card-tps-delta');
-    if (cardTpsVal) cardTpsVal.innerHTML = `${formatNumber(Math.round(net.current_tps || 4077))} <span class="unit-text">TPS</span>`;
-    if (cardTpsDelta) {
-      const d = formatDelta(2.40);
-      cardTpsDelta.textContent = d.text;
-      cardTpsDelta.className = `quantix-delta-chip ${d.cls}`;
-    }
-
-    // 3. Validators Card
-    const cardValVal = document.getElementById('card-val-val');
-    const cardValDelta = document.getElementById('card-val-delta');
-    if (cardValVal) cardValVal.innerHTML = `${formatNumber(val.active_validators || 687)} <span class="unit-text">NODES</span>`;
-    if (cardValDelta) cardValDelta.textContent = `NC: ${val.nakamoto_coefficient || 18}`;
-
-    // Render Deep Mountain Area Charts matching Instagram.jpg!
-    renderMountainSparkline('sparkline-price', (trends.sol_price || []).map(p => p.value), '#F7931A');
-    renderMountainSparkline('sparkline-tps', (trends.tps || []).map(p => p.value), '#4E82FF');
-    renderMountainSparkline('sparkline-val', (trends.validators || []).map(p => p.value), '#00F0FF');
+  /* ===================================================================
+     RENDER HELPERS
+     =================================================================== */
+  function setText(el, val) {
+    if (el) el.textContent = val || '—';
   }
 
-  /**
-   * Deep Mountain Area Chart (Exact Quantix Instagram.jpg Wave).
-   */
-  function renderMountainSparkline(canvasId, dataPoints, strokeColor) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas || typeof Chart === 'undefined') return;
+  function setHTML(el, val) {
+    if (el) el.innerHTML = val || '—';
+  }
 
-    if (chartInstances[canvasId]) {
-      chartInstances[canvasId].destroy();
-    }
+  /* ===================================================================
+     RENDER KPI CARDS
+     =================================================================== */
+  function renderKPI(r) {
+    const p = r.price || {};
+    const n = r.network || {};
+    const v = r.validators || {};
+    const e = r.economics || {};
 
-    const data = (dataPoints && dataPoints.length >= 2) ? dataPoints : [72, 75, 73, 79, 76, 81, 78, 84, 82];
-
-    const ctx = canvas.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 110);
-    gradient.addColorStop(0, `${strokeColor}44`);
-    gradient.addColorStop(0.5, `${strokeColor}12`);
-    gradient.addColorStop(1, `${strokeColor}00`);
-
-    chartInstances[canvasId] = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: data.map((_, i) => i),
-        datasets: [{
-          data: data,
-          borderColor: strokeColor,
-          borderWidth: 2,
-          pointRadius: (ctx) => (ctx.dataIndex === data.length - 1 ? 4 : 0),
-          pointBackgroundColor: strokeColor,
-          pointBorderColor: '#FFFFFF',
-          pointBorderWidth: 1.5,
-          tension: 0.42,
-          fill: true,
-          backgroundColor: gradient,
-        }]
+    const cards = [
+      {
+        label: 'SOL Price',
+        value: fmtUSD(p.price_usd),
+        delta: fmtDelta(p.change_24h_pct),
+        sub: '24h change',
+        spark: (r.live_cards && r.live_cards.sol_price && r.live_cards.sol_price.sparkline) || null,
+        sparkColor: '#2FE6A2',
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        },
-        scales: {
-          x: { display: false },
-          y: { display: false, min: Math.min(...data) * 0.96, max: Math.max(...data) * 1.04 }
-        },
-        animation: false
-      }
-    });
-  }
-
-  /**
-   * Render Market Overview Table (Exact Quantix Columns).
-   */
-  function renderMarketTable(report) {
-    if (!validatorTbody) return;
-    const valData = report.validators || {};
-    const topVals = Array.isArray(valData.top_validators) ? valData.top_validators : [];
-
-    // Base market coins + Solana validators matching Instagram.jpg
-    const marketRows = [
-      { no: 1, icon: '₿', iconBg: '#F7931A', name: 'Bitcoin', symbol: 'BTC', price: '$102,648.00', d24: '+0.54%', d7d: '-2.13%', d30d: '+15.4%', mcap: '$2,030,152,410,200', vol: '$49,328,261,894', isUp: true },
-      { no: 2, icon: '₮', iconBg: '#26A17B', name: 'Tether', symbol: 'USDT', price: '$1.01', d24: '+0.10%', d7d: '+0.02%', d30d: '+0.01%', mcap: '$153,584,210,001', vol: '$20,572,981,002', isUp: true },
-      { no: 3, icon: '◆', iconBg: '#627EEA', name: 'Ethereum', symbol: 'ETH', price: '$3,529.42', d24: '-1.45%', d7d: '+4.01%', d30d: '+8.2%', mcap: '$432,109,947,332', vol: '$21,784,510,118', isUp: true },
-      { no: 4, icon: '◎', iconBg: '#14F195', name: 'Solana', symbol: 'SOL', price: `$${(report.price ? report.price.price_usd : 76.80).toFixed(2)}`, d24: '+1.97%', d7d: '+3.41%', d30d: '+12.8%', mcap: `$${((report.price ? report.price.market_cap_usd : 44.75e9) / 1e9).toFixed(2)}B`, vol: '$1,412,330,812', isUp: true },
-      { no: 5, icon: 'Ð', iconBg: '#C2A633', name: 'Doge', symbol: 'DOGE', price: '$0.168', d24: '-0.40%', d7d: '-1.89%', d30d: '+5.1%', mcap: '$22,410,117,448', vol: '$2,110,432,225', isUp: false },
-      { no: 6, icon: '💧', iconBg: '#4A92FE', name: 'Sui', symbol: 'SUI', price: '$1.29', d24: '+4.12%', d7d: '+6.23%', d30d: '+22.4%', mcap: '$1,872,391,834', vol: '$509,821,122', isUp: true },
+      {
+        label: 'Network TPS',
+        value: fmtNum(Math.round(n.current_tps)),
+        delta: fmtDelta((r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.delta_pct) || 0),
+        sub: '15m avg: ' + fmtNum(Math.round(n.avg_tps_15m)),
+        spark: (r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.sparkline) || null,
+        sparkColor: '#9945FF',
+      },
+      {
+        label: 'Slot Time',
+        value: Math.round(n.avg_slot_time_ms) + 'ms',
+        delta: { text: 'target 400ms', cls: n.avg_slot_time_ms > 450 ? 'delta-down' : 'delta-up' },
+        sub: 'current slot: ' + fmtNum(n.current_slot),
+      },
+      {
+        label: 'Active Validators',
+        value: fmtNum(v.active_validators),
+        delta: { text: v.delinquent_validators + ' delinquent', cls: v.delinquent_validators > 10 ? 'delta-down' : 'delta-up' },
+        sub: 'Nakamoto: ' + v.nakamoto_coefficient + ' nodes',
+        spark: (r.live_cards && r.live_cards.active_validators && r.live_cards.active_validators.sparkline) || null,
+        sparkColor: '#14F195',
+      },
+      {
+        label: 'DeFi TVL',
+        value: fmtUSD(e.tvl_usd, true),
+        delta: fmtDelta(e.tvl_change_24h_pct),
+        sub: '24h change',
+      },
+      {
+        label: '24h DEX Volume',
+        value: fmtUSD(e.dex_volume_24h_usd, true),
+        delta: { text: '', cls: '' },
+        sub: 'capital turnover: ' + (e.capital_efficiency_ratio || 0).toFixed(2) + 'x',
+      },
+      {
+        label: 'Stablecoin Supply',
+        value: fmtUSD(e.stablecoin_mcap_usd, true),
+        delta: { text: '', cls: '' },
+        sub: 'USDC & USDT on Solana',
+      },
+      {
+        label: 'REV / Day',
+        value: fmtUSD(e.rev_24h_usd, true),
+        delta: { text: '', cls: '' },
+        sub: 'base + priority + tips',
+      },
     ];
 
-    // Append Solana top validators into the table
-    topVals.slice(0, 10).forEach((v, idx) => {
-      const isUp = (idx % 3 !== 1);
-      marketRows.push({
-        no: 7 + idx,
-        icon: '🛡️',
-        iconBg: '#9945FF',
-        name: v.name || `Validator ${truncatePubkey(v.vote_pubkey)}`,
-        symbol: 'NODE',
-        price: `${((v.activated_stake_sol || 0) / 1e6).toFixed(2)}M SOL`,
-        d24: isUp ? `+${(1.2 + idx * 0.3).toFixed(2)}%` : `-${(0.8 + idx * 0.2).toFixed(2)}%`,
-        d7d: isUp ? `+${(2.4 + idx * 0.4).toFixed(2)}%` : `-${(1.1 + idx * 0.1).toFixed(2)}%`,
-        d30d: `${v.commission}% fee`,
-        mcap: `${(v.stake_percentage || 0).toFixed(2)}% share`,
-        vol: formatNumber(v.last_vote || 440180024),
-        isUp: isUp,
-        voteKey: v.vote_pubkey
-      });
-    });
-
-    let displayRows = marketRows;
-
-    // Filter Tabs
-    if (currentTableFilter === 'trends') {
-      displayRows = marketRows.filter(r => r.isUp);
-    } else if (currentTableFilter === 'top10') {
-      displayRows = marketRows.slice(0, 5);
-    } else if (currentTableFilter === 'nakamoto') {
-      displayRows = marketRows.slice(0, 8);
-    } else if (currentTableFilter === 'zero_comm') {
-      displayRows = marketRows.filter(r => !r.isUp);
-    }
-
-    if (validatorSearchQuery.trim()) {
-      const q = validatorSearchQuery.toLowerCase();
-      displayRows = displayRows.filter(r => r.name.toLowerCase().includes(q) || r.symbol.toLowerCase().includes(q));
-    }
-
-    const rowsHtml = displayRows.map(r => {
-      const rowSparkId = `q-spark-${r.no}`;
-      const deltaCls = r.isUp ? 'quantix-delta-chip up' : 'quantix-delta-chip down';
-      return `
-        <tr>
-          <td class="col-no">#${r.no}</td>
-          <td>
-            <div class="coin-cell">
-              <div class="coin-small-disc" style="background: ${r.iconBg}22; border: 1px solid ${r.iconBg}44; color: ${r.iconBg};">
-                ${r.icon}
-              </div>
-              <span class="coin-name-bold">${r.name}</span>
-              <span class="coin-symbol-sub">${r.symbol}</span>
-            </div>
-          </td>
-          <td class="td-price">${r.price}</td>
-          <td class="td-delta"><span class="${deltaCls}">${r.d24}</span></td>
-          <td class="td-delta"><span class="${deltaCls}">${r.d7d}</span></td>
-          <td class="td-delta">${r.d30d}</td>
-          <td class="th-mcap">${r.mcap}</td>
-          <td class="th-vol">${r.vol}</td>
-          <td class="th-chart">
-            <canvas id="${rowSparkId}" class="canvas-sparkline" width="60" height="18"></canvas>
-          </td>
-        </tr>
-      `;
+    el.kpiGrid.innerHTML = cards.map(function (c, i) {
+      var d = c.delta || { text: '', cls: '' };
+      var sparkHtml = '';
+      if (c.spark && c.spark.length > 1) {
+        var min = Math.min.apply(null, c.spark);
+        var max = Math.max.apply(null, c.spark);
+        var range = max - min || 1;
+        var pts = c.spark.map(function (s, j) {
+          var x = (j / (c.spark.length - 1)) * 100;
+          var y = 100 - ((s - min) / range) * 100;
+          return x + ',' + y;
+        }).join(' ');
+        sparkHtml = '<svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none" width="100%" height="34">'
+          + '<polyline fill="none" stroke="' + c.sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-opacity=".85" points="' + pts + '"/>'
+          + '<polyline fill="' + c.sparkColor + '" fill-opacity="0.12" stroke="none" points="' + pts + ' 100,34 0,34"/>'
+          + '</svg>';
+      }
+      return '<div class="kpi-card">'
+        + '<div class="kpi-label">' + c.label + '</div>'
+        + '<div class="kpi-value">' + c.value + '</div>'
+        + '<div class="kpi-delta ' + (d.cls || '') + '">' + d.text + '<span class="kpi-sub">' + (c.sub || '') + '</span></div>'
+        + (sparkHtml || '') + '</div>';
     }).join('');
+  }
 
-    validatorTbody.innerHTML = rowsHtml;
+  /* ===================================================================
+     RENDER EPOCH & NETWORK
+     =================================================================== */
+  function renderEpoch(r) {
+    const n = r.network || {};
+    setText(el.epochPill, 'Epoch ' + n.epoch);
+    if (el.progressFill) el.progressFill.style.width = (n.epoch_progress_pct || 0) + '%';
+    setText(el.epochSlot, fmtNum(n.current_slot));
+    setText(el.epochIndex, fmtNum(n.epoch_slot_index));
+    setText(el.epochTotal, fmtNum(n.epoch_slots_total));
+    setText(el.epochRemaining, (n.epoch_time_remaining_hours || 0).toFixed(1) + 'h');
 
-    // Draw Mini Sparklines on Every Row matching Instagram.jpg!
-    requestAnimationFrame(() => {
-      displayRows.forEach(r => {
-        const rowCanvas = document.getElementById(`q-spark-${r.no}`);
-        if (rowCanvas) {
-          const ctx = rowCanvas.getContext('2d');
-          const pts = r.isUp ? [10, 11, 10.5, 13, 12.5, 15, 14.5, 17] : [17, 15.5, 16, 13.5, 14, 11, 10.5];
-          ctx.clearRect(0, 0, 60, 18);
-          ctx.strokeStyle = r.isUp ? '#14F195' : '#FF4D6A';
-          ctx.lineWidth = 1.6;
-          ctx.beginPath();
-          pts.forEach((p, idx) => {
-            const x = (idx / (pts.length - 1)) * 56 + 2;
-            const y = 16 - ((p - 10) / 8) * 13;
-            if (idx === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          });
-          ctx.stroke();
-        }
-      });
+    setText(el.tpsBig, fmtNum(Math.round(n.current_tps)));
+    const d = fmtDelta((r.live_cards && r.live_cards.network_tps && r.live_cards.network_tps.delta_pct) || 0);
+    setText(el.tpsDeltaChip, d.text);
+    el.tpsDeltaChip.className = 'chip ' + (d.cls === 'delta-up' ? 'chip-up' : 'chip-warn');
+    setText(el.tpsAvg, fmtNum(Math.round(n.avg_tps_15m)));
+    setText(el.tpsNonvote, fmtNum(Math.round(n.non_vote_tps)));
+    setText(el.tpsSlot, Math.round(n.avg_slot_time_ms) + 'ms');
+    setText(el.tpsTx, fmtNum(n.total_transactions));
+  }
+
+  /* ===================================================================
+     RENDER HERO
+     =================================================================== */
+  function renderHero(r) {
+    const h = r.health || {};
+    const n = r.network || {};
+    setText(el.heroEyebrow, r.status === 'success' ? 'AUTO-UPDATING REPORT' : 'DEGRADED');
+    setText(el.heroTitle, 'Live ecosystem health, at a glance.');
+    setText(el.heroSub, 'Automated on-chain telemetry, validator analytics, and economic indicators — refreshed directly from the Solana mainnet, no API keys required.');
+    setText(el.metaEpoch, 'Epoch ' + n.epoch + ' — ' + (n.epoch_progress_pct || 0).toFixed(1) + '%');
+    setText(el.metaSlot, 'Block ' + fmtNum(n.block_height));
+    setText(el.metaHealth, h.cluster_status || 'Operational');
+
+    const healthy = h.is_healthy !== false;
+    setText(el.statusValue, healthy ? 'All Systems Operational' : 'Degraded');
+    setText(el.statusDetail, h.summary || '');
+    el.statusOrb.className = 'status-orb' + (healthy ? '' : ' warn');
+    el.statusOrb.innerHTML = '<span class="dot dot-' + (healthy ? 'ok' : 'warn') + '"></span>';
+
+    // Health pill
+    el.healthPill.className = 'health-pill' + (healthy ? '' : ' warn');
+    setText(el.healthPillText, healthy ? 'Operational' : 'Degraded');
+    el.healthPill.innerHTML = '<span class="dot dot-' + (healthy ? 'ok' : 'warn') + '"></span><span id="health-pill-text">' + (healthy ? 'Operational' : 'Degraded') + '</span>';
+  }
+
+  /* ===================================================================
+     RENDER ECONOMY
+     =================================================================== */
+  function renderEconomy(r) {
+    const v = r.validators || {};
+    const s = r.supply || {};
+    const e = r.economics || {};
+    const p = r.price || {};
+
+    setText(el.econActive, fmtNum(v.active_validators));
+    setText(el.econDelinq, fmtNum(v.delinquent_validators));
+    setText(el.econStake, fmtSOL(v.total_active_stake_sol) + ' SOL');
+    setText(el.econNakamoto, v.nakamoto_coefficient);
+    setText(el.econTop10, v.top_10_stake_pct != null ? v.top_10_stake_pct.toFixed(2) + '%' : '—');
+    setText(el.econDelinqStake, (v.delinquent_stake_pct != null ? v.delinquent_stake_pct.toFixed(2) + '%' : '—'));
+    if (el.stakeFill) el.stakeFill.style.width = Math.min((s.staked_pct || 0), 100) + '%';
+    setText(el.stakePct, (s.staked_pct || 0).toFixed(1) + '% staked');
+
+    setText(el.supplyTotal, fmtSOL(s.total_sol) + ' SOL');
+    setText(el.supplyCirc, fmtSOL(s.circulating_sol) + ' SOL');
+    setText(el.supplyStaked, fmtSOL(s.staked_sol) + ' SOL');
+    setText(el.supplyStakedPct, (s.staked_pct || 0).toFixed(1) + '%');
+    if (s.total_sol && s.total_sol > 0) {
+      var circPct = (s.circulating_sol / s.total_sol) * 100;
+      if (el.circFill) el.circFill.style.width = Math.min(circPct, 100) + '%';
+      setText(el.circPct, circPct.toFixed(1) + '% circulating');
+    }
+
+    setText(el.econRev, fmtUSD(e.rev_24h_usd, true) + '/day');
+    setText(el.econMedfee, fmtUSD(e.median_fee_usd));
+    setText(el.econBasefee, e.base_fee_sol != null ? e.base_fee_sol + ' SOL' : '—');
+    setText(el.econVelocity, (e.capital_efficiency_ratio || 0).toFixed(2) + 'x');
+    setText(el.econRevNote, e.rev_methodology || '');
+
+    setText(el.econTvl, fmtUSD(e.tvl_usd, true));
+    setText(el.econDex, fmtUSD(e.dex_volume_24h_usd, true));
+    setText(el.econStables, fmtUSD(e.stablecoin_mcap_usd, true));
+    setText(el.econMcap, fmtUSD(p.market_cap_usd, true));
+    setText(el.econLiquid, 'DEX volume / TVL: ' + (e.dex_volume_24h_usd && e.tvl_usd ? (e.dex_volume_24h_usd / e.tvl_usd).toFixed(2) + 'x' : '—'));
+  }
+
+  /* ===================================================================
+     RENDER FOOTER
+     =================================================================== */
+  function renderFooter(r) {
+    setText(el.footerVersion, 'v' + (r.generator_version || '1.0.0'));
+    const src = r.sources || {};
+    var chips = Object.entries(src).map(function (kv) {
+      return '<span class="source-chip">' + kv[0] + ': ' + kv[1] + '</span>';
+    }).join('');
+    setHTML(el.sourcesList, chips);
+    setText(el.footerDisclaimer, 'Zero external dependencies: Python 3.11+ stdlib, Solana JSON-RPC, DeFiLlama, CoinGecko. No API keys required.');
+  }
+
+  /* ===================================================================
+     CHARTS (Chart.js)
+     =================================================================== */
+  const CHART_COLORS = {
+    purple: '#9945FF',
+    teal: '#14F195',
+    text: '#9AA4B6',
+    grid: 'rgba(255,255,255,0.05)',
+    fillTps: 'rgba(153,69,255,0.18)',
+    fillPrice: 'rgba(47,230,162,0.16)',
+    fillTvl: 'rgba(20,241,149,0.14)',
+  };
+
+  function baseChartOpts() {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: CHART_COLORS.text, maxTicksLimit: 6, maxRotation: 0 } },
+        y: { grid: { color: CHART_COLORS.grid }, ticks: { color: CHART_COLORS.text, maxTicksLimit: 5 } },
+      },
+    };
+  }
+
+  function timeLabels(values) {
+    return values.map(function (s) {
+      const d = new Date(s.timestamp);
+      if (isNaN(d.getTime())) return '';
+      return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0') + ':' + d.getSeconds().toString().padStart(2, '0');
     });
   }
 
-  /**
-   * Render Candlestick / Multi-colored Bar Chart (Instagram.jpg Bottom Right Card).
-   */
-  function renderCandlestickChart() {
-    const canvas = document.getElementById('headline-candlestick-chart');
+  function renderLineChart(canvas, labels, data, color, fill, noteEl, noteText, yPrefix) {
     if (!canvas || typeof Chart === 'undefined') return;
-
-    if (chartInstances['headline-candlestick-chart']) {
-      chartInstances['headline-candlestick-chart'].destroy();
-    }
-
-    // Alternating green and red candlestick bars matching Instagram.jpg!
-    const labels = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
-    const barValues = [35, 48, 42, 65, 58, 72, 68, 85, 78, 92, 88, 95, 89, 74, 82, 91, 86, 98, 94, 102];
-    const barColors = barValues.map((v, i) => {
-      if (i > 0 && v < barValues[i - 1]) return '#FF4D6A';
-      return '#14F195';
-    });
-
-    const ctx = canvas.getContext('2d');
-    chartInstances['headline-candlestick-chart'] = new Chart(ctx, {
-      type: 'bar',
+    setText(noteEl, noteText);
+    const exists = charts[canvas.id];
+    if (exists) exists.destroy();
+    charts[canvas.id] = new Chart(canvas, {
+      type: 'line',
       data: {
         labels: labels,
         datasets: [{
-          data: barValues,
-          backgroundColor: barColors,
-          borderRadius: 2,
-          borderSkipped: false,
-          barPercentage: 0.5,
-        }]
+          data: data,
+          borderColor: color,
+          backgroundColor: fill,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true,
+        }],
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        },
-        scales: {
-          x: { display: false },
-          y: { display: false }
-        }
+      options: Object.assign(baseChartOpts(), {
+        scales: Object.assign({}, baseChartOpts().scales, {
+          y: Object.assign({}, baseChartOpts().scales.y, {
+            ticks: Object.assign({}, baseChartOpts().scales.y.ticks, {
+              callback: function (val) { return yPrefix ? yPrefix + ' ' + val.toLocaleString() : val; },
+            }),
+          }),
+        }),
+      }),
+    });
+  }
+
+  function renderBarChart(canvas, labels, values, color, note, noteText) {
+    if (!canvas || typeof Chart === 'undefined') return;
+    setText(note, noteText);
+    const exists = charts[canvas.id];
+    if (exists) exists.destroy();
+    charts[canvas.id] = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          borderColor: color,
+          backgroundColor: CHART_COLORS.fillTvl,
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true,
+        }],
+      },
+      options: baseChartOpts(),
+    });
+  }
+
+  function renderCharts(r) {
+    const ht = r.historical_trends || {};
+    const lc = r.live_cards || {};
+
+    // TPS
+    const tpsSrc = (ht.tps && ht.tps.length) ? ht.tps : [];
+    if (tpsSrc.length) {
+      renderLineChart(el.chartTps, timeLabels(tpsSrc), tpsSrc.map(s => s.value), CHART_COLORS.accent, CHART_COLORS.fillTps, el.tpsChartNote, 'trailing snapshots', '');
+    } else if (lc.network_tps && lc.network_tps.sparkline) {
+      renderLineChart(el.chartTps, lc.network_tps.sparkline.map((_, i) => i), lc.network_tps.sparkline, CHART_COLORS.accent, CHART_COLORS.fillTps, el.tpsChartNote, 'intra-session sparkline', '');
+    }
+
+    // SOL Price
+    const priceSrc = (ht.sol_price && ht.sol_price.length) ? ht.sol_price : (lc.sol_price && lc.sol_price.sparkline ? lc.sol_price.sparkline.map(function (v) { return { timestamp: new Date().toISOString(), value: v }; }) : []);
+    if (priceSrc.length) {
+      const labels = ht.sol_price && ht.sol_price.length ? timeLabels(priceSrc) : priceSrc.map((_, i) => i);
+      renderLineChart(el.chartPrice, labels, priceSrc.map(s => s.value), CHART_COLORS['teal'], CHART_COLORS.fillPrice, el.priceChartNote, 'USD spot', '$');
+    }
+
+    // TVL 30d
+    const tvl = ht.historical_tvl_30d || r.economics.historical_tvl_30d || [];
+    if (tvl.length) {
+      renderBarChart(el.chartTvl, tvl.map(d => d.date.slice(5)), tvl.map(d => +(d.tvl / 1e9).toFixed(2)), CHART_COLORS.teal, el.tvlChartNote, 'USD billion');
+    }
+
+    // Validators
+    const valSrc = (ht.validators && ht.validators.length) ? ht.validators : (lc.active_validators && lc.active_validators.sparkline ? lc.active_validators.sparkline.map(function (v) { return { timestamp: new Date().toISOString(), value: v }; }) : []);
+    if (valSrc.length) {
+      const labels = ht.validators && ht.validators.length ? timeLabels(ht.validators) : valSrc.map((_, i) => i);
+      renderLineChart(el.chartValidators, labels, valSrc.map(s => s.value), CHART_COLORS.accent, CHART_COLORS.fillTps, el.valChartNote, 'active nodes', '');
+    }
+  }
+
+  /* ===================================================================
+     VALIDATORS TABLE
+     =================================================================== */
+  function getValidatorSource(r) {
+    const v = r.validators || {};
+    return Array.isArray(v.top_validators) ? v.top_validators.slice() : [];
+  }
+
+  function applyValidatorFilters(r) {
+    const v = r.validators || {};
+    const nakamoto = v.nakamoto_coefficient || 18;
+    let list = getValidatorSource(r);
+    const filter = el.valFilter ? el.valFilter.value : 'all';
+    const q = el.valSearch ? el.valSearch.value.trim().toLowerCase() : '';
+
+    if (filter === 'top10') list = list.slice(0, 10);
+    else if (filter === 'nakamoto') list = list.slice(0, nakamoto);
+    else if (filter === 'zero') list = list.filter(x => Number(x.commission) === 0);
+    else if (filter === 'high') list = list.filter(x => Number(x.commission) >= 10);
+
+    if (q) list = list.filter(function (x) {
+      return (x.name && x.name.toLowerCase().indexOf(q) !== -1) ||
+        (x.vote_pubkey && x.vote_pubkey.toLowerCase().indexOf(q) !== -1) ||
+        (x.node_pubkey && x.node_pubkey.toLowerCase().indexOf(q) !== -1);
+    });
+
+    // Sort
+    list.sort(function (a, b) {
+      let va, vb;
+      if (sortKey === 'rank') { va = a.rank; vb = b.rank; }
+      else if (sortKey === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); return sortAsc ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0); }
+      else if (sortKey === 'stake') { va = a.activated_stake_sol; vb = b.activated_stake_sol; }
+      else if (sortKey === 'share') { va = a.stake_percentage; vb = b.stake_percentage; }
+      else if (sortKey === 'commission') { va = a.commission; vb = b.commission; }
+      else return 0;
+      return sortAsc ? va - vb : vb - va;
+    });
+
+    filteredValidators = list;
+    return list;
+  }
+
+  function renderValidatorTable(r) {
+    const list = applyValidatorFilters(r);
+    const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageRows = list.slice(start, start + PAGE_SIZE);
+
+    setText(el.valCount, list.length + ' validator' + (list.length === 1 ? '' : 's') + ' shown');
+    setText(el.pageInfo, currentPage + ' / ' + totalPages);
+    el.pagePrev.disabled = currentPage <= 1;
+    el.pageNext.disabled = currentPage >= totalPages;
+
+    if (!pageRows.length) {
+      setHTML(el.valTbody, '<tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:28px;">No validators match your filters.</td></tr>');
+      return;
+    }
+
+    el.valTbody.innerHTML = pageRows.map(function (x) {
+      const statusCls = x.status === 'delinquent' ? 'delinquent' : 'active';
+      return '<tr>'
+        + '<td class="num mono">' + (x.rank != null ? x.rank : '—') + '</td>'
+        + '<td><div class="val-name">' + (x.name || 'Validator') + '</div>'
+        + '<div class="val-pubkey" title="' + (x.vote_pubkey || '') + '">' + truncatePubkey(x.vote_pubkey) + '</div></td>'
+        + '<td class="num mono">' + fmtSOL(x.activated_stake_sol) + '</td>'
+        + '<td class="num mono">' + (x.stake_percentage != null ? x.stake_percentage.toFixed(2) + '%' : '—') + '</td>'
+        + '<td class="num mono">' + (x.commission != null ? x.commission + '%' : '—') + '</td>'
+        + '<td class="num mono">' + (x.last_vote != null ? fmtNum(x.last_vote) : '—') + '</td>'
+        + '<td class="num"><span class="val-status ' + statusCls + '">' + (x.status === 'delinquent' ? 'Delinquent' : 'Active') + '</span></td>'
+        + '</tr>';
+    }).join('');
+    updateSortIndicators();
+  }
+
+  function updateSortIndicators() {
+    document.querySelectorAll('.table th.sortable').forEach(function (th) {
+      th.classList.remove('asc', 'desc');
+      if (th.getAttribute('data-sort') === sortKey) {
+        th.classList.add(sortAsc ? 'asc' : 'desc');
       }
     });
   }
 
-  /**
-   * Render Economic Indicators Grid.
-   */
-  function renderEconomics(report) {
-    const econ = report.economics || {};
-    const supply = report.supply || {};
-
-    const elTvl = document.getElementById('econ-tvl');
-    const elTvlDelta = document.getElementById('econ-tvl-delta');
-    const elDex = document.getElementById('econ-dex');
-    const elVelocity = document.getElementById('econ-velocity');
-    const elStables = document.getElementById('econ-stables');
-    const elRev = document.getElementById('econ-rev');
-    const elFee = document.getElementById('econ-fee');
-    const elStaked = document.getElementById('econ-staked');
-
-    if (elTvl) elTvl.textContent = formatUSD(econ.tvl_usd, true);
-    if (elTvlDelta) {
-      const d = formatDelta(econ.tvl_change_24h_pct || 0.65);
-      elTvlDelta.textContent = d.text;
-      elTvlDelta.className = `quantix-delta-chip ${d.cls}`;
-    }
-    if (elDex) elDex.textContent = formatUSD(econ.dex_volume_24h_usd, true);
-    if (elVelocity) elVelocity.textContent = `${(econ.capital_efficiency_ratio || 0.37).toFixed(2)}x`;
-    if (elStables) elStables.textContent = formatUSD(defi_stables_usd(econ), true);
-    if (elRev) elRev.textContent = formatUSD(econ.rev_24h_usd || 758002, true);
-    if (elFee) elFee.textContent = `${econ.median_fee_sol || '0.000028'} SOL`;
-    if (elStaked) elStaked.textContent = `${(supply.staked_pct || 68.8).toFixed(1)}%`;
+  function exportValidatorsCSV(r) {
+    const list = getValidatorSource(r);
+    const headers = ['rank', 'name', 'vote_pubkey', 'activated_stake_sol', 'stake_percentage', 'commission', 'last_vote', 'status'];
+    const rows = list.map(function (x) {
+      return headers.map(function (h) { return '"' + String(x[h] == null ? '' : x[h]).replace(/"/g, '""') + '"'; }).join(',');
+    });
+    const csv = headers.join(',') + '\n' + rows.join('\n');
+    download('solana-validators.csv', csv, 'text/csv');
+    toast('Validator CSV exported (' + list.length + ' rows)');
   }
 
-  function defi_stables_usd(econ) {
-    return econ.stablecoin_mcap_usd || 15361000000;
+  function download(name, content, mime) {
+    const blob = new Blob([content], { type: mime + ';charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   }
 
-  /**
-   * Render Protocol Roadmap & Upgrades.
-   */
-  function renderUpgrades(report) {
-    if (!upgradesContainer) return;
-    const news = report.ecosystem_news || {};
+  /* ===================================================================
+     ROADMAP
+     =================================================================== */
+  function renderRoadmap(r) {
+    const news = r.ecosystem_news || {};
     const upgrades = Array.isArray(news.upgrades) ? news.upgrades : [];
-
-    const html = upgrades.map(u => `
-      <div class="quantix-upgrade-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="qu-title">${u.title}</span>
-          <span class="quantix-delta-chip cyan">${u.status}</span>
-        </div>
-        <p class="qu-desc">${u.description}</p>
-        <a href="${u.documentation_url}" target="_blank" rel="noopener noreferrer" class="qu-link">Docs & SIMD →</a>
-      </div>
-    `).join('');
-
-    upgradesContainer.innerHTML = html;
+    if (!upgrades.length) {
+      setHTML(el.roadmapGrid, '<p class="section-note">No upgrade data available.</p>');
+      return;
+    }
+    el.roadmapGrid.innerHTML = upgrades.map(function (u) {
+      const impactCls = (u.impact || '').toLowerCase().indexOf('critical') !== -1 ? 'impact-critical' : 'impact-high';
+      return '<div class="roadmap-card">'
+        + '<div class="roadmap-top"><span class="roadmap-cat">' + (u.category || 'Protocol') + '</span>'
+        + '<span class="roadmap-impact ' + impactCls + '">' + (u.impact || 'High') + '</span></div>'
+        + '<div class="roadmap-title">' + (u.title || '') + '</div>'
+        + '<div class="roadmap-desc">' + (u.description || '') + '</div>'
+        + '<div class="roadmap-bottom">'
+        + '<span class="roadmap-status">● ' + (u.status || '—') + ' · ' + (u.target_timeline || '') + '</span>'
+        + (u.documentation_url ? '<a class="roadmap-docs" href="' + u.documentation_url + '" target="_blank" rel="noopener">Docs →</a>' : '')
+        + '</div></div>';
+    }).join('');
   }
 
-  /**
-   * Main Render Pipeline.
-   */
-  function renderAll(report) {
-    currentReport = report;
-    renderTicker(report);
-    renderLiveCards(report);
-    renderMarketTable(report);
-    renderEconomics(report);
-    renderCandlestickChart();
-    renderUpgrades(report);
+  /* ===================================================================
+     NEWS
+     =================================================================== */
+  function renderNews(r) {
+    const news = r.ecosystem_news || {};
+    setText(el.newsNote, news.source_type || '');
+    const ann = Array.isArray(news.recent_announcements) ? news.recent_announcements : [];
+    if (!ann.length) {
+      setHTML(el.newsGrid, '<p class="section-note">No announcements available.</p>');
+      return;
+    }
+    el.newsGrid.innerHTML = ann.map(function (a) {
+      return '<div class="news-card">'
+        + '<span class="news-tag">' + (a.tag || 'Ecosystem') + '</span>'
+        + '<div class="news-title">' + (a.title || '') + '</div>'
+        + '<div class="news-summary">' + (a.summary || '') + '</div>'
+        + '<div class="news-date">' + (a.date || '') + '</div>'
+        + '</div>';
+    }).join('');
   }
 
-  /**
-   * Setup Event Listeners.
-   */
-  function setupEventListeners() {
-    // Refresh Button
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', async () => {
-        try {
-          const report = await fetchReportData();
-          renderAll(report);
-          showToast('Quantix telemetry refreshed from Solana mainnet');
-        } catch (err) {
-          showToast('Failed to refresh data feed', '⚠');
-        }
-      });
+  /* ===================================================================
+     ANOMALIES
+     =================================================================== */
+  function renderAnomalies(r) {
+    const alerts = Array.isArray(r.alerts) ? r.alerts : [];
+    const count = r.alerts_count != null ? r.alerts_count : alerts.length;
+    if (!count) {
+      el.anomalyChip.className = 'chip chip-ok';
+      setText(el.anomalyChip, '0 ACTIVE');
+      setHTML(el.anomalyBody, '<p class="all-clear">No statistical anomalies detected across throughput, slot latency, validator delinquency, or market moves.</p>');
+      return;
     }
+    el.anomalyChip.className = 'chip ' + (count > 2 ? 'chip-bad' : 'chip-warn');
+    setText(el.anomalyChip, count + ' ACTIVE');
+    setHTML(el.anomalyBody, '<div class="anomaly-list">' + alerts.map(function (a) {
+      const sev = (a.severity || '').toLowerCase();
+      const icon = sev === 'critical' ? '⛔' : sev === 'warning' ? '⚠️' : 'ℹ️';
+      return '<div class="anomaly-item"><span class="anomaly-icon">' + icon + '</span>'
+        + '<div class="anomaly-text"><strong>' + (a.title || a.rule || 'Alert') + '</strong>'
+        + '<p>' + (a.message || a.description || '') + '</p></div></div>';
+    }).join('') + '</div>');
+  }
 
-    // Global Search
-    if (globalSearchInput) {
-      globalSearchInput.addEventListener('input', (e) => {
-        validatorSearchQuery = e.target.value;
-        if (currentReport) renderMarketTable(currentReport);
-      });
-    }
+  /* ===================================================================
+     RENDER ALL
+     =================================================================== */
+  function renderAll(r) {
+    report = r;
+    currentPage = 1;
+    renderHero(r);
+    renderKPI(r);
+    renderEpoch(r);
+    renderEconomy(r);
+    renderCharts(r);
+    renderValidatorTable(r);
+    renderRoadmap(r);
+    renderNews(r);
+    renderAnomalies(r);
+    renderFooter(r);
 
-    // Market Overview Tabs
-    const tabBtns = document.querySelectorAll('.m-tab-pill');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentTableFilter = btn.getAttribute('data-filter');
-        if (currentReport) renderMarketTable(currentReport);
+    setText(el.updatedAt, 'Updated ' + timeAgo(r.generated_at));
+    document.title = 'Solana Ecosystem — Epoch ' + (r.network && r.network.epoch ? r.network.epoch : '') + ' · ' + (r.price ? fmtUSD(r.price.price_usd) : '') + ' · Dashboard';
+  }
+
+  /* ===================================================================
+     EVENTS
+     =================================================================== */
+  function setupEvents() {
+    // Refresh
+    if (el.refreshBtn) el.refreshBtn.addEventListener('click', async function () {
+      try {
+        const r = await fetchReport();
+        renderAll(r);
+        toast('Telemetry refreshed from mainnet');
+      } catch (e) {
+        toast('Failed to refresh: ' + e.message, '⚠');
+      }
+    });
+
+    // Exports
+    if (el.exportJson) el.exportJson.addEventListener('click', function () {
+      if (report) { download('solana-report.json', JSON.stringify(report, null, 2), 'application/json'); toast('report.json exported'); }
+    });
+    if (el.exportCsv) el.exportCsv.addEventListener('click', function () {
+      if (report) exportValidatorsCSV(report);
+    });
+
+    // Search & filter
+    if (el.valSearch) el.valSearch.addEventListener('input', function () { currentPage = 1; if (report) renderValidatorTable(report); });
+    if (el.valFilter) el.valFilter.addEventListener('change', function () { currentPage = 1; if (report) renderValidatorTable(report); });
+
+    // Pagination
+    if (el.pagePrev) el.pagePrev.addEventListener('click', function () { if (currentPage > 1) { currentPage--; renderValidatorTable(report); } });
+    if (el.pageNext) el.pageNext.addEventListener('click', function () { currentPage++; renderValidatorTable(report); });
+
+    // Sort
+    if (el.valTable) el.valTable.querySelectorAll('th.sortable').forEach(function (th) {
+      th.addEventListener('click', function () {
+        const key = th.getAttribute('data-sort');
+        if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true; }
+        if (report) renderValidatorTable(report);
       });
     });
 
-    // Exchange Panel Tabs
-    if (exTabConsensus && exTabEconomics && exTabHealth) {
-      const exTabs = [exTabConsensus, exTabEconomics, exTabHealth];
-      exTabs.forEach(t => {
-        t.addEventListener('click', () => {
-          exTabs.forEach(x => x.classList.remove('active'));
-          t.classList.add('active');
-          if (t === exTabConsensus && spendInput && receiveInput) {
-            spendInput.value = '90,020.9';
-            receiveInput.value = '38.14';
-          } else if (t === exTabEconomics && spendInput && receiveInput) {
-            spendInput.value = '4,077.0';
-            receiveInput.value = '416.00';
-          }
+    // Top nav active state
+    el.topnavLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        el.topnavLinks.forEach(function (l) { l.classList.remove('active'); });
+        link.classList.add('active');
+      });
+    });
+
+    // Mobile hamburger toggle
+    var hamburger = document.querySelector('.hamburger');
+    var topnav = document.querySelector('.topnav');
+    if (hamburger && topnav) {
+      hamburger.addEventListener('click', function () {
+        var isOpen = topnav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+        if (isOpen) {
+          var firstLink = topnav.querySelector('.topnav-link');
+          if (firstLink) firstLink.focus();
+        }
+      });
+      topnav.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && topnav.classList.contains('open')) {
+          topnav.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.focus();
+        }
+      });
+      topnav.querySelectorAll('.topnav-link').forEach(function (link) {
+        link.addEventListener('click', function () {
+          topnav.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
         });
       });
     }
 
-    // Action Button (Buy ETH / Audit)
-    if (runAuditBtn) {
-      runAuditBtn.addEventListener('click', () => {
-        showToast('Running Quantix order verification on Solana cluster...');
-        setTimeout(() => {
-          showToast('✓ Order Verified: All 687 nodes operating at 416ms slot cadence');
-        }, 600);
-      });
-    }
-
-    // Copy RPC Button
-    if (copyRpcBtn) {
-      copyRpcBtn.addEventListener('click', () => {
-        const rpcUrl = (currentReport && currentReport.sources && currentReport.sources.solana_rpc) || 'https://api.mainnet-beta.solana.com';
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(rpcUrl);
-          showToast(`Copied RPC URL: ${rpcUrl}`);
+    // Scroll-based topbar enhancement
+    var topbar = document.querySelector('.topbar');
+    if (topbar) {
+      var scrollThreshold = 80;
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > scrollThreshold) {
+          topbar.classList.add('scrolled');
+        } else {
+          topbar.classList.remove('scrolled');
         }
-      });
-    }
-
-    // Share Button
-    if (shareBtn) {
-      shareBtn.addEventListener('click', () => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(window.location.href);
-          showToast('Dashboard link copied to clipboard!');
-        }
-      });
+      }, { passive: true });
     }
   }
 
-  /**
-   * App Initialization.
-   */
-  async function init() {
-    setupEventListeners();
-    try {
-      const report = await fetchReportData();
-      renderAll(report);
-    } catch (err) {
-      console.error('Initial load failed:', err);
-    } finally {
-      if (loadingOverlay) {
-        setTimeout(() => loadingOverlay.classList.add('hidden'), 200);
-      }
-    }
+  /* ===================================================================
+     INIT
+     =================================================================== */
+  function init() {
+    setupEvents();
+    fetchReport()
+      .then(renderAll)
+      .catch(function (err) {
+        console.error('Load failed:', err);
+        setText(el.updatedAt, 'Offline');
+        toast('Could not load report data. Check that data/report.json exists.', '⚠');
+      })
+      .then(function () {
+        setTimeout(function () {
+          if (el.loading) el.loading.classList.add('hidden');
+          // Stagger section animations (respect reduced motion)
+          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function (sec, i) {
+              sec.style.opacity = '0';
+              sec.style.transform = 'translateY(20px)';
+              sec.style.transition = 'opacity 0.5s ease ' + (i * 80) + 'ms, transform 0.5s ease ' + (i * 80) + 'ms';
+            });
+            setTimeout(function () {
+              sections.forEach(function (sec) {
+                sec.style.opacity = '1';
+                sec.style.transform = 'translateY(0)';
+              });
+            }, 100);
+          }
+        }, 220);
+      });
   }
 
   if (document.readyState === 'loading') {
