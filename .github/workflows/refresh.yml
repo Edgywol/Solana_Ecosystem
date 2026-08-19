@@ -1,0 +1,84 @@
+name: Solana Ecosystem Telemetry Auto-Update
+
+on:
+  # Scheduled execution: Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+  schedule:
+    - cron: '0 */6 * * *'
+  
+  # Manual dispatch: Enables on-demand updates for live judging and demonstrations
+  workflow_dispatch:
+    inputs:
+      custom_rpc:
+        description: 'Optional custom Solana RPC URL'
+        required: false
+        default: ''
+
+  # Optional trigger on code changes
+  push:
+    branches:
+      - main
+    paths:
+      - 'collector/**'
+      - '.github/workflows/refresh.yml'
+
+# Permissions required for git commit and GitHub Pages deployment
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'solana-telemetry-refresh'
+  cancel-in-progress: false
+
+jobs:
+  collect-and-publish:
+    name: Ingest Telemetry & Deploy Dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          # Stdlib only: Zero external packages or pip install needed
+
+      - name: Run Collector & Report Compiler Pipeline
+        env:
+          SOLANA_RPC_URL: ${{ github.event.inputs.custom_rpc || 'https://api.mainnet-beta.solana.com' }}
+        run: |
+          echo "Executing Solana Ecosystem Telemetry Pipeline..."
+          python3 run.py
+
+      - name: Commit & Push Updated Data Artifacts
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage refreshed data files and dashboard snapshots
+          git add data/report.json data/report.md data/snapshots.db dashboard/data/report.json dashboard/report.json dashboard/report.md
+          
+          if git diff --staged --quiet; then
+            echo "No changes detected in telemetry data. Skipping commit."
+          else
+            git commit -m "chore(telemetry): auto-refresh Solana ecosystem data [skip ci]"
+            git push origin main
+          fi
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Static Dashboard Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
