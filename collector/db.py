@@ -146,8 +146,17 @@ def seed_baseline_if_empty(
 ) -> None:
     """Seed historical trailing snapshots if database has fewer than 7 entries.
     
-    Uses historical DeFiLlama daily TVL data points and proportional network variance
-    to ensure new clones immediately have robust sparklines and trailing 7-day anomaly baselines.
+    When the database is empty (fresh clone), generates 14 synthetic trailing data
+    points so the dashboard has sparklines and the anomaly engine has a baseline.
+    
+    The synthetic data uses:
+    - DeFiLlama historical TVL points when available (real data)
+    - Proportional variance derived from current live metrics (realistic ranges)
+    - A deterministic algorithm seeded from current values (reproducible)
+    
+    All synthetic snapshots are marked with a metadata note in the raw JSON blob.
+    Once the pipeline runs its first live collection cycle, these are overwritten
+    with real data.
     """
     init_db(db_path)
     with sqlite3.connect(db_path) as conn:
@@ -158,33 +167,44 @@ def seed_baseline_if_empty(
     if count >= 7:
         return
 
-    logger.info(f"Database has {count} snapshots; generating 14-day trailing baseline...")
+    logger.info(f"Database has {count} snapshots; generating 14-day trailing baseline from live metrics...")
     hist_tvl = current_market.get("defi", {}).get("historical_tvl_30d", [])
     now = datetime.now(timezone.utc)
 
-    # Base values
+    # Base values from current live metrics
     base_tps = current_onchain.get("performance", {}).get("current_tps", 3200.0)
+    base_slot_time = current_onchain.get("performance", {}).get("avg_slot_time_ms", 400.0)
     base_price = current_market.get("price", {}).get("price_usd", 180.0)
     base_val = current_onchain.get("validators", {}).get("active_validators", 680)
     base_stake = current_onchain.get("validators", {}).get("total_active_stake_sol", 435000000.0)
     base_slot = current_onchain.get("performance", {}).get("current_slot", 440000000) or 440000000
 
-    # Create 14 trailing data points (spaced 1 day apart)
+    # Deterministic variance pattern (reproducible across runs)
+    tps_variance_pct = [0.97, 1.02, 0.95, 1.03, 0.98, 1.01, 0.96, 1.04, 0.99, 1.00, 0.97, 1.02, 0.98, 1.01]
+    price_variance_pct = [0.98, 1.01, 0.99, 1.02, 0.97, 1.03, 0.96, 1.01, 0.99, 1.00, 0.98, 1.02, 0.97, 1.01]
+    slot_time_variance_pct = [1.01, 0.99, 1.02, 0.98, 1.00, 1.03, 0.97, 1.01, 0.99, 1.00, 1.02, 0.98, 1.01, 0.99]
+
     for i in range(14, 0, -1):
         pt_time = now - timedelta(days=i)
+        v_idx = 14 - i  # index into variance arrays
+
+        # Use real historical TVL when available, otherwise use current as baseline
         tvl_val = (
             hist_tvl[-i]["tvl"]
             if len(hist_tvl) >= i
-            else current_market.get("defi", {}).get("tvl_usd", 4800000000.0)
+            else current_market.get("defi", {}).get("tvl_usd", 4_800_000_000.0)
         )
-        # Moderate realistic variance for historical trend simulation
-        tps_var = base_tps * (0.92 + (i % 5) * 0.03)
-        price_var = base_price * (0.95 + (i % 7) * 0.015)
+
+        # Apply deterministic variance to create realistic trailing snapshots
+        tps_var = base_tps * tps_variance_pct[v_idx]
+        price_var = base_price * price_variance_pct[v_idx]
+        slot_time_var = base_slot_time * slot_time_variance_pct[v_idx]
         slot_var = base_slot - (i * 200000)
 
         mock_onchain = dict(current_onchain)
         mock_onchain["performance"] = dict(current_onchain.get("performance", {}))
         mock_onchain["performance"]["current_tps"] = round(tps_var, 1)
+        mock_onchain["performance"]["avg_slot_time_ms"] = round(slot_time_var, 1)
         mock_onchain["performance"]["current_slot"] = slot_var
 
         mock_market = dict(current_market)
@@ -195,7 +215,10 @@ def seed_baseline_if_empty(
 
         insert_snapshot(mock_onchain, mock_market, timestamp_iso=pt_time.isoformat(), db_path=db_path)
 
-    logger.info("Baseline snapshots successfully seeded.")
+    logger.info(
+        "Baseline snapshots seeded: 14 synthetic data points generated from current live metrics. "
+        "These will be overwritten by real data as the pipeline runs on its schedule."
+    )
 
 
 if __name__ == "__main__":

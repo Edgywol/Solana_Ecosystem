@@ -534,6 +534,162 @@
   }
 
   /* ===================================================================
+     NAKAMOTO WATERFALL CHART
+     =================================================================== */
+  function renderNakamotoWaterfall(r) {
+    var canvas = document.getElementById('chart-nakamoto');
+    var label = document.getElementById('nakamoto-label');
+    if (!canvas || typeof Chart === 'undefined') return;
+    var v = r.validators || {};
+    var validators = Array.isArray(v.top_validators) ? v.top_validators : [];
+    var nk = v.nakamoto_coefficient || 18;
+
+    if (validators.length === 0) return;
+
+    // Calculate cumulative stake percentage
+    var cumulative = [];
+    var running = 0;
+    var labels = [];
+    var colors = [];
+    for (var i = 0; i < Math.min(validators.length, 25); i++) {
+      running += (validators[i].stake_percentage || 0);
+      cumulative.push(+running.toFixed(2));
+      labels.push('#' + (i + 1));
+      colors.push(i < nk ? 'rgba(153,69,255,0.7)' : 'rgba(153,69,255,0.25)');
+    }
+
+    if (label) label.textContent = 'Nakamoto = ' + nk + ' validators';
+
+    if (charts['chart-nakamoto']) charts['chart-nakamoto'].destroy();
+    charts['chart-nakamoto'] = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Cumulative Stake %',
+          data: cumulative,
+          backgroundColor: colors,
+          borderColor: colors.map(function(c) { return c.replace('0.7', '1').replace('0.25', '0.5'); }),
+          borderWidth: 1,
+          borderRadius: 3,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1E2636',
+            titleColor: '#F1F5F9',
+            bodyColor: '#94A3B8',
+            borderColor: 'rgba(255,255,255,0.14)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 6,
+            callbacks: {
+              title: function(items) {
+                var idx = items[0].dataIndex;
+                return validators[idx] ? validators[idx].name : '';
+              },
+              label: function(item) {
+                var idx = item.dataIndex;
+                var val = validators[idx];
+                if (!val) return '';
+                return [
+                  'Cumulative: ' + item.raw.toFixed(1) + '%',
+                  'Stake: ' + fmtSOL(val.activated_stake_sol) + ' SOL',
+                  'Individual: ' + (val.stake_percentage || 0).toFixed(2) + '%',
+                  'Commission: ' + (val.commission || 0) + '%',
+                  idx < nk ? 'Inside Nakamoto set' : 'Outside Nakamoto set'
+                ];
+              },
+            },
+          },
+          annotation: undefined,
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#94A3B8', font: { size: 10 }, maxRotation: 0 },
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: {
+              color: '#94A3B8',
+              callback: function(val) { return val + '%'; },
+            },
+            max: Math.min(100, running * 1.2),
+          },
+        },
+      },
+      plugins: [{
+        id: 'nakamotoLine',
+        afterDraw: function(chart) {
+          var yScale = chart.scales.y;
+          var xScale = chart.scales.x;
+          var y33 = yScale.getPixelForValue(33.33);
+          var ctx = chart.ctx;
+          ctx.save();
+          ctx.beginPath();
+          ctx.setLineDash([6, 4]);
+          ctx.strokeStyle = '#FF6B6B';
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(xScale.left, y33);
+          ctx.lineTo(xScale.right, y33);
+          ctx.stroke();
+          ctx.fillStyle = '#FF6B6B';
+          ctx.font = '10px Inter, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText('33.3% threshold', xScale.right, y33 - 5);
+          ctx.restore();
+        },
+      }],
+    });
+  }
+
+  /* ===================================================================
+     REV BREAKDOWN
+     =================================================================== */
+  function renderREVBreakdown(r) {
+    var e = r.economics || {};
+    var p = r.price || {};
+    var solPrice = p.price_usd || 180;
+
+    // Calculate REV components
+    var revTotal = e.rev_24h_usd || 0;
+    var baseFeeSol = e.base_fee_sol || 0.000005;
+    var medianPriorityFeeSol = e.median_priority_fee_sol || (e.median_fee_sol ? e.median_fee_sol - baseFeeSol : 0);
+    var medianFeeUsd = e.median_fee_usd || 0;
+
+    // Estimate daily non-vote transactions (~30% of total)
+    var network = r.network || {};
+    var totalTx = network.total_transactions || 0;
+    var dailyNonVote = Math.round(totalTx * 0.001); // rough daily proxy
+    if (dailyNonVote < 1000000) dailyNonVote = 13500000; // fallback estimate
+
+    // REV component estimates
+    var baseFeesDaily = dailyNonVote * baseFeeSol * solPrice;
+    var priorityFeesDaily = dailyNonVote * medianPriorityFeeSol * solPrice;
+    var mevTipsDaily = Math.min(1500000, Math.max(250000, (e.dex_volume_24h_usd || 0) * 0.0004));
+
+    setText(document.getElementById('rev-total'), fmtUSD(revTotal, true));
+    setText(document.getElementById('rev-base'), fmtUSD(baseFeesDaily, true));
+    setText(document.getElementById('rev-priority'), fmtUSD(priorityFeesDaily, true));
+    setText(document.getElementById('rev-mev'), fmtUSD(mevTipsDaily, true));
+
+    var methodology = document.getElementById('rev-methodology');
+    if (methodology) {
+      var feeSource = e.fee_source || 'model estimation';
+      methodology.innerHTML = '<strong>Methodology:</strong> REV = (est. daily non-vote transactions × median fee) + estimated Jito MEV tips. '
+        + 'Fee source: ' + feeSource + '. '
+        + 'Base fee: ' + baseFeeSol + ' SOL (protocol constant). '
+        + 'Priority fee: ' + (medianPriorityFeeSol > 0 ? medianPriorityFeeSol.toFixed(9) + ' SOL (measured)' : 'model fallback') + '. '
+        + 'MEV estimated from ' + fmtUSD(e.dex_volume_24h_usd, true) + ' DEX volume × 0.04% tip rate.';
+    }
+  }
+
+  /* ===================================================================
      CHARTS
      =================================================================== */
   var CHART_COLORS = {
@@ -808,6 +964,68 @@
   }
 
   /* ===================================================================
+     RENDER ANOMALY / ALERT PANEL
+     =================================================================== */
+  function renderAlerts(r) {
+    var alerts = r.alerts || [];
+    var badge = document.getElementById('alert-count-badge');
+    var allClear = document.getElementById('anomaly-all-clear');
+    var list = document.getElementById('anomaly-list');
+    if (!list) return;
+
+    if (alerts.length === 0) {
+      if (badge) badge.hidden = true;
+      if (allClear) allClear.style.display = '';
+      list.innerHTML = '';
+      return;
+    }
+
+    if (allClear) allClear.style.display = 'none';
+    if (badge) {
+      badge.hidden = false;
+      badge.textContent = alerts.length + ' alert' + (alerts.length !== 1 ? 's' : '');
+      badge.className = 'chip ' + (alerts.some(function(a){return a.severity==='critical';}) ? 'chip-accent' : 'chip-up');
+    }
+
+    list.innerHTML = alerts.map(function(a) {
+      var icon = a.severity === 'critical' ? '🔴' : a.severity === 'warning' ? '🟡' : 'ℹ️';
+      var severityCls = a.severity === 'critical' ? 'delta-down' : a.severity === 'warning' ? 'delta-down' : 'muted';
+      return '<div class="anomaly-item" data-alert-id="' + (a.id || '') + '">'
+        + '<span class="anomaly-icon">' + icon + '</span>'
+        + '<div class="anomaly-text">'
+        + '<strong>' + (a.title || a.metric || 'Alert') + '</strong>'
+        + '<p>' + (a.description || '') + '</p>'
+        + '</div>'
+        + '<span class="chip ' + (a.severity === 'critical' ? 'chip-accent' : 'chip-neutral') + '">'
+        + (a.severity || 'info') + '</span>'
+        + '</div>';
+    }).join('');
+
+    // Click to show detail modal
+    list.querySelectorAll('.anomaly-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var alertId = item.getAttribute('data-alert-id');
+        var alert = alerts.find(function(a) { return a.id === alertId; });
+        if (alert) {
+          showModal(alert.title || 'Alert Detail',
+            '<div style="display:grid;gap:12px;">'
+            + '<p><strong>Metric:</strong> ' + (alert.metric || '\u2014') + '</p>'
+            + '<p><strong>Severity:</strong> ' + (alert.severity || '\u2014') + '</p>'
+            + '<p><strong>Current Value:</strong> ' + (alert.current_value != null ? alert.current_value : '\u2014') + '</p>'
+            + '<p><strong>Baseline:</strong> ' + (alert.baseline_value != null ? alert.baseline_value : '\u2014') + '</p>'
+            + '<p><strong>Threshold:</strong> ' + (alert.threshold || '\u2014') + '</p>'
+            + '<p><strong>Deviation:</strong> ' + (alert.deviation_pct != null ? alert.deviation_pct.toFixed(1) + '%' : '\u2014') + '</p>'
+            + '<p><strong>Confidence:</strong> ' + (alert.confidence_score != null ? (alert.confidence_score * 100).toFixed(0) + '%' : '\u2014') + '</p>'
+            + '<p><strong>Description:</strong> ' + (alert.description || '\u2014') + '</p>'
+            + '<p style="color:var(--text-3);font-size:11px;">Detected: ' + (alert.detected_at || '\u2014') + '</p>'
+            + '</div>'
+          );
+        }
+      });
+    });
+  }
+
+  /* ===================================================================
      RENDER ALL
      =================================================================== */
   function renderAll(r) {
@@ -818,10 +1036,13 @@
     renderKPI(r);
     renderNetworkPanel(r);
     renderValidatorStatus(r);
+    renderAlerts(r);
+    renderNakamotoWaterfall(r);
     renderRoadmap(r);
     renderDeFiTable(r);
     renderStablecoinPanel(r);
     renderEconomy(r);
+    renderREVBreakdown(r);
     renderCharts(r);
     renderRefreshHistory(r);
     renderFooter(r);

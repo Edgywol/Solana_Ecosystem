@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from collector.anomaly import detect_anomalies
+from collector.daily_active_addresses import DAAEstimator
 from collector.db import (
     DEFAULT_DB_PATH,
     get_metric_trend,
@@ -27,6 +28,8 @@ from collector.market_data import collect_market_data
 from collector.news import get_ecosystem_news
 from collector.onchain_metrics import collect_onchain_metrics
 from collector.rpc import SolanaRPCClient
+from collector.rpc_orchestrator import RpcOrchestrator
+from collector.twitter_sentiment import collect_solana_sentiment, TwitterSentimentCollector
 
 logger = logging.getLogger("report_builder")
 
@@ -152,15 +155,58 @@ class ReportBuilder:
         now_iso = now_utc.isoformat()
         logger.info("Starting Solana Ecosystem report compilation...")
 
-        # 1. On-chain telemetry
+        # 1. On-chain telemetry with multi-endpoint consensus
+        #    Use RPC orchestrator for resilient 3-endpoint consensus voting
+        orchestrator = RpcOrchestrator()
+        
+        # For backward compatibility, still create a single RPC client for regular queries
         rpc_client = SolanaRPCClient()
+        
         onchain = collect_onchain_metrics(rpc_client).to_dict()
+        
+        # 1b. Validate cluster health via multi-endpoint consensus
+        #     Override single-RPC health check with 2/3 majority vote
+        try:
+            consensus_health = orchestrator.get_health_with_consensus()
+            if consensus_health is not None:
+                consensus_ok = consensus_health == "ok"
+                onchain["health"]["rpc_status"] = consensus_health
+                onchain["health"]["is_healthy"] = consensus_ok
+                onchain["health"]["cluster_status"] = "Operational" if consensus_ok else "Degraded"
+                logger.info(f"Consensus health check: {consensus_health} ({len([h for h in orchestrator.health.values() if h.is_healthy()])}/{len(orchestrator.endpoints)} healthy)")
+        except Exception as e:
+            logger.warning(f"Consensus health check failed, using single-RPC result: {e}")
+        
+        # 1c. Validate critical metrics via multi-endpoint consensus
+        #     Cross-check slot from 3 endpoints for data integrity
+        try:
+            consensus_slot = orchestrator.get_slot_with_consensus()
+            if consensus_slot is not None:
+                rpc_slot = onchain["performance"].get("current_slot")
+                if rpc_slot and abs(consensus_slot - rpc_slot) > 10:
+                    logger.warning(f"Slot divergence: RPC={rpc_slot}, Consensus={consensus_slot}. Using consensus.")
+                    onchain["performance"]["current_slot"] = consensus_slot
+        except Exception as e:
+            logger.warning(f"Consensus slot check failed: {e}")
 
         # 2. Off-chain market data & news
         market = collect_market_data().to_dict()
         news = get_ecosystem_news().to_dict()
 
-        # 2b. Measure recent priority fees from the RPC endpoint (no keys required)
+        # 2a. Social Sentiment Analysis (Twitter/X ecosystem signals)
+        sentiment_collector = TwitterSentimentCollector()
+        current_sentiment = sentiment_collector.collect_sentiment(time_window_hours=24)
+        sentiment_report = sentiment_collector.to_report_dict()
+        
+        # Correlate sentiment with on-chain metrics for composite alerts
+        sentiment_correlations = sentiment_collector.correlate_with_onchain(current_sentiment, onchain)
+
+        # 2b. Estimate Daily Active Addresses via sampling high-activity program accounts
+        daa_estimator = DAAEstimator()
+        daa_snapshot = daa_estimator.estimate_daa(rpc_client)
+        daa_report = daa_estimator.to_report_dict()
+
+        # 2c. Measure recent priority fees from the RPC endpoint (no keys required)
         #     so the "median fee" economic figure is measured, not assumed.
         #     Only positive samples count — the raw stream is dominated by
         #     zero-priority transactions, so a raw median would misleadingly be $0.
@@ -304,7 +350,9 @@ class ReportBuilder:
             "generator_version": "1.0.0",
             "status": "success" if onchain.get("status") != "failed" else "partial",
             "health": health_data,
+            "rpc_orchestrator": orchestrator.to_report_dict()["rpc_orchestrator"],
             "alerts": alerts,
+            "sentiment_correlations": sentiment_correlations,
             "alerts_count": len(alerts),
             "ticker": ticker,
             "live_cards": live_cards,
@@ -312,6 +360,8 @@ class ReportBuilder:
             "validators": val_data,
             "supply": onchain.get("supply", {}),
             "price": price_data,
+            "sentiment": sentiment_report,
+            "daily_active_addresses": daa_report,
             "economics": {
                 **market.get("economics", {}),
                 **defi_data,

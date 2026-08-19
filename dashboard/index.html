@@ -69,6 +69,23 @@
       <div class="tab-content active" id="tab-content-overview" role="tabpanel" aria-labelledby="tab-overview">
         <section class="section kpi-grid" id="kpi-grid"></section>
         <section class="section kpi-grid-secondary" id="kpi-grid-secondary"></section>
+
+        <!-- Anomaly & Alert Panel -->
+        <section class="section" id="alerts-section">
+          <div class="anomalies-card">
+            <div class="card-head">
+              <span class="card-title">Anomaly & Risk Telemetry</span>
+              <span id="alert-count-badge" class="chip chip-neutral" hidden>0 alerts</span>
+            </div>
+            <div class="anomaly-body" id="anomaly-body">
+              <p class="all-clear" id="anomaly-all-clear">
+                <span style="color:var(--teal);">●</span> All Systems Normal — No statistical anomalies detected.
+              </p>
+              <div class="anomaly-list" id="anomaly-list"></div>
+            </div>
+          </div>
+        </section>
+
         <section id="trends" class="section">
           <div class="charts-grid">
             <div class="chart-card">
@@ -163,6 +180,16 @@
             <div id="roadmap-list"></div>
           </div>
         </section>
+        <section class="section">
+          <div class="chart-card">
+            <div class="card-head">
+              <span class="card-title">Stake Concentration — Nakamoto Waterfall</span>
+              <span class="chip chip-neutral" id="nakamoto-label">—</span>
+            </div>
+            <div class="chart-wrap" style="height:240px;"><canvas id="chart-nakamoto" role="img" aria-label="Cumulative stake concentration showing Nakamoto coefficient threshold"></canvas></div>
+            <p style="font-size:11px;color:var(--text-3);margin-top:8px;">Cumulative stake % of top validators. The Nakamoto coefficient is the minimum number of validators controlling &gt;33.3% of total stake.</p>
+          </div>
+        </section>
       </div>
 
       <!-- Tab: DeFi -->
@@ -213,6 +240,18 @@
                 <div class="econ-item"><span class="econ-label">Avg Tx Fee</span><strong id="econ-basefee">—</strong></div>
               </div>
             </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="econ-card" style="grid-column: 1 / -1;">
+            <div class="card-head"><span class="card-title">Real Economic Value (REV) — Daily Breakdown</span></div>
+            <div class="econ-grid-inner" style="grid-template-columns:repeat(4,1fr);">
+              <div class="econ-item"><span class="econ-label">Total REV / Day</span><strong id="rev-total">—</strong></div>
+              <div class="econ-item"><span class="econ-label">Base Fees</span><strong id="rev-base">—</strong></div>
+              <div class="econ-item"><span class="econ-label">Priority Fees</span><strong id="rev-priority">—</strong></div>
+              <div class="econ-item"><span class="econ-label">MEV Tips (est.)</span><strong id="rev-mev">—</strong></div>
+            </div>
+            <p id="rev-methodology" style="font-size:11px;color:var(--text-3);margin-top:12px;line-height:1.5;"></p>
           </div>
         </section>
         <section class="section">

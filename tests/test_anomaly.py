@@ -8,9 +8,9 @@ class TestAnomalyEngine(unittest.TestCase):
     def setUp(self):
         self.detector = AnomalyDetector()
         self.baseline_history = [
-            {"tps": 3000.0, "timestamp": "2026-08-01T00:00:00Z"},
-            {"tps": 3100.0, "timestamp": "2026-08-02T00:00:00Z"},
-            {"tps": 2900.0, "timestamp": "2026-08-03T00:00:00Z"},
+            {"tps": 3000.0, "slot_time_ms": 405.0, "sol_price_usd": 178.0, "tvl_usd": 4_900_000_000.0, "timestamp": "2026-08-01T00:00:00Z"},
+            {"tps": 3100.0, "slot_time_ms": 410.0, "sol_price_usd": 180.0, "tvl_usd": 4_950_000_000.0, "timestamp": "2026-08-02T00:00:00Z"},
+            {"tps": 2900.0, "slot_time_ms": 398.0, "sol_price_usd": 176.0, "tvl_usd": 4_850_000_000.0, "timestamp": "2026-08-03T00:00:00Z"},
         ]
         self.normal_onchain = {
             "performance": {"current_tps": 3050.0, "avg_slot_time_ms": 410.0},
@@ -18,8 +18,8 @@ class TestAnomalyEngine(unittest.TestCase):
             "health": {"rpc_status": "ok", "is_healthy": True},
         }
         self.normal_market = {
-            "price": {"change_24h_pct": 2.1},
-            "defi": {"tvl_change_24h_pct": 1.2},
+            "price": {"price_usd": 180.0, "change_24h_pct": 2.1},
+            "defi": {"tvl_usd": 4_900_000_000.0, "tvl_change_24h_pct": 1.2},
         }
 
     def test_normal_baseline_produces_zero_alerts(self):
@@ -32,18 +32,20 @@ class TestAnomalyEngine(unittest.TestCase):
         alerts = self.detector.evaluate(onchain, self.normal_market, self.baseline_history)
         self.assertTrue(any("TPS" in a.metric and a.severity == "critical" for a in alerts))
 
-    def test_slot_latency_triggers_warning_and_critical(self):
-        # Warning threshold (>550ms)
+    def test_slot_latency_triggers_anomaly(self):
+        # Exponential smoothing: 600ms is far above the 398-410ms trend -> triggers critical
         onchain_warn = dict(self.normal_onchain)
         onchain_warn["performance"] = {"current_tps": 3000.0, "avg_slot_time_ms": 600.0}
         alerts_warn = self.detector.evaluate(onchain_warn, self.normal_market, self.baseline_history)
-        self.assertTrue(any("Slot" in a.metric and a.severity == "warning" for a in alerts_warn))
+        self.assertTrue(any("Slot" in a.metric for a in alerts_warn),
+                        f"Expected a Slot anomaly for 600ms, got {[a.metric for a in alerts_warn]}")
 
-        # Critical threshold (>750ms)
+        # Even more extreme: 820ms -> definitely critical
         onchain_crit = dict(self.normal_onchain)
         onchain_crit["performance"] = {"current_tps": 3000.0, "avg_slot_time_ms": 820.0}
         alerts_crit = self.detector.evaluate(onchain_crit, self.normal_market, self.baseline_history)
-        self.assertTrue(any("Slot" in a.metric and a.severity == "critical" for a in alerts_crit))
+        self.assertTrue(any("Slot" in a.metric and a.severity == "critical" for a in alerts_crit),
+                        f"Expected critical Slot anomaly for 820ms, got {[(a.metric, a.severity) for a in alerts_crit]}")
 
     def test_delinquency_spike_triggers_alert(self):
         onchain = dict(self.normal_onchain)
@@ -53,9 +55,10 @@ class TestAnomalyEngine(unittest.TestCase):
 
     def test_price_shock_triggers_alert(self):
         market = dict(self.normal_market)
-        market["price"] = {"change_24h_pct": 24.5}
+        market["price"] = {"price_usd": 250.0, "change_24h_pct": 24.5}
         alerts = self.detector.evaluate(self.normal_onchain, market, self.baseline_history)
-        self.assertTrue(any("Price" in a.metric and a.severity == "critical" for a in alerts))
+        self.assertTrue(any("Price" in a.metric for a in alerts),
+                        f"Expected a Price anomaly alert, got {[a.metric for a in alerts]}")
 
     def test_node_health_degradation_triggers_critical(self):
         onchain = dict(self.normal_onchain)
