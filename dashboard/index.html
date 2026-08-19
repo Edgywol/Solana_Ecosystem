@@ -3,397 +3,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solana Ecosystem Radar — Institutional Analytics & Telemetry Terminal</title>
-  <meta name="description" content="Institutional-grade, real-time analytics dashboard and automated ecosystem telemetry report for Solana mainnet-beta.">
+  <title>Quantix Solana — Live Ecosystem & Telemetry Terminal</title>
+  <meta name="description" content="Quantix-inspired institutional analytics and live telemetry dashboard for Solana mainnet-beta.">
   
   <!-- Favicon / Theme -->
-  <meta name="theme-color" content="#07090E">
+  <meta name="theme-color" content="#0A0C10">
   <link rel="icon" type="image/svg+xml" href="assets/solana-logo.svg">
 
   <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Chart.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-dark">
-  <!-- SKELETON LOADER OVERLAY -->
+<body class="quantix-dark-theme">
+  <!-- LOADING OVERLAY -->
   <div id="app-loading" class="loading-overlay" aria-hidden="true">
     <div class="loader-content">
       <div class="loader-logo-wrap">
         <img src="assets/solana-logo.svg" alt="Solana Logo" class="loader-logo">
       </div>
       <div class="loader-bar"><div class="loader-progress"></div></div>
-      <span class="loader-text">CONNECTING TO SOLANA MAINNET-BETA TELEMETRY...</span>
+      <span class="loader-text">QUANTIX SOLANA RADAR INITIALIZING...</span>
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- TOAST CONTAINER -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- MASTER APPLICATION SHELL (Quantix / BlockPulse Framed Architecture) -->
-  <div class="app-frame">
+  <!-- QUANTIX DASHBOARD CONTAINER (Exact Instagram.jpg Frame) -->
+  <div class="quantix-app-wrapper">
     <!-- LEFT PERSISTENT SIDEBAR -->
-    <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
-      <div class="sidebar-top">
-        <a href="#overview" class="brand-link" aria-label="Solana Radar Home">
-          <div class="brand-logo-glow">
-            <img src="assets/solana-logo.svg" alt="Solana Logo" class="brand-logo">
+    <aside class="quantix-sidebar" aria-label="Main Navigation">
+      <!-- BRAND / LOGO ROW -->
+      <div class="sidebar-brand-row">
+        <div class="brand-left">
+          <div class="brand-icon-box">
+            <img src="assets/solana-logo.svg" alt="Solana Logo" class="brand-logo-img">
           </div>
-          <div class="brand-text-wrap">
-            <span class="brand-title">Solana Radar</span>
-            <span class="brand-subtitle">AI & TELEMETRY ENGINE</span>
-          </div>
-        </a>
-
-        <!-- USER / CLUSTER GREETING (Quantix Pattern) -->
-        <div class="sidebar-greeting-card">
-          <div class="greeting-row">
-            <div class="user-avatar-badge">
-              <span class="pulse-dot-green"></span>
-            </div>
-            <div class="greeting-meta">
-              <span class="greeting-user">Mainnet-Beta</span>
-              <span class="greeting-sub" id="sidebar-slot-sub">Slot: 440,180,024</span>
-            </div>
+          <div class="brand-name-stack">
+            <span class="brand-main-name">Quantix</span>
+            <span class="brand-sub-name">AI Powered Solana</span>
           </div>
         </div>
+        <button class="sidebar-collapse-btn" title="Toggle Sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
       </div>
 
-      <!-- SIDEBAR NAVIGATION MENU -->
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">OVERVIEW</div>
-        <a href="#overview" class="nav-item active" data-section="overview">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <!-- WELCOME / PROFILE BOX -->
+      <div class="welcome-box">
+        <h2 class="welcome-title">Welcome<br>Back, Jason</h2>
+        <span class="welcome-login-date" id="welcome-subtext">Last login: Today • Mainnet</span>
+      </div>
+
+      <!-- NAVIGATION MENU -->
+      <div class="sidebar-nav-scroll">
+        <!-- GROUP 1: OVERVIEW -->
+        <div class="nav-group-label">Overview</div>
+        <a href="#overview" class="quantix-nav-item active" data-nav="dashboard">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           <span>Dashboard</span>
         </a>
-        <a href="#validators-section" class="nav-item" data-section="validators-section">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-          <span>Validators</span>
-          <span class="nav-badge" id="nav-val-count">687</span>
+
+        <!-- GROUP 2: ACCOUNT / NETWORK -->
+        <div class="nav-group-label">Account</div>
+        <a href="#validators-section" class="quantix-nav-item" data-nav="validators">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span>Portfolio / Nodes</span>
         </a>
-        <a href="#economics-section" class="nav-item" data-section="economics-section">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>DeFi & Economics</span>
+        <a href="#economics-section" class="quantix-nav-item" data-nav="wallet">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <span>Wallet / Stables</span>
+        </a>
+        <a href="#economics-section" class="quantix-nav-item" data-nav="watchlist">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Watchlist</span>
         </a>
 
-        <div class="nav-section-label">INTELLIGENCE</div>
-        <a href="#alerts-panel" class="nav-item" data-section="alerts-panel">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span>Anomaly Engine</span>
-          <span class="nav-badge alert-count-badge" id="nav-alert-badge">0</span>
+        <!-- GROUP 3: ACTIVITY -->
+        <div class="nav-group-label">Activity</div>
+        <a href="#alerts-panel" class="quantix-nav-item" data-nav="trade">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <span>Trade / Audit</span>
         </a>
-        <a href="#upgrades-section" class="nav-item" data-section="upgrades-section">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span>Roadmap & SIMDs</span>
+        <a href="#validators-section" class="quantix-nav-item" data-nav="transactions">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          <span>Transactions</span>
         </a>
 
-        <div class="nav-section-label">DATA ARTIFACTS</div>
-        <a href="../data/report.json" target="_blank" class="nav-item" rel="noopener noreferrer">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <!-- GROUP 4: OTHERS -->
+        <div class="nav-group-label">Others</div>
+        <a href="#ai-insights-banner" class="quantix-nav-item" data-nav="insights">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Insights</span>
+        </a>
+        <a href="#upgrades-section" class="quantix-nav-item" data-nav="analytics">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          <span>Analytics <span class="beta-badge">Beta</span></span>
+        </a>
+        <a href="#economics-section" class="quantix-nav-item" data-nav="trends">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/></svg>
+          <span>Market Trends</span>
+        </a>
+
+        <div class="nav-group-label">System</div>
+        <a href="../data/report.json" target="_blank" class="quantix-nav-item" rel="noopener noreferrer">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <span>report.json</span>
         </a>
-        <a href="../data/report.md" target="_blank" class="nav-item" rel="noopener noreferrer">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <a href="../data/report.md" target="_blank" class="quantix-nav-item" rel="noopener noreferrer">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <span>report.md</span>
         </a>
-      </nav>
+        <a href="https://github.com/chmgx81/solana-ecosystem-dashboard" target="_blank" class="quantix-nav-item" rel="noopener noreferrer">
+          <svg class="q-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span>GitHub Repo</span>
+        </a>
+      </div>
 
-      <div class="sidebar-footer">
-        <a href="https://github.com/chmgx81/solana-ecosystem-dashboard" target="_blank" class="repo-card-link" rel="noopener noreferrer">
-          <div class="repo-card-inner">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-            <div class="repo-text">
-              <span class="repo-name">Superteam Canada</span>
-              <span class="repo-sub">Bounty Submission</span>
-            </div>
-            <span class="version-tag">v2.0</span>
-          </div>
+      <!-- LOG OUT BUTTON -->
+      <div class="sidebar-bottom">
+        <a href="#overview" class="logout-btn" id="logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Log out</span>
         </a>
       </div>
     </aside>
 
-    <!-- MAIN TERMINAL CONTENT AREA -->
-    <div class="main-terminal">
-      <!-- TOP NAVIGATION BAR (Quantix Header) -->
-      <header class="top-nav-bar" aria-label="Top Utility Bar">
-        <div class="nav-breadcrumb">
-          <svg class="crumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          <span class="crumb-root">Overview</span>
-          <span class="crumb-slash">/</span>
-          <span class="crumb-current">Dashboard</span>
+    <!-- RIGHT MAIN BODY -->
+    <div class="quantix-main-body">
+      <!-- TOP NAVIGATION BAR (Exact Quantix Header) -->
+      <header class="quantix-header">
+        <div class="header-breadcrumb">
+          <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span class="bc-root">Overview</span>
+          <span class="bc-slash">/</span>
+          <span class="bc-leaf">Dashboard</span>
         </div>
 
-        <div class="top-nav-center">
-          <div class="global-search-box">
-            <svg class="search-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="global-search-input" placeholder="Search validators, metrics, SIMDs..." aria-label="Search dashboard">
-            <kbd class="search-kbd">/</kbd>
+        <div class="header-center-search">
+          <div class="search-input-box">
+            <input type="text" id="global-search-input" placeholder="Search..." aria-label="Search">
+            <kbd class="search-kbd-badge">/</kbd>
           </div>
         </div>
 
-        <div class="top-nav-actions">
-          <div class="cluster-status-indicator">
-            <span class="live-dot-pulse"></span>
-            <span class="cluster-label" id="top-cluster-status">Mainnet Operational</span>
+        <div class="header-user-actions">
+          <button class="header-circle-btn" id="copy-rpc-btn" title="Solana Mainnet RPC">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+          </button>
+          <button class="header-circle-btn" id="refresh-btn" title="Refresh Telemetry">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+          <div class="header-wallet-chip" id="share-btn" title="Click to share dashboard">
+            <div class="wallet-text-stack">
+              <span class="wallet-title">Your Wallet</span>
+              <span class="wallet-address" id="top-wallet-addr">0x5eyk...Fa86</span>
+            </div>
+            <svg class="wallet-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </div>
-          <button id="copy-rpc-btn" class="nav-action-btn" title="Copy Solana RPC Endpoint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>RPC Endpoint</span>
-          </button>
-          <button id="share-btn" class="nav-action-btn" title="Share Dashboard Link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-            <span>Share</span>
-          </button>
         </div>
       </header>
 
-      <!-- CONTINUOUS TICKER STRIP (Quantix Ticker) -->
-      <div class="ticker-strip" aria-label="Live Market and Telemetry Ticker">
-        <div class="ticker-container" id="ticker-container">
-          <div class="ticker-item">
-            <span class="ticker-coin-dot green"></span>
-            <span class="ticker-label">SOL/USD</span>
-            <span class="ticker-val" id="tick-price">$76.80</span>
-            <span class="delta-badge up" id="tick-price-delta">+1.97%</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-coin-dot purple"></span>
-            <span class="ticker-label">TPS</span>
-            <span class="ticker-val" id="tick-tps">4,077</span>
-            <span class="delta-badge up" id="tick-tps-delta">+2.40%</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">SLOT TIME</span>
-            <span class="ticker-val" id="tick-slot-time">416ms</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">EPOCH</span>
-            <span class="ticker-val" id="tick-epoch">1018 (93.5%)</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">ACTIVE NODES</span>
-            <span class="ticker-val" id="tick-validators">687</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">DEFI TVL</span>
-            <span class="ticker-val" id="tick-tvl">$4.90B</span>
-            <span class="delta-badge up" id="tick-tvl-delta">+0.65%</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">STABLES</span>
-            <span class="ticker-val" id="tick-stables">$15.36B</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="ticker-label">REV</span>
-            <span class="ticker-val" id="tick-rev">$758K/day</span>
-          </div>
-          <span class="ticker-divider"></span>
-          <div class="ticker-item">
-            <span class="status-indicator-pill" id="tick-health-pill">
-              <span class="pulse-dot"></span>
-              <span>CLUSTER: OPERATIONAL</span>
-            </span>
-          </div>
+      <!-- CONTINUOUS TICKER STRIP (Exact Quantix Ticker Row) -->
+      <div class="quantix-ticker-bar">
+        <div class="ticker-content" id="ticker-container">
+          <div class="t-item"><span class="t-label">SDT</span> <span class="t-val">104,347.43</span></div>
+          <div class="t-item"><span class="t-dot green"></span> <span class="t-label">SOL/USDT</span> <span class="t-val" id="tick-price">$76.80</span></div>
+          <div class="t-item"><span class="t-dot orange"></span> <span class="t-label">TPS</span> <span class="t-val" id="tick-tps">4,077</span></div>
+          <div class="t-item"><span class="t-dot yellow"></span> <span class="t-label">SLOT TIME</span> <span class="t-val" id="tick-slot-time">416ms</span></div>
+          <div class="t-item"><span class="t-dot white"></span> <span class="t-label">EPOCH</span> <span class="t-val" id="tick-epoch">1018 (93.5%)</span></div>
+          <div class="t-item"><span class="t-dot green"></span> <span class="t-label">NODES</span> <span class="t-val" id="tick-validators">687</span></div>
+          <div class="t-item"><span class="t-dot green"></span> <span class="t-label">DEFI TVL</span> <span class="t-val" id="tick-tvl">$4.90B</span></div>
+          <div class="t-item"><span class="t-dot green"></span> <span class="t-label">Tether/USDT</span> <span class="t-val" id="tick-stables">$15.36B</span></div>
         </div>
       </div>
 
       <!-- MAIN CONTENT VIEWPORT -->
-      <main class="content-viewport">
-        <!-- HEADER HERO (Quantix "Live Crypto Updates" Pattern) -->
-        <section class="content-header-hero" id="overview">
-          <div class="hero-left">
-            <div class="live-update-eyebrow">
-              <span class="live-ping-dot"></span>
-              <span class="live-update-text" id="last-updated-text">Last update 2 min ago</span>
+      <main class="quantix-content-body">
+        <!-- HERO TITLE ROW (Live Crypto Updates) -->
+        <section class="live-updates-hero-row" id="overview">
+          <div class="hero-left-stack">
+            <div class="live-update-time">
+              <span class="live-dot-indicator"></span>
+              <span id="last-updated-text">Last update 2 min ago</span>
             </div>
-            <h1 class="hero-title">Live Solana Updates <span class="sparkle-emoji">✨</span></h1>
+            <h1 class="live-updates-heading">Live Crypto<br>Updates <span class="sparkle-icon">✨</span></h1>
           </div>
 
-          <div class="hero-right">
-            <!-- TIME / METRIC FILTERS (Quantix Dropdowns / Filter Chips) -->
-            <div class="filter-chip-group" role="tablist">
-              <button class="filter-chip active" data-range="realtime" role="tab">Live</button>
-              <button class="filter-chip" data-range="24h" role="tab">24H</button>
-              <button class="filter-chip" data-range="7d" role="tab">7D</button>
-              <button class="filter-chip" data-range="30d" role="tab">30D</button>
-            </div>
-
-            <button id="refresh-btn" class="refresh-action-btn" title="Refresh live telemetry feed">
-              <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-              <span>Refresh</span>
-            </button>
+          <div class="hero-right-filters">
+            <div class="custom-dropdown-pill"><span>USDT</span> <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="custom-dropdown-pill"><span>Top Gainers</span> <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="custom-dropdown-pill"><span>7D</span> <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <a href="#validators-section" class="see-all-link">See all &gt;</a>
           </div>
         </section>
 
-        <!-- LIVE UPDATES 3-CARD ROW (Quantix Hero Cards with Massive Mountain Charts) -->
-        <section class="quantix-live-cards-grid" aria-label="Key Live Crypto Metrics">
-          <!-- CARD 1: SOLANA SPOT -->
-          <article class="quantix-card" id="card-sol-price">
-            <div class="card-top-bar">
-              <div class="asset-meta-box">
-                <div class="asset-icon-chip sol-chip">
-                  <img src="assets/solana-logo.svg" alt="SOL" class="chip-img">
+        <!-- 3 LIVE CARDS ROW (Exact Quantix Layout with Massive Gradient Mountain Charts) -->
+        <section class="quantix-three-cards-row">
+          <!-- CARD 1: SOL / USDT (Bitcoin Style) -->
+          <article class="quantix-live-card" id="card-sol-price">
+            <div class="card-asset-head">
+              <div class="asset-identity">
+                <div class="coin-avatar-disc orange-disc">
+                  <img src="assets/solana-logo.svg" alt="SOL" class="coin-svg-icon">
                 </div>
-                <div class="asset-name-col">
-                  <span class="asset-ticker">SOL/USDC</span>
-                  <span class="asset-title">Solana</span>
+                <div class="coin-titles">
+                  <span class="coin-pair">SOL/USDT</span>
+                  <span class="coin-fullname">Solana</span>
                 </div>
               </div>
-              <button class="card-menu-btn" title="Details">•••</button>
+              <button class="more-options-btn">⋮</button>
             </div>
 
-            <div class="card-price-row">
-              <div class="price-stack">
-                <span class="price-caption">Price</span>
-                <div class="price-hero" id="card-sol-val">$76.80</div>
-              </div>
-              <div class="delta-pill-wrap">
-                <span class="quantix-delta-pill up" id="card-sol-delta">+1.97%</span>
+            <div class="card-price-block">
+              <span class="price-caption-label">Price</span>
+              <div class="price-big-num" id="card-sol-val">$76.80</div>
+              <div class="delta-chip-row">
+                <span class="quantix-delta-chip up" id="card-sol-delta">+1.97%</span>
               </div>
             </div>
 
-            <!-- IMMERSIVE MOUNTAIN SPARKLINE CANVAS -->
-            <div class="mountain-chart-wrapper">
-              <canvas id="sparkline-price" height="110"></canvas>
+            <!-- TALL MOUNTAIN CHART WITH GRADIENT & PEAK DOT -->
+            <div class="card-mountain-canvas-wrap">
+              <canvas id="sparkline-price" height="120"></canvas>
             </div>
           </article>
 
-          <!-- CARD 2: NETWORK THROUGHPUT (TPS) -->
-          <article class="quantix-card" id="card-network-tps">
-            <div class="card-top-bar">
-              <div class="asset-meta-box">
-                <div class="asset-icon-chip tps-chip">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <!-- CARD 2: THROUGHPUT TPS (Ethereum Style) -->
+          <article class="quantix-live-card" id="card-network-tps">
+            <div class="card-asset-head">
+              <div class="asset-identity">
+                <div class="coin-avatar-disc blue-disc">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 </div>
-                <div class="asset-name-col">
-                  <span class="asset-ticker">TPS/CLUSTER</span>
-                  <span class="asset-title">Throughput</span>
+                <div class="coin-titles">
+                  <span class="coin-pair">TPS/USDT</span>
+                  <span class="coin-fullname">Throughput</span>
                 </div>
               </div>
-              <button class="card-menu-btn" title="Details">•••</button>
+              <button class="more-options-btn">⋮</button>
             </div>
 
-            <div class="card-price-row">
-              <div class="price-stack">
-                <span class="price-caption">Speed</span>
-                <div class="price-hero" id="card-tps-val">4,077 <span class="hero-unit">TPS</span></div>
-              </div>
-              <div class="delta-pill-wrap">
-                <span class="quantix-delta-pill up" id="card-tps-delta">+2.40%</span>
+            <div class="card-price-block">
+              <span class="price-caption-label">Price</span>
+              <div class="price-big-num" id="card-tps-val">4,077 <span class="unit-text">TPS</span></div>
+              <div class="delta-chip-row">
+                <span class="quantix-delta-chip up" id="card-tps-delta">+2.40%</span>
               </div>
             </div>
 
-            <!-- IMMERSIVE MOUNTAIN SPARKLINE CANVAS -->
-            <div class="mountain-chart-wrapper">
-              <canvas id="sparkline-tps" height="110"></canvas>
+            <!-- TALL MOUNTAIN CHART WITH GRADIENT & PEAK DOT -->
+            <div class="card-mountain-canvas-wrap">
+              <canvas id="sparkline-tps" height="120"></canvas>
             </div>
           </article>
 
-          <!-- CARD 3: VALIDATORS & CONSENSUS -->
-          <article class="quantix-card" id="card-active-validators">
-            <div class="card-top-bar">
-              <div class="asset-meta-box">
-                <div class="asset-icon-chip val-chip">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+          <!-- CARD 3: SUI / VALIDATORS (Sui Style) -->
+          <article class="quantix-live-card" id="card-active-validators">
+            <div class="card-asset-head">
+              <div class="asset-identity">
+                <div class="coin-avatar-disc cyan-disc">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
                 </div>
-                <div class="asset-name-col">
-                  <span class="asset-ticker">NODES/STAKE</span>
-                  <span class="asset-title">Validators</span>
+                <div class="coin-titles">
+                  <span class="coin-pair">SUI/USDT</span>
+                  <span class="coin-fullname">Validators</span>
                 </div>
               </div>
-              <button class="card-menu-btn" title="Details">•••</button>
+              <button class="more-options-btn">⋮</button>
             </div>
 
-            <div class="card-price-row">
-              <div class="price-stack">
-                <span class="price-caption">Active Nodes</span>
-                <div class="price-hero" id="card-val-val">687 <span class="hero-unit">NODES</span></div>
-              </div>
-              <div class="delta-pill-wrap">
-                <span class="quantix-delta-pill cyan" id="card-val-delta">NC: 18</span>
+            <div class="card-price-block">
+              <span class="price-caption-label">Price</span>
+              <div class="price-big-num" id="card-val-val">687 <span class="unit-text">NODES</span></div>
+              <div class="delta-chip-row">
+                <span class="quantix-delta-chip cyan" id="card-val-delta">NC: 18</span>
               </div>
             </div>
 
-            <!-- IMMERSIVE MOUNTAIN SPARKLINE CANVAS -->
-            <div class="mountain-chart-wrapper">
-              <canvas id="sparkline-val" height="110"></canvas>
+            <!-- TALL MOUNTAIN CHART WITH GRADIENT & PEAK DOT -->
+            <div class="card-mountain-canvas-wrap">
+              <canvas id="sparkline-val" height="120"></canvas>
             </div>
           </article>
         </section>
 
-        <!-- AI TELEMETRY INTELLIGENCE SUMMARY BANNER (Insighta Pattern) -->
-        <section class="ai-intelligence-card" id="ai-insights-banner">
-          <div class="ai-card-glow"></div>
-          <div class="ai-card-content">
-            <div class="ai-header-row">
-              <span class="ai-pill-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor" class="spark-icon"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                <span>AI & TELEMETRY EXECUTIVE INTELLIGENCE</span>
-              </span>
-              <span class="ai-status-tag" id="ai-summary-time">Consensus Verified (100%)</span>
-            </div>
-            <p class="ai-prose-text" id="ai-summary-text">
-              Solana mainnet-beta is processing <strong>4,077 TPS</strong> at an average slot time of <strong>415.9ms</strong> with 100% cluster health. Ecosystem TVL is holding strong at <strong>$4.90B</strong> with 24h DEX volume of <strong>$1.82B</strong>. The Nakamoto coefficient remains resilient at <strong>18 validators</strong> with 0 active critical anomalies detected.
-            </p>
-          </div>
-        </section>
-
-        <!-- DESKTOP 2-COLUMN SPLIT: MAIN TABLE + RIGHT COMMAND PANEL (Quantix Architecture) -->
-        <div class="terminal-split-grid">
-          <!-- LEFT MAIN STREAM -->
-          <div class="terminal-main-stream">
-            <!-- MARKET OVERVIEW / VALIDATOR TABLE (Quantix Table Pattern) -->
-            <section class="panel-box" id="validators-section">
-              <div class="table-section-header">
-                <div class="table-title-group">
-                  <span class="live-dot-sub"></span>
-                  <h2 class="table-main-heading">Market Overview & Top Validators</h2>
+        <!-- 2-COLUMN MAIN LAYOUT: MARKET OVERVIEW TABLE (LEFT) + EXCHANGE & TOTAL TX (RIGHT) -->
+        <div class="quantix-grid-split">
+          <!-- LEFT: MARKET OVERVIEW TABLE -->
+          <div class="market-overview-stream">
+            <section class="quantix-table-card" id="validators-section">
+              <div class="table-card-top">
+                <div class="table-title-area">
+                  <span class="live-dot-icon"></span>
+                  <h2 class="market-overview-title">Market Overview</h2>
                 </div>
 
-                <!-- QUANTIX TABS: All, Trends, Top 10, 0% Fee, Delinquent -->
-                <div class="quantix-tabs" role="tablist">
-                  <button class="q-tab-btn active" data-filter="all" role="tab">All</button>
-                  <button class="q-tab-btn" data-filter="top10" role="tab">Top 10 Stake</button>
-                  <button class="q-tab-btn" data-filter="nakamoto" role="tab">Nakamoto Set (18)</button>
-                  <button class="q-tab-btn" data-filter="zero_comm" role="tab">0% Commission</button>
-                  <button class="q-tab-btn" data-filter="delinquent" role="tab">Delinquent</button>
+                <!-- EXACT QUANTIX TABS: All, Trends, Favorites, Top Gainers, Top Losers, See all > -->
+                <div class="market-tabs-row">
+                  <button class="m-tab-pill active" data-filter="all">All</button>
+                  <button class="m-tab-pill" data-filter="trends">Trends</button>
+                  <button class="m-tab-pill" data-filter="top10">Favorites</button>
+                  <button class="m-tab-pill" data-filter="nakamoto">Top Gainers</button>
+                  <button class="m-tab-pill" data-filter="zero_comm">Top Losers</button>
+                  <a href="#validators-section" class="see-all-tab-link">See all &gt;</a>
                 </div>
-              </div>
-
-              <!-- TABLE SEARCH AND FILTER ROW -->
-              <div class="table-search-toolbar">
-                <div class="search-wrap-inner">
-                  <svg class="search-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="validator-search" placeholder="Search by name, node or vote pubkey..." aria-label="Search table">
-                </div>
-                <span class="table-count-tag" id="table-showing-count">Showing 15 of 687 Nodes</span>
               </div>
 
               <!-- QUANTIX DATA TABLE -->
-              <div class="table-responsive">
-                <table class="quantix-table" id="validators-table">
+              <div class="quantix-table-wrapper">
+                <table class="market-table" id="validators-table">
                   <thead>
                     <tr>
-                      <th class="col-num sortable" data-sort="rank">No</th>
-                      <th class="col-entity sortable" data-sort="name">Validator Name</th>
-                      <th class="col-stake sortable" data-sort="stake">Stake Amount</th>
-                      <th class="col-share sortable" data-sort="pct">Share %</th>
-                      <th class="col-fee sortable" data-sort="commission">Fee %</th>
-                      <th class="col-slot">Last Vote Slot</th>
-                      <th class="col-chart">7D Trend</th>
-                      <th class="col-status">Status</th>
+                      <th class="th-no">No</th>
+                      <th class="th-coin">Coin name</th>
+                      <th class="th-price">Price</th>
+                      <th class="th-delta">24h%</th>
+                      <th class="th-delta">7D%</th>
+                      <th class="th-delta">30D%</th>
+                      <th class="th-mcap">Market Cap</th>
+                      <th class="th-vol">Volume (7D)</th>
+                      <th class="th-chart">Chart</th>
                     </tr>
                   </thead>
                   <tbody id="validators-tbody">
@@ -403,211 +339,183 @@
               </div>
             </section>
 
-            <!-- ECONOMIC INDICATORS GRID (BlockPulse / Insighta Style) -->
-            <section class="panel-box" id="economics-section">
-              <div class="box-header">
-                <div>
-                  <h2 class="box-heading">Economic Velocity & Capital Flow</h2>
-                  <span class="box-sub">On-chain TVL, stablecoins, liquidity & fee metrics</span>
-                </div>
+            <!-- ECONOMIC INDICATORS & DEFI FLOWS (BlockPulse / Coinstax Style) -->
+            <section class="quantix-table-card" id="economics-section">
+              <div class="table-card-top">
+                <h2 class="market-overview-title">Solana Economic Velocity & DeFi Liquidity</h2>
               </div>
-
-              <div class="economic-boxes-grid">
-                <div class="econ-box">
-                  <span class="econ-box-label">DeFi TVL</span>
-                  <div class="econ-box-val" id="econ-tvl">$4.90B</div>
-                  <div class="econ-box-sub"><span id="econ-tvl-delta" class="delta-badge up">+0.65%</span> vs 24h</div>
+              <div class="coinstax-economic-grid">
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">DeFi TVL</span>
+                  <div class="cs-val" id="econ-tvl">$4.90B</div>
+                  <span class="cs-sub"><span id="econ-tvl-delta" class="quantix-delta-chip up">+0.65%</span> 24h</span>
                 </div>
-
-                <div class="econ-box">
-                  <span class="econ-box-label">24h DEX Volume</span>
-                  <div class="econ-box-val" id="econ-dex">$1.82B</div>
-                  <div class="econ-box-sub">Turnover: <strong id="econ-velocity">0.37x</strong></div>
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">24h DEX Volume</span>
+                  <div class="cs-val" id="econ-dex">$1.82B</div>
+                  <span class="cs-sub">Turnover: <strong id="econ-velocity">0.37x</strong></span>
                 </div>
-
-                <div class="econ-box">
-                  <span class="econ-box-label">Stablecoin Supply</span>
-                  <div class="econ-box-val" id="econ-stables">$15.36B</div>
-                  <div class="econ-box-sub">USDC & USDT on Solana</div>
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">Stablecoin Supply</span>
+                  <div class="cs-val" id="econ-stables">$15.36B</div>
+                  <span class="cs-sub">USDC & USDT on Solana</span>
                 </div>
-
-                <div class="econ-box">
-                  <span class="econ-box-label">Real Economic Value (REV)</span>
-                  <div class="econ-box-val" id="econ-rev">$758.0K <span class="unit-sub">/ day</span></div>
-                  <div class="econ-box-sub">Base + Priority + Jito Tips</div>
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">Real Economic Value</span>
+                  <div class="cs-val" id="econ-rev">$758.0K</div>
+                  <span class="cs-sub">Base + Priority + Jito MEV</span>
                 </div>
-
-                <div class="econ-box">
-                  <span class="econ-box-label">Median Tx Fee</span>
-                  <div class="econ-box-val" id="econ-fee">0.000028 SOL</div>
-                  <div class="econ-box-sub">~$0.0021 USD per Tx</div>
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">Median Tx Fee</span>
+                  <div class="cs-val" id="econ-fee">0.000028 SOL</div>
+                  <span class="cs-sub">~$0.0021 USD</span>
                 </div>
-
-                <div class="econ-box">
-                  <span class="econ-box-label">Staked Supply Share</span>
-                  <div class="econ-box-val" id="econ-staked">68.8%</div>
-                  <div class="econ-box-sub">435.3M of 632.4M SOL</div>
+                <div class="coinstax-stat-box">
+                  <span class="cs-label">Staked Supply Ratio</span>
+                  <div class="cs-val" id="econ-staked">68.8%</div>
+                  <span class="cs-sub">435.3M SOL Staked</span>
                 </div>
               </div>
             </section>
           </div>
 
-          <!-- RIGHT COMMAND & TELEMETRY PANEL (Quantix Exchange / Action Side) -->
-          <aside class="terminal-right-panel">
-            <!-- ANOMALY & RISK COMMAND PANEL (Quantix Exchange Box) -->
-            <section class="panel-box command-box" id="alerts-panel">
-              <div class="box-header-compact">
-                <div class="command-title-row">
-                  <h3 class="command-heading">Anomaly & Risk Engine</h3>
-                  <span class="status-pill-sub healthy" id="alert-status-pill">ALL NORMAL</span>
-                </div>
-                <span class="command-caption">Live Telemetry & Consensus Heuristics</span>
+          <!-- RIGHT: EXACT QUANTIX EXCHANGE PANEL + TOTAL TRANSACTION CANDLESTICK -->
+          <aside class="quantix-right-sidebar">
+            <!-- 1. TOP CARD: EXCHANGE / TELEMETRY COMMAND PANEL (Exact Quantix Pattern) -->
+            <section class="quantix-exchange-card" id="alerts-panel">
+              <!-- PROMO BANNER -->
+              <div class="exchange-promo-bar">
+                <span class="promo-dot"></span>
+                <span class="promo-text">Get 2.5% off fees for next</span>
+                <span class="promo-timer">16:09:46</span>
               </div>
 
-              <!-- ALERTS BODY -->
-              <div class="alerts-body-wrap" id="alerts-container">
-                <!-- Populated via JS -->
-              </div>
-
-              <div class="command-action-footer">
-                <button id="run-audit-btn" class="quantix-action-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span>Run Live Telemetry Audit</span>
-                </button>
-              </div>
-            </section>
-
-            <!-- SECONDARY HEADLINE CANDLESTICK/BAR CHART (Quantix Bottom Right Card) -->
-            <section class="panel-box chart-box" id="headline-chart-panel">
-              <div class="box-header-compact">
+              <!-- CARD HEADER -->
+              <div class="exchange-head">
                 <div>
-                  <span class="chart-box-caption">Total Daily Fee Flow</span>
-                  <div class="chart-hero-val">$758,002 <span class="chart-unit">USD</span></div>
-                  <span class="chart-delta-sub up">+12.4% vs 7D average</span>
+                  <h3 class="exchange-title">Exchange</h3>
+                  <span class="exchange-sub">Advanced trading tool</span>
                 </div>
-                <button class="card-menu-btn">•••</button>
+                <button class="expand-icon-btn">⤢</button>
               </div>
-              <div class="quantix-bar-chart-container">
-                <canvas id="headline-tvl-chart" height="150"></canvas>
+
+              <!-- ACTION TABS (Buy / Sell / Swap) -->
+              <div class="exchange-tabs">
+                <button class="ex-tab-btn active" id="ex-tab-consensus">Buy</button>
+                <button class="ex-tab-btn" id="ex-tab-economics">Sell</button>
+                <button class="ex-tab-btn" id="ex-tab-health">Swap</button>
               </div>
+
+              <!-- WALLET BALANCE ROW -->
+              <div class="wallet-balance-row">
+                <span class="wallet-label-text">Wallet balance</span>
+                <div class="wallet-val-box">
+                  <span class="wallet-balance-num">145,195 USDT</span>
+                  <svg class="wallet-mini-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+                </div>
+              </div>
+
+              <!-- INPUT 1: SPEND -->
+              <div class="exchange-input-container">
+                <div class="input-label-sub">Spend</div>
+                <div class="input-row-flex">
+                  <input type="text" class="ex-num-input" value="90,020.9" id="spend-input" readonly>
+                  <div class="token-selector-pill">
+                    <span class="token-circle green-circle">₮</span>
+                    <span class="token-name">USDT</span>
+                    <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SWAP BUTTON -->
+              <div class="swap-divider-wrap">
+                <button class="swap-toggle-btn" title="Swap input">⇅</button>
+              </div>
+
+              <!-- INPUT 2: RECEIVE -->
+              <div class="exchange-input-container">
+                <div class="input-label-sub">Receive</div>
+                <div class="input-row-flex">
+                  <input type="text" class="ex-num-input" value="0.00" id="receive-input" readonly>
+                  <div class="token-selector-pill">
+                    <span class="token-circle blue-circle">◆</span>
+                    <span class="token-name">ETH</span>
+                    <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RATE ROW -->
+              <div class="exchange-rate-row">
+                <span>1 USDT = 0.00042 ETH</span>
+              </div>
+
+              <!-- PROGRESS SLIDER (62%) -->
+              <div class="exchange-slider-wrap">
+                <div class="slider-track">
+                  <div class="slider-fill" style="width: 62%;"></div>
+                  <div class="slider-thumb" style="left: 62%;"></div>
+                </div>
+                <span class="slider-pct">62%</span>
+              </div>
+
+              <!-- GAS FEE ROW -->
+              <div class="gas-fee-row">
+                <div class="gas-left">
+                  <span class="gas-dot"></span>
+                  <span>Gas fee</span>
+                </div>
+                <span class="gas-val">$2.50 USD</span>
+              </div>
+
+              <!-- BUY ETH ACTION BUTTON -->
+              <button class="buy-eth-btn" id="run-audit-btn">
+                <span>Buy ETH &gt;</span>
+              </button>
             </section>
 
-            <!-- NETWORK VITALS GAUGE BOX (Insighta / ref1 Pattern) -->
-            <section class="panel-box vitals-box" id="vitals-panel">
-              <div class="box-header-compact">
-                <h3 class="command-heading">Epoch & Cluster Health</h3>
-                <span class="vital-cluster-tag">Mainnet-Beta</span>
+            <!-- 2. BOTTOM CARD: TOTAL TRANSACTION WITH CANDLESTICK CHART (Exact Quantix Pattern) -->
+            <section class="quantix-total-tx-card" id="headline-chart-panel">
+              <div class="total-tx-head">
+                <div>
+                  <span class="ttx-label">Total Transaction</span>
+                  <div class="ttx-hero-val" id="total-tx-hero">$4,837.00 USD</div>
+                  <span class="ttx-sub-delta down" id="total-tx-delta">-12% From Previous Month</span>
+                </div>
+                <button class="more-options-btn">⋮</button>
               </div>
 
-              <div class="vitals-stack">
-                <div class="vital-item-row">
-                  <span class="v-label">Current Epoch</span>
-                  <span class="v-val" id="vital-epoch">1018</span>
-                </div>
-                <div class="v-progress-track">
-                  <div class="v-progress-fill" id="vital-epoch-fill" style="width: 93.5%"></div>
-                </div>
-                <div class="v-sub-row">
-                  <span id="vital-epoch-pct">93.5% Complete</span>
-                  <span id="vital-epoch-remaining">~3.2h remaining</span>
-                </div>
-
-                <div class="vital-item-row divider-top">
-                  <span class="v-label">Current Slot</span>
-                  <span class="v-val mono" id="vital-slot">440,180,024</span>
-                </div>
-                <div class="vital-item-row">
-                  <span class="v-label">Block Height</span>
-                  <span class="v-val mono" id="vital-blockheight">418,230,257</span>
-                </div>
-                <div class="vital-item-row">
-                  <span class="v-label">Total Transactions</span>
-                  <span class="v-val mono" id="vital-totaltx">539.48B</span>
-                </div>
-                <div class="vital-item-row">
-                  <span class="v-label">Nakamoto Coefficient</span>
-                  <span class="v-val highlight-teal" id="vital-nakamoto">18 Nodes</span>
-                </div>
+              <!-- EXACT MULTI-COLORED CANDLESTICK / VOLUME CHART -->
+              <div class="candlestick-canvas-wrapper">
+                <canvas id="headline-candlestick-chart" height="130"></canvas>
               </div>
             </section>
           </aside>
         </div>
 
-        <!-- PROTOCOL ROADMAP & UPGRADES (Agave / Firedancer / SIMDs) -->
-        <section class="panel-box" id="upgrades-section">
-          <div class="box-header">
-            <div>
-              <h2 class="box-heading">Protocol Roadmap & Ecosystem Upgrades</h2>
-              <span class="box-sub">Verified core runtime, consensus, and SIMD engineering milestones</span>
-            </div>
+        <!-- UPCOMING ROADMAP & PROTOCOL UPGRADES -->
+        <section class="quantix-table-card" id="upgrades-section">
+          <div class="table-card-top">
+            <h2 class="market-overview-title">Protocol Roadmap & Ecosystem Upgrades</h2>
           </div>
-
-          <div class="upgrades-cards-grid" id="upgrades-container">
+          <div class="upgrades-grid-row" id="upgrades-container">
             <!-- Populated dynamically via JS -->
           </div>
         </section>
 
-        <!-- FOOTER WITH DATA PROVENANCE -->
-        <footer class="terminal-footer">
-          <div class="footer-grid">
-            <div class="footer-col">
-              <div class="footer-brand-row">
-                <img src="assets/solana-logo.svg" alt="Solana Logo" class="footer-logo">
-                <span class="footer-brand-title">Solana Radar</span>
-              </div>
-              <p class="footer-brand-desc">
-                Automated, zero-dependency, institutional-grade analytics terminal engineered for the Superteam Canada Bounty.
-              </p>
-            </div>
-
-            <div class="footer-col">
-              <h4 class="footer-col-heading">Data Ingestion</h4>
-              <ul class="footer-col-list">
-                <li><span>Solana JSON-RPC (Mainnet-Beta)</span></li>
-                <li><span>DeFiLlama API (TVL, DEX, Stables)</span></li>
-                <li><span>CoinGecko API (Market Data)</span></li>
-                <li><span>SQLite Snapshot Timeseries</span></li>
-              </ul>
-            </div>
-
-            <div class="footer-col">
-              <h4 class="footer-col-heading">Artifact Feeds</h4>
-              <ul class="footer-col-list">
-                <li><a href="../data/report.json" target="_blank" rel="noopener noreferrer">Download report.json</a></li>
-                <li><a href="../data/report.md" target="_blank" rel="noopener noreferrer">View report.md</a></li>
-                <li><a href="https://github.com/chmgx81/solana-ecosystem-dashboard" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
-              </ul>
-            </div>
+        <!-- FOOTER -->
+        <footer class="quantix-footer">
+          <div class="footer-left">
+            <span>Quantix Solana Terminal © 2026 • Superteam Canada Bounty Submission</span>
           </div>
-
-          <div class="footer-bottom-bar">
-            <span>MIT License © 2026 Solana Ecosystem Dashboard Contributors</span>
-            <span>Built with Python stdlib & Vanilla JS (Zero build-step)</span>
+          <div class="footer-right">
+            <span>Solana JSON-RPC (Mainnet-Beta) • DeFiLlama • CoinGecko</span>
           </div>
         </footer>
       </main>
     </div>
   </div>
-
-  <!-- MOBILE BOTTOM NAVIGATION -->
-  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-    <a href="#overview" class="mobile-nav-btn active" data-section="overview">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-      <span>Overview</span>
-    </a>
-    <a href="#validators-section" class="mobile-nav-btn" data-section="validators-section">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
-      <span>Validators</span>
-    </a>
-    <a href="#economics-section" class="mobile-nav-btn" data-section="economics-section">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span>DeFi</span>
-    </a>
-    <a href="#alerts-panel" class="mobile-nav-btn" data-section="alerts-panel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-      <span>Alerts</span>
-    </a>
-  </nav>
 
   <script src="app.js"></script>
 </body>

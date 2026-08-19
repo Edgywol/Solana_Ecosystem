@@ -1,76 +1,55 @@
 /* ==========================================================================
-   SOLANA ECOSYSTEM RADAR — INSTITUTIONAL TERMINAL STYLES (v2.0)
-   Pixel-perfect implementation of Quantix, Insighta & BlockPulse architecture
+   QUANTIX SOLANA RADAR — EXACT 1:1 REPLICATION OF INSTAGRAM.JPG THEME
+   Pixel-perfect layout, color scheme, typography & card architecture
    ========================================================================== */
 
 :root {
-  /* Ultra-Rich Cosmic Dark Palette */
-  --bg-page: #05070B;
-  --bg-sidebar: #090C14;
-  --bg-card: #0E131F;
-  --bg-card-elevated: #141A29;
-  --bg-card-hover: #192236;
-  --bg-toolbar: #0A0E18;
+  /* Quantix Exact Matte Charcoal Color Palette */
+  --q-bg-page: #07090C;
+  --q-bg-sidebar: #0C0E13;
+  --q-bg-header: #0A0C10;
+  --q-bg-card: #11141A;
+  --q-bg-card-inner: #151821;
+  --q-bg-card-hover: #171B26;
+  --q-bg-input: #13161F;
+  --q-bg-pill: #1C202B;
   
-  /* Borders & Hairlines */
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-subtle-hover: rgba(255, 255, 255, 0.16);
-  --border-highlight: rgba(255, 255, 255, 0.12);
-  --border-focus: rgba(153, 69, 255, 0.6);
-
-  /* Authentic Solana Gradient & Neon Accents */
-  --solana-purple: #9945FF;
-  --solana-teal: #14F195;
-  --solana-cyan: #00F0FF;
-  --solana-gradient: linear-gradient(135deg, #9945FF 0%, #14F195 100%);
-  --solana-gradient-subtle: linear-gradient(135deg, rgba(153, 69, 255, 0.15) 0%, rgba(20, 241, 149, 0.15) 100%);
-  --ai-card-gradient: linear-gradient(135deg, rgba(121, 40, 202, 0.45) 0%, rgba(67, 56, 202, 0.3) 100%);
+  /* Borders & Outlines */
+  --q-border-subtle: rgba(255, 255, 255, 0.05);
+  --q-border-card: #191D27;
+  --q-border-input: #1E2330;
+  --q-border-focus: rgba(153, 69, 255, 0.5);
 
   /* Typography Colors */
-  --text-primary: #FFFFFF;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-dim: #475569;
+  --q-text-white: #FFFFFF;
+  --q-text-heading: #F2F5F9;
+  --q-text-secondary: #8E95A5;
+  --q-text-muted: #5C6374;
+  --q-text-dim: #3F4554;
 
-  /* Status Colors */
-  --delta-up: #14F195;
-  --delta-up-bg: rgba(20, 241, 149, 0.14);
-  --delta-down: #FF4D6A;
-  --delta-down-bg: rgba(255, 77, 106, 0.14);
-  --delta-cyan: #00F0FF;
-  --delta-cyan-bg: rgba(0, 240, 255, 0.14);
-
-  --status-healthy: #14F195;
-  --status-healthy-bg: rgba(20, 241, 149, 0.14);
-  --status-warning: #FFB020;
-  --status-warning-bg: rgba(255, 176, 32, 0.14);
-  --status-critical: #FF3B30;
-  --status-critical-bg: rgba(255, 59, 48, 0.14);
+  /* Quantix Brand & Token Accents */
+  --q-green: #14F195;
+  --q-green-bg: rgba(20, 241, 149, 0.12);
+  --q-red: #FF4D6A;
+  --q-red-bg: rgba(255, 77, 106, 0.12);
+  --q-orange: #FFA800;
+  --q-blue: #4E82FF;
+  --q-purple: #9945FF;
+  --q-cyan: #00F0FF;
 
   /* Fonts */
-  --font-display: 'Space Grotesk', 'Syne', sans-serif;
-  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', SFMono-Regular, monospace;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Radii & Shadows */
+  /* Radii */
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-lg: 18px;
   --radius-pill: 9999px;
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
-  --shadow-glow-purple: 0 0 24px rgba(153, 69, 255, 0.3);
-  --shadow-glow-teal: 0 0 24px rgba(20, 241, 149, 0.3);
-
-  /* Layout Scale */
-  --sidebar-width: 250px;
-  --top-nav-height: 56px;
-  --ticker-height: 42px;
-  --content-max-width: 1460px;
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset & Global */
+/* Reset & Global Base */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -83,62 +62,45 @@ html {
   font-size: 14px;
 }
 
-body {
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  line-height: 1.5;
+body.quantix-dark-theme {
+  background-color: var(--q-bg-page);
+  color: var(--q-text-heading);
+  font-family: var(--font-sans);
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   overflow-x: hidden;
-  position: relative;
-}
-
-/* Subtle Ambient Glow in Body Background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 20%;
-  width: 600px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(153, 69, 255, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
 }
 
 :focus-visible {
-  outline: 2px solid var(--solana-purple);
+  outline: 2px solid var(--q-purple);
   outline-offset: 2px;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-page);
+  background: var(--q-bg-page);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-pill);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
 
-/* Loading Overlay */
+/* Loader */
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background-color: var(--bg-page);
+  background-color: var(--q-bg-page);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.35s ease, visibility 0.35s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .loading-overlay.hidden {
@@ -151,13 +113,12 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .loader-logo-wrap {
-  width: 56px;
-  height: 56px;
-  animation: pulseLogo 1.5s infinite ease-in-out;
+  width: 48px;
+  height: 48px;
 }
 
 .loader-logo {
@@ -166,9 +127,9 @@ body::before {
 }
 
 .loader-bar {
-  width: 220px;
-  height: 3px;
-  background: var(--bg-card-elevated);
+  width: 180px;
+  height: 2px;
+  background: var(--q-bg-card-inner);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -176,30 +137,24 @@ body::before {
 .loader-progress {
   width: 50%;
   height: 100%;
-  background: var(--solana-gradient);
-  animation: loadProgress 1.2s infinite ease-in-out;
-  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--q-purple), var(--q-green));
+  animation: loadAnim 1.2s infinite ease-in-out;
 }
 
 .loader-text {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
   letter-spacing: 0.12em;
-  color: var(--text-secondary);
+  color: var(--q-text-muted);
 }
 
-@keyframes loadProgress {
+@keyframes loadAnim {
   0% { transform: translateX(-100%); }
   50% { transform: translateX(50%); width: 70%; }
   100% { transform: translateX(200%); width: 30%; }
 }
 
-@keyframes pulseLogo {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(153, 69, 255, 0.3)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(20, 241, 149, 0.5)); }
-}
-
-/* Toast Notifications */
+/* Toast */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -212,10 +167,10 @@ body::before {
 }
 
 .toast {
-  background: var(--bg-card-elevated);
-  border: 1px solid var(--solana-teal);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-  color: var(--text-primary);
+  background: var(--q-bg-card-inner);
+  border: 1px solid var(--q-green);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7);
+  color: var(--q-text-white);
   padding: 10px 16px;
   border-radius: var(--radius-sm);
   font-size: 12px;
@@ -223,30 +178,27 @@ body::before {
   align-items: center;
   gap: 8px;
   pointer-events: auto;
-  animation: toastIn 0.25s ease-out forwards;
+  animation: toastIn 0.2s ease-out forwards;
 }
 
 @keyframes toastIn {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(16px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
 /* ==========================================================================
-   MASTER APPLICATION FRAME (Quantix / BlockPulse Structure)
+   APP WRAPPER & PERSISTENT LEFT SIDEBAR (Exact Quantix Pattern)
    ========================================================================== */
 
-.app-frame {
+.quantix-app-wrapper {
   display: flex;
   min-height: 100vh;
-  position: relative;
-  z-index: 1;
 }
 
-/* SIDEBAR (Quantix Pattern) */
-.sidebar {
-  width: var(--sidebar-width);
-  background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--border-subtle);
+.quantix-sidebar {
+  width: 220px;
+  background-color: var(--q-bg-sidebar);
+  border-right: 1px solid var(--q-border-subtle);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -257,1799 +209,1270 @@ body::before {
   user-select: none;
 }
 
-.sidebar-top {
-  padding: 20px 18px 16px;
+.sidebar-brand-row {
+  padding: 20px 16px 14px;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.brand-link {
+.brand-left {
   display: flex;
   align-items: center;
   gap: 10px;
-  text-decoration: none;
-  color: inherit;
 }
 
-.brand-logo-glow {
-  width: 32px;
-  height: 32px;
+.brand-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 10px rgba(153, 69, 255, 0.6));
 }
 
-.brand-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.brand-logo-img {
+  width: 22px;
+  height: 22px;
 }
 
-.brand-text-wrap {
+.brand-name-stack {
   display: flex;
   flex-direction: column;
 }
 
-.brand-title {
-  font-family: var(--font-display);
+.brand-main-name {
+  font-size: 15px;
   font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.01em;
-  color: #FFFFFF;
+  color: var(--q-text-white);
+  letter-spacing: -0.02em;
 }
 
-.brand-subtitle {
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  color: var(--text-muted);
-  letter-spacing: 0.12em;
+.brand-sub-name {
+  font-size: 9px;
+  color: var(--q-text-muted);
 }
 
-/* Quantix User / Cluster Greeting Card */
-.sidebar-greeting-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
-}
-
-.greeting-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar-badge {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(20, 241, 149, 0.15);
-  border: 1px solid rgba(20, 241, 149, 0.3);
+.sidebar-collapse-btn {
+  background: transparent;
+  border: 1px solid var(--q-border-subtle);
+  color: var(--q-text-muted);
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  cursor: pointer;
 }
 
-.pulse-dot-green {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--solana-teal);
-  box-shadow: 0 0 8px var(--solana-teal);
-  animation: liveBlink 1.5s infinite ease-in-out;
+.sidebar-collapse-btn svg {
+  width: 12px;
+  height: 12px;
 }
 
-.greeting-meta {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.sidebar-collapse-btn:hover {
+  color: var(--q-text-white);
+  background: var(--q-bg-card-inner);
 }
 
-.greeting-user {
-  font-family: var(--font-body);
-  font-size: 12px;
+/* Welcome Box */
+.welcome-box {
+  padding: 8px 16px 16px;
+  border-bottom: 1px solid var(--q-border-subtle);
+}
+
+.welcome-title {
+  font-size: 17px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--q-text-white);
+  line-height: 1.25;
 }
 
-.greeting-sub {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.welcome-login-date {
+  font-size: 10px;
+  color: var(--q-text-muted);
+  display: block;
+  margin-top: 4px;
 }
 
-.sidebar-nav {
-  padding: 10px 12px;
+.sidebar-nav-scroll {
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   flex-grow: 1;
   overflow-y: auto;
 }
 
-.nav-section-label {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
-  padding: 12px 10px 4px;
+.nav-group-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--q-text-muted);
+  padding: 10px 10px 4px;
 }
 
-.nav-item {
+.quantix-nav-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--q-text-secondary);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  position: relative;
+  transition: all 0.15s ease;
 }
 
-.nav-item:hover {
-  background-color: var(--bg-card-elevated);
-  color: var(--text-primary);
+.quantix-nav-item:hover {
+  color: var(--q-text-white);
+  background-color: #141720;
 }
 
-/* Quantix Filled Pill Active State */
-.nav-item.active {
-  background: rgba(153, 69, 255, 0.18);
-  color: var(--solana-teal);
+/* Quantix Active Nav Item: Dark Rounded Pill with White Text & Indicator Tick */
+.quantix-nav-item.active {
+  background-color: #1A1E29;
+  color: var(--q-text-white);
   font-weight: 600;
-  border-left: 2px solid var(--solana-teal);
 }
 
-.nav-icon {
-  width: 16px;
-  height: 16px;
+.quantix-nav-item.active::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  width: 2px;
+  height: 12px;
+  background-color: var(--q-text-white);
+  border-radius: 2px;
+}
+
+.q-nav-icon {
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
+  color: var(--q-text-muted);
 }
 
-.nav-badge {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: var(--radius-pill);
-  background-color: var(--bg-card-elevated);
-  color: var(--text-muted);
+.quantix-nav-item.active .q-nav-icon {
+  color: var(--q-text-white);
 }
 
-.alert-count-badge {
-  background-color: var(--status-healthy-bg);
-  color: var(--status-healthy);
+.beta-badge {
+  font-size: 9px;
+  background: rgba(153, 69, 255, 0.2);
+  color: var(--q-purple);
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
 }
 
-.alert-count-badge.has-alerts {
-  background-color: var(--status-warning-bg);
-  color: var(--status-warning);
-}
-
-.sidebar-footer {
+.sidebar-bottom {
   padding: 14px 12px;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--q-border-subtle);
 }
 
-.repo-card-link {
-  text-decoration: none;
-  display: block;
-}
-
-.repo-card-inner {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+.logout-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all var(--transition-fast);
+  color: var(--q-text-muted);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
-.repo-card-inner:hover {
-  background: var(--bg-card-elevated);
-  border-color: var(--border-subtle-hover);
+.logout-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
-.repo-text {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.repo-name {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.repo-sub {
-  font-size: 9.5px;
-  color: var(--text-muted);
-}
-
-.version-tag {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  color: var(--solana-teal);
-  background: rgba(20, 241, 149, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
+.logout-btn:hover {
+  color: var(--q-text-white);
+  background: var(--q-bg-card-inner);
 }
 
 /* ==========================================================================
-   MAIN TERMINAL & TOP NAV (Quantix Header Bar)
+   MAIN BODY & TOP NAVIGATION BAR (Quantix Header)
    ========================================================================== */
 
-.main-terminal {
-  margin-left: var(--sidebar-width);
+.quantix-main-body {
+  margin-left: 220px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.top-nav-bar {
-  height: var(--top-nav-height);
-  background-color: var(--bg-toolbar);
-  border-bottom: 1px solid var(--border-subtle);
+.quantix-header {
+  height: 52px;
+  background-color: var(--q-bg-header);
+  border-bottom: 1px solid var(--q-border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  gap: 24px;
+  padding: 0 28px;
+  gap: 20px;
 }
 
-.nav-breadcrumb {
+.header-breadcrumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12.5px;
-  font-family: var(--font-mono);
+  font-size: 12px;
 }
 
-.crumb-icon {
+.home-icon {
   width: 14px;
   height: 14px;
-  color: var(--text-muted);
+  color: var(--q-text-muted);
 }
 
-.crumb-root {
-  color: var(--text-muted);
+.bc-root {
+  color: var(--q-text-muted);
 }
 
-.crumb-slash {
-  color: var(--text-dim);
+.bc-slash {
+  color: var(--q-text-dim);
 }
 
-.crumb-current {
-  color: var(--text-primary);
+.bc-leaf {
+  color: var(--q-text-white);
   font-weight: 600;
 }
 
-.top-nav-center {
+.header-center-search {
   flex-grow: 1;
-  max-width: 440px;
+  max-width: 360px;
 }
 
-.global-search-box {
+.search-input-box {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.search-nav-icon {
-  position: absolute;
-  left: 12px;
-  width: 15px;
-  height: 15px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
-.global-search-box input {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 7px 40px 7px 36px;
-  font-size: 12px;
-  color: var(--text-primary);
-  font-family: var(--font-body);
+.search-input-box input {
+  background-color: var(--q-bg-input);
+  border: 1px solid var(--q-border-input);
+  border-radius: 6px;
+  padding: 6px 32px 6px 12px;
+  font-size: 11.5px;
+  color: var(--q-text-white);
+  font-family: var(--font-sans);
   width: 100%;
-  transition: all var(--transition-fast);
+  transition: all 0.15s ease;
 }
 
-.global-search-box input:focus {
+.search-input-box input:focus {
   outline: none;
-  border-color: var(--solana-purple);
-  box-shadow: 0 0 16px rgba(153, 69, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.search-kbd {
+.search-kbd-badge {
   position: absolute;
-  right: 10px;
+  right: 8px;
   font-family: var(--font-mono);
   font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: var(--bg-card-elevated);
-  color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
+  color: var(--q-text-muted);
   pointer-events: none;
 }
 
-.top-nav-actions {
+.header-user-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.cluster-status-indicator {
+.header-circle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--q-bg-card);
+  border: 1px solid var(--q-border-subtle);
+  color: var(--q-text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(20, 241, 149, 0.08);
-  border: 1px solid rgba(20, 241, 149, 0.25);
-  border-radius: var(--radius-pill);
-  padding: 4px 10px;
-}
-
-.live-dot-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--solana-teal);
-  box-shadow: 0 0 8px var(--solana-teal);
-  animation: liveBlink 1.4s infinite;
-}
-
-.cluster-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--solana-teal);
-}
-
-.nav-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
+  justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.15s ease;
 }
 
-.nav-action-btn svg {
-  width: 14px;
-  height: 14px;
+.header-circle-btn svg {
+  width: 15px;
+  height: 15px;
 }
 
-.nav-action-btn:hover {
-  background: var(--bg-card-elevated);
-  color: var(--text-primary);
-  border-color: var(--border-subtle-hover);
+.header-circle-btn:hover {
+  background: var(--q-bg-card-inner);
+  color: var(--q-text-white);
+}
+
+.header-wallet-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--q-bg-card);
+  border: 1px solid var(--q-border-subtle);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.header-wallet-chip:hover {
+  background: var(--q-bg-card-inner);
+}
+
+.wallet-text-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-title {
+  font-size: 10px;
+  color: var(--q-text-muted);
+}
+
+.wallet-address {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--q-text-white);
+}
+
+.wallet-copy-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--q-text-muted);
 }
 
 /* ==========================================================================
-   TICKER STRIP (Quantix Pattern)
+   TICKER STRIP (Exact Quantix Layout)
    ========================================================================== */
 
-.ticker-strip {
-  height: var(--ticker-height);
-  background-color: #06080E;
-  border-bottom: 1px solid var(--border-subtle);
-  position: sticky;
-  top: 0;
-  z-index: 90;
+.quantix-ticker-bar {
+  height: 38px;
+  background-color: #080A0E;
+  border-bottom: 1px solid var(--q-border-subtle);
   display: flex;
   align-items: center;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.ticker-container {
+.ticker-content {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 0 32px;
-  width: 100%;
-  font-size: 11.5px;
+  padding: 0 28px;
   font-family: var(--font-mono);
-}
-
-.ticker-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ticker-coin-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.ticker-coin-dot.green {
-  background-color: var(--solana-teal);
-  box-shadow: 0 0 6px var(--solana-teal);
-}
-
-.ticker-coin-dot.purple {
-  background-color: var(--solana-purple);
-  box-shadow: 0 0 6px var(--solana-purple);
-}
-
-.ticker-label {
-  color: var(--text-muted);
   font-size: 11px;
-  font-weight: 500;
 }
 
-.ticker-val {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.ticker-divider {
-  width: 1px;
-  height: 14px;
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.status-indicator-pill {
+.t-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: var(--status-healthy-bg);
-  color: var(--status-healthy);
-  font-size: 10px;
-  font-weight: 600;
 }
 
-.pulse-dot {
-  width: 6px;
-  height: 6px;
+.t-dot {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background-color: var(--status-healthy);
-  box-shadow: 0 0 8px var(--status-healthy);
-  animation: liveBlink 1.8s infinite ease-in-out;
 }
 
-@keyframes liveBlink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(0.85); }
+.t-dot.green { background-color: var(--q-green); }
+.t-dot.orange { background-color: var(--q-orange); }
+.t-dot.yellow { background-color: #FFD233; }
+.t-dot.white { background-color: #FFFFFF; }
+
+.t-label {
+  color: var(--q-text-muted);
+}
+
+.t-val {
+  color: var(--q-text-white);
+  font-weight: 600;
 }
 
 /* ==========================================================================
-   CONTENT VIEWPORT
+   CONTENT VIEWPORT (Exact Quantix Padding & Layout)
    ========================================================================== */
 
-.content-viewport {
-  padding: 28px 32px 48px;
-  max-width: var(--content-max-width);
+.quantix-content-body {
+  padding: 24px 28px 48px;
+  max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 22px;
 }
 
-/* HEADER HERO (Quantix "Live Crypto Updates") */
-.content-header-hero {
+/* HERO TITLE ROW (Live Crypto Updates) */
+.live-updates-hero-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 16px;
-  flex-wrap: wrap;
 }
 
-.live-update-eyebrow {
+.live-update-time {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--q-text-muted);
+  margin-bottom: 2px;
 }
 
-.live-ping-dot {
+.live-dot-indicator {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: var(--solana-teal);
-  box-shadow: 0 0 6px var(--solana-teal);
-  animation: liveBlink 1.4s infinite;
+  background-color: var(--q-green);
 }
 
-.live-update-text {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
+.live-updates-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--q-text-white);
+  line-height: 1.18;
 }
 
-.hero-title {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #FFFFFF;
+.sparkle-icon {
+  font-size: 16px;
 }
 
-.sparkle-emoji {
-  font-size: 20px;
-}
-
-.hero-right {
+.hero-right-filters {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
-/* Filter Chips (Quantix Filter Group) */
-.filter-chip-group {
-  display: flex;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  padding: 3px;
-}
-
-.filter-chip {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+.custom-dropdown-pill {
+  background: var(--q-bg-card);
+  border: 1px solid var(--q-border-card);
+  border-radius: 6px;
+  padding: 5px 10px;
   font-size: 11px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.filter-chip:hover {
-  color: var(--text-primary);
-}
-
-.filter-chip.active {
-  background: var(--bg-card-elevated);
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.refresh-action-btn {
-  display: inline-flex;
+  color: var(--q-text-secondary);
+  display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 12px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
-.refresh-action-btn:hover {
-  background: var(--bg-card-elevated);
-  color: var(--solana-teal);
-  border-color: var(--border-subtle-hover);
+.custom-dropdown-pill:hover {
+  background: var(--q-bg-card-inner);
+  color: var(--q-text-white);
 }
 
-.refresh-icon {
-  width: 14px;
-  height: 14px;
+.see-all-link {
+  font-size: 11px;
+  color: var(--q-text-muted);
+  text-decoration: none;
+  margin-left: 4px;
 }
 
-.refresh-action-btn.spinning .refresh-icon {
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
+.see-all-link:hover {
+  color: var(--q-text-white);
 }
 
 /* ==========================================================================
-   LIVE 3-CARD ROW (Quantix Massive Mountain Area Charts)
+   3 LIVE HERO CARDS ROW (Exact Quantix Cards with Mountain Charts)
    ========================================================================== */
 
-.quantix-live-cards-grid {
+.quantix-three-cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 18px;
 }
 
-.quantix-card {
-  background: var(--bg-card);
-  border-top: 1px solid var(--border-highlight);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-lg);
-  padding: 20px 20px 14px;
+.quantix-live-card {
+  background-color: var(--q-bg-card);
+  border: 1px solid var(--q-border-card);
+  border-radius: var(--radius-md);
+  padding: 16px 16px 8px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.quantix-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
-}
-
-.card-top-bar {
+.card-asset-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
-.asset-meta-box {
+.asset-identity {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.asset-icon-chip {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+.coin-avatar-disc {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sol-chip {
-  background: rgba(153, 69, 255, 0.15);
-  border: 1px solid rgba(153, 69, 255, 0.35);
-}
+.orange-disc { background: rgba(247, 147, 26, 0.15); border: 1px solid rgba(247, 147, 26, 0.3); color: #F7931A; }
+.blue-disc { background: rgba(78, 130, 255, 0.15); border: 1px solid rgba(78, 130, 255, 0.3); color: #4E82FF; }
+.cyan-disc { background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--q-cyan); }
 
-.chip-img {
-  width: 20px;
-  height: 20px;
-}
-
-.tps-chip {
-  background: rgba(20, 241, 149, 0.15);
-  border: 1px solid rgba(20, 241, 149, 0.35);
-  color: var(--solana-teal);
-}
-
-.tps-chip svg {
+.coin-svg-icon {
   width: 18px;
   height: 18px;
 }
 
-.val-chip {
-  background: rgba(0, 240, 255, 0.15);
-  border: 1px solid rgba(0, 240, 255, 0.35);
-  color: var(--solana-cyan);
-}
-
-.val-chip svg {
-  width: 18px;
-  height: 18px;
-}
-
-.asset-name-col {
+.coin-titles {
   display: flex;
   flex-direction: column;
 }
 
-.asset-ticker {
-  font-family: var(--font-display);
+.coin-pair {
+  font-size: 12px;
   font-weight: 700;
-  font-size: 14px;
-  color: #FFFFFF;
+  color: var(--q-text-white);
 }
 
-.asset-title {
-  font-size: 11px;
-  color: var(--text-muted);
+.coin-fullname {
+  font-size: 10px;
+  color: var(--q-text-muted);
 }
 
-.card-menu-btn {
+.more-options-btn {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  color: var(--q-text-dim);
   font-size: 14px;
   cursor: pointer;
-  padding: 4px;
 }
 
-.card-menu-btn:hover {
-  color: var(--text-primary);
-}
-
-.card-price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 10px;
-}
-
-.price-stack {
+.card-price-block {
   display: flex;
   flex-direction: column;
+  margin-bottom: 4px;
 }
 
-.price-caption {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 2px;
+.price-caption-label {
+  font-size: 10.5px;
+  color: var(--q-text-muted);
 }
 
-.price-hero {
-  font-family: var(--font-display);
-  font-size: 30px;
+.price-big-num {
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
-  line-height: 1.1;
+  color: var(--q-text-white);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 2px 0 4px;
 }
 
-.hero-unit {
-  font-size: 14px;
+.unit-text {
+  font-size: 13px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--q-text-secondary);
 }
 
-/* Quantix Delta Pill Badges */
-.quantix-delta-pill {
+.delta-chip-row {
+  display: flex;
+}
+
+.quantix-delta-chip {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-.quantix-delta-pill.up {
-  background-color: var(--delta-up-bg);
-  color: var(--delta-up);
+.quantix-delta-chip.up {
+  background-color: var(--q-green-bg);
+  color: var(--q-green);
 }
 
-.quantix-delta-pill.down {
-  background-color: var(--delta-down-bg);
-  color: var(--delta-down);
+.quantix-delta-chip.down {
+  background-color: var(--q-red-bg);
+  color: var(--q-red);
 }
 
-.quantix-delta-pill.cyan {
-  background-color: var(--delta-cyan-bg);
-  color: var(--solana-cyan);
+.quantix-delta-chip.cyan {
+  background-color: rgba(0, 240, 255, 0.12);
+  color: var(--q-cyan);
 }
 
-/* Massive Mountain Area Chart */
-.mountain-chart-wrapper {
+/* Mountain Canvas Wrapper */
+.card-mountain-canvas-wrap {
   height: 110px;
   width: 100%;
   position: relative;
   margin-top: 4px;
 }
 
-.mountain-chart-wrapper canvas {
+.card-mountain-canvas-wrap canvas {
   width: 100% !important;
   height: 110px !important;
   display: block;
 }
 
 /* ==========================================================================
-   AI INTELLIGENCE CARD (Insighta Glow Pattern)
+   2-COLUMN SPLIT: MARKET TABLE (LEFT) + RIGHT PANEL (EXCHANGE & TOTAL TX)
    ========================================================================== */
 
-.ai-intelligence-card {
-  background: var(--ai-card-gradient);
-  border: 1px solid rgba(153, 69, 255, 0.45);
-  border-radius: var(--radius-lg);
-  padding: 18px 24px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(121, 40, 202, 0.25);
-}
-
-.ai-card-glow {
-  position: absolute;
-  top: -60%;
-  right: -10%;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(20, 241, 149, 0.35) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.ai-card-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ai-pill-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.16);
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-}
-
-.spark-icon {
-  width: 13px;
-  height: 13px;
-  color: var(--solana-teal);
-}
-
-.ai-status-tag {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.ai-prose-text {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.95);
-  line-height: 1.5;
-}
-
-.ai-prose-text strong {
-  color: #FFFFFF;
-}
-
-/* ==========================================================================
-   2-COLUMN SPLIT GRID (Main Stream + Right Command Panel)
-   ========================================================================== */
-
-.terminal-split-grid {
+.quantix-grid-split {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
+  grid-template-columns: 1fr 320px;
+  gap: 18px;
   align-items: start;
 }
 
-.terminal-main-stream {
+.market-overview-stream {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   min-width: 0;
 }
 
-.panel-box {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+.quantix-table-card {
+  background-color: var(--q-bg-card);
+  border: 1px solid var(--q-border-card);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Quantix Table Section Header */
-.table-section-header {
-  padding: 20px 24px 14px;
+.table-card-top {
+  padding: 16px 20px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--q-border-subtle);
 }
 
-.table-title-group {
+.table-title-area {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.live-dot-sub {
+.live-dot-icon {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: var(--solana-teal);
+  background-color: var(--q-green);
 }
 
-.table-main-heading {
-  font-family: var(--font-display);
-  font-size: 16px;
+.market-overview-title {
+  font-size: 15px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--q-text-white);
 }
 
-/* Quantix Filter Tabs */
-.quantix-tabs {
+/* Quantix Tabs (All, Trends, Favorites, Top Gainers, Top Losers) */
+.market-tabs-row {
   display: flex;
-  gap: 6px;
-  background: var(--bg-card-elevated);
-  border-radius: var(--radius-pill);
-  padding: 3px;
+  align-items: center;
+  gap: 4px;
 }
 
-.q-tab-btn {
+.m-tab-pill {
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 11.5px;
+  color: var(--q-text-muted);
+  font-size: 11px;
   font-weight: 600;
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.15s ease;
 }
 
-.q-tab-btn:hover {
-  color: var(--text-primary);
+.m-tab-pill:hover {
+  color: var(--q-text-white);
 }
 
-.q-tab-btn.active {
-  background: #222B3F;
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+.m-tab-pill.active {
+  background-color: var(--q-bg-pill);
+  color: var(--q-text-white);
 }
 
-.table-search-toolbar {
-  padding: 8px 24px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.search-wrap-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-mini-icon {
-  position: absolute;
-  left: 10px;
-  width: 14px;
-  height: 14px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
-.search-wrap-inner input {
-  background-color: var(--bg-card-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px 6px 32px;
-  font-size: 12px;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  width: 260px;
-  transition: all var(--transition-fast);
-}
-
-.search-wrap-inner input:focus {
-  outline: none;
-  border-color: var(--solana-purple);
-  width: 300px;
-}
-
-.table-count-tag {
-  font-family: var(--font-mono);
+.see-all-tab-link {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--q-text-muted);
+  text-decoration: none;
+  margin-left: 4px;
 }
 
-/* ==========================================================================
-   QUANTIX DATA TABLE
-   ========================================================================== */
-
-.table-responsive {
+/* Data Table */
+.quantix-table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
-.quantix-table {
+.market-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
-.quantix-table th {
-  background-color: #0B0E17;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+.market-table th {
+  background-color: #0E1016;
+  color: var(--q-text-muted);
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--q-border-subtle);
   user-select: none;
 }
 
-.quantix-table th.sortable {
-  cursor: pointer;
-}
-
-.quantix-table th.sortable:hover {
-  color: var(--text-primary);
-}
-
-.quantix-table td {
-  padding: 12px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  color: var(--text-secondary);
+.market-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  color: var(--q-text-secondary);
   vertical-align: middle;
 }
 
-.quantix-table tr:hover td {
-  background-color: var(--bg-card-elevated);
-  color: #FFFFFF;
+.market-table tr:hover td {
+  background-color: var(--q-bg-card-inner);
+  color: var(--q-text-white);
 }
 
-.col-num {
-  width: 44px;
+.th-no, .col-no {
+  width: 32px;
   font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--text-dim);
+  color: var(--q-text-dim);
 }
 
-.validator-entity-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.node-icon-chip {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: var(--solana-gradient-subtle);
-  border: 1px solid rgba(153, 69, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--solana-teal);
-  flex-shrink: 0;
-}
-
-.val-name-text {
-  font-weight: 600;
-  color: #FFFFFF;
-  font-size: 13px;
-}
-
-.val-pubkey-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.val-pubkey-text {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-muted);
-}
-
-.copy-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  padding: 0;
-  display: inline-flex;
-}
-
-.copy-btn:hover {
-  color: var(--solana-teal);
-}
-
-.col-stake {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  color: #FFFFFF;
-}
-
-.col-share, .col-fee, .col-slot {
-  font-family: var(--font-mono);
-}
-
-.col-chart {
-  width: 80px;
-}
-
-.row-sparkline {
-  width: 70px;
-  height: 20px;
-  display: block;
-}
-
-.status-badge-active {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--status-healthy);
-  background: var(--status-healthy-bg);
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-}
-
-/* ==========================================================================
-   ECONOMIC BOXES GRID (BlockPulse Pattern)
-   ========================================================================== */
-
-.box-header {
-  padding: 20px 24px 14px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.box-heading {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.box-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.economic-boxes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  padding: 20px 24px;
-}
-
-.econ-box {
-  background-color: var(--bg-card-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  transition: border-color var(--transition-fast);
-}
-
-.econ-box:hover {
-  border-color: rgba(153, 69, 255, 0.3);
-}
-
-.econ-box-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.econ-box-val {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 4px;
-}
-
-.econ-box-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.delta-badge {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.delta-badge.up {
-  background-color: var(--delta-up-bg);
-  color: var(--delta-up);
-}
-
-.delta-badge.down {
-  background-color: var(--delta-down-bg);
-  color: var(--delta-down);
-}
-
-/* ==========================================================================
-   RIGHT COMMAND & TELEMETRY PANEL (Quantix Exchange / Action Side)
-   ========================================================================== */
-
-.terminal-right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.command-box {
-  padding: 20px;
-}
-
-.box-header-compact {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 14px;
-}
-
-.command-title-row {
+.coin-cell {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.command-heading {
-  font-family: var(--font-display);
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.command-caption {
-  display: block;
-  font-size: 10.5px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.status-pill-sub {
-  font-family: var(--font-mono);
+.coin-small-disc {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--q-bg-card-inner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
+  color: var(--q-text-white);
 }
 
-.status-pill-sub.healthy {
-  background: var(--status-healthy-bg);
-  color: var(--status-healthy);
+.coin-name-bold {
+  font-weight: 600;
+  color: var(--q-text-white);
 }
 
-.status-pill-sub.warning {
-  background: var(--status-warning-bg);
-  color: var(--status-warning);
+.coin-symbol-sub {
+  font-size: 10px;
+  color: var(--q-text-muted);
+  margin-left: 4px;
 }
 
-.status-pill-sub.critical {
-  background: var(--status-critical-bg);
-  color: var(--status-critical);
+.th-price, .td-price {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--q-text-white);
 }
 
-.all-clear-box {
-  background: rgba(20, 241, 149, 0.05);
-  border: 1px solid rgba(20, 241, 149, 0.2);
+.th-delta, .td-delta {
+  font-family: var(--font-mono);
+}
+
+.th-mcap, .th-vol {
+  font-family: var(--font-mono);
+}
+
+.th-chart {
+  width: 70px;
+}
+
+.canvas-sparkline {
+  width: 60px;
+  height: 18px;
+  display: block;
+}
+
+/* Economic Grid */
+.coinstax-economic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.coinstax-stat-box {
+  background: var(--q-bg-card-inner);
+  border: 1px solid var(--q-border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
-.check-icon {
-  width: 18px;
-  height: 18px;
-  color: var(--status-healthy);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.all-clear-text strong {
-  display: block;
-  font-size: 12px;
-  color: var(--status-healthy);
+.cs-label {
+  font-size: 10.5px;
+  color: var(--q-text-muted);
   margin-bottom: 2px;
 }
 
-.all-clear-text p {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.4;
+.cs-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--q-text-white);
+  margin-bottom: 2px;
 }
 
-.alert-item-card {
-  background: var(--bg-card-elevated);
-  border-left: 3px solid var(--status-warning);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  margin-bottom: 8px;
+.cs-sub {
+  font-size: 10px;
+  color: var(--q-text-muted);
 }
 
-.alert-item-card.critical {
-  border-left-color: var(--status-critical);
+/* ==========================================================================
+   RIGHT SIDEBAR: EXCHANGE PANEL & TOTAL TRANSACTION CARD (Exact Quantix)
+   ========================================================================== */
+
+.quantix-right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.alert-item-header {
+/* 1. EXCHANGE PANEL */
+.quantix-exchange-card {
+  background-color: var(--q-bg-card);
+  border: 1px solid var(--q-border-card);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.exchange-promo-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 77, 106, 0.08);
+  border: 1px solid rgba(255, 77, 106, 0.2);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 10.5px;
+}
+
+.promo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--q-red);
+}
+
+.promo-text {
+  color: var(--q-text-secondary);
+}
+
+.promo-timer {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--q-red);
+}
+
+.exchange-head {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
+  align-items: flex-start;
 }
 
-.alert-item-title {
-  font-weight: 600;
-  font-size: 12px;
-  color: #FFFFFF;
+.exchange-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--q-text-white);
 }
 
-.alert-item-desc {
-  font-size: 11px;
-  color: var(--text-secondary);
-  line-height: 1.35;
+.exchange-sub {
+  font-size: 10.5px;
+  color: var(--q-text-muted);
 }
 
-.command-action-footer {
-  margin-top: 14px;
-}
-
-.quantix-action-btn {
-  width: 100%;
-  background: var(--solana-gradient);
-  color: #06080E;
+.expand-icon-btn {
+  background: transparent;
   border: none;
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: 12.5px;
-  padding: 10px;
-  border-radius: var(--radius-sm);
+  color: var(--q-text-dim);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Exchange Tabs */
+.exchange-tabs {
+  display: flex;
+  background: var(--q-bg-card-inner);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.ex-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--q-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ex-tab-btn.active {
+  background: #232938;
+  color: var(--q-text-white);
+}
+
+.wallet-balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--q-text-muted);
+}
+
+.wallet-val-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--q-text-white);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* Input Containers */
+.exchange-input-container {
+  background: var(--q-bg-input);
+  border: 1px solid var(--q-border-input);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label-sub {
+  font-size: 10px;
+  color: var(--q-text-muted);
+  margin-bottom: 2px;
+}
+
+.input-row-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ex-num-input {
+  background: transparent;
+  border: none;
+  color: var(--q-text-white);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  width: 140px;
+}
+
+.ex-num-input:focus {
+  outline: none;
+}
+
+.token-selector-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1C202C;
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--q-text-white);
+}
+
+.token-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #fff;
+}
+
+.green-circle { background: #26A17B; }
+.blue-circle { background: #627EEA; }
+
+.swap-divider-wrap {
+  display: flex;
+  justify-content: center;
+  margin: -4px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.swap-toggle-btn {
+  background: #1E2330;
+  border: 1px solid var(--q-border-subtle);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--q-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 16px rgba(20, 241, 149, 0.25);
-}
-
-.quantix-action-btn svg {
-  width: 15px;
-  height: 15px;
-}
-
-.quantix-action-btn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 6px 20px rgba(20, 241, 149, 0.4);
-  transform: translateY(-1px);
-}
-
-/* Candlestick / Bar Chart Box (Quantix Bottom Right Card) */
-.chart-box {
-  padding: 20px;
-}
-
-.chart-box-caption {
-  font-size: 11px;
-  color: var(--text-muted);
-  display: block;
-}
-
-.chart-hero-val {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  color: #FFFFFF;
-  line-height: 1.1;
-  margin: 2px 0;
-}
-
-.chart-unit {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
 }
 
-.chart-delta-sub {
+.swap-toggle-btn:hover {
+  background: #283042;
+  color: #fff;
+}
+
+.exchange-rate-row {
+  font-size: 10.5px;
+  color: var(--q-text-muted);
+}
+
+/* Slider Track */
+.exchange-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-track {
+  flex-grow: 1;
+  height: 4px;
+  background: #1D222E;
+  border-radius: 2px;
+  position: relative;
+}
+
+.slider-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366F1, #A855F7);
+  border-radius: 2px;
+}
+
+.slider-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.slider-pct {
   font-family: var(--font-mono);
   font-size: 10.5px;
+  color: var(--q-text-muted);
 }
 
-.chart-delta-sub.up {
-  color: var(--delta-up);
-}
-
-.quantix-bar-chart-container {
-  height: 150px;
-  width: 100%;
-  position: relative;
-  margin-top: 10px;
-}
-
-.quantix-bar-chart-container canvas {
-  width: 100% !important;
-  height: 150px !important;
-}
-
-/* Vitals Stack Box */
-.vitals-box {
-  padding: 20px;
-}
-
-.vital-cluster-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--solana-teal);
-  background: rgba(20, 241, 149, 0.1);
-  padding: 2px 6px;
-  border-radius: var(--radius-pill);
-}
-
-.vitals-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.vital-item-row {
+.gas-fee-row {
   display: flex;
   justify-content: space-between;
+  font-size: 11px;
+}
+
+.gas-left {
+  display: flex;
   align-items: center;
+  gap: 6px;
+  color: var(--q-text-muted);
 }
 
-.v-label {
-  color: var(--text-muted);
+.gas-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--q-orange);
 }
 
-.v-val {
-  color: #FFFFFF;
+.gas-val {
+  font-family: var(--font-mono);
+  color: var(--q-text-white);
   font-weight: 600;
 }
 
-.mono {
-  font-family: var(--font-mono);
-}
-
-.highlight-teal {
-  font-family: var(--font-mono);
-  color: var(--solana-teal);
-}
-
-.v-progress-track {
+/* Action Button */
+.buy-eth-btn {
+  background: #252B3A;
+  border: 1px solid #30374A;
+  color: var(--q-text-white);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
   width: 100%;
-  height: 6px;
-  background-color: var(--bg-card-elevated);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  margin-top: 2px;
-}
-
-.v-progress-fill {
-  height: 100%;
-  background: var(--solana-gradient);
-  border-radius: var(--radius-pill);
-  transition: width 0.5s ease;
-}
-
-.v-sub-row {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.divider-top {
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 8px;
   margin-top: 4px;
 }
 
-/* ==========================================================================
-   UPGRADES ROADMAP SECTION
-   ========================================================================== */
-
-.upgrades-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 20px 24px;
+.buy-eth-btn:hover {
+  background: #2F374A;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.upgrade-card {
-  background-color: var(--bg-card-elevated);
-  border: 1px solid var(--border-subtle);
+/* 2. TOTAL TRANSACTION CANDLESTICK CARD */
+.quantix-total-tx-card {
+  background-color: var(--q-bg-card);
+  border: 1px solid var(--q-border-card);
   border-radius: var(--radius-md);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: border-color var(--transition-fast);
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.upgrade-card:hover {
-  border-color: rgba(153, 69, 255, 0.4);
-}
-
-.upgrade-header-row {
+.total-tx-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
-}
-
-.upgrade-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.upgrade-meta-pill {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-  background: rgba(153, 69, 255, 0.2);
-  color: var(--solana-purple);
-  white-space: nowrap;
-}
-
-.upgrade-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.45;
-  flex-grow: 1;
-}
-
-.upgrade-footer-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 10px;
-  font-size: 11px;
-}
-
-.upgrade-target {
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-}
-
-.upgrade-link {
-  color: var(--solana-teal);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.upgrade-link:hover {
-  text-decoration: underline;
-}
-
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
-
-.terminal-footer {
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 32px;
-}
-
-.footer-brand-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-bottom: 8px;
 }
 
-.footer-logo {
-  width: 24px;
-  height: 24px;
-}
-
-.footer-brand-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 15px;
-  color: #FFFFFF;
-}
-
-.footer-brand-desc {
-  font-size: 12px;
-  color: var(--text-muted);
-  max-width: 400px;
-  line-height: 1.5;
-}
-
-.footer-col-heading {
-  font-family: var(--font-mono);
+.ttx-label {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-bottom: 12px;
+  color: var(--q-text-muted);
 }
 
-.footer-col-list {
-  list-style: none;
+.ttx-hero-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--q-text-white);
+  margin: 2px 0;
+}
+
+.ttx-sub-delta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.ttx-sub-delta.down {
+  color: var(--q-red);
+}
+
+.candlestick-canvas-wrapper {
+  height: 130px;
+  width: 100%;
+  position: relative;
+  margin-top: 6px;
+}
+
+.candlestick-canvas-wrapper canvas {
+  width: 100% !important;
+  height: 130px !important;
+}
+
+/* ==========================================================================
+   UPGRADES & FOOTER
+   ========================================================================== */
+
+.upgrades-grid-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.quantix-upgrade-box {
+  background: var(--q-bg-card-inner);
+  border: 1px solid var(--q-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
-.footer-col-list a {
-  color: var(--text-muted);
+.qu-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--q-text-white);
+}
+
+.qu-desc {
+  font-size: 11px;
+  color: var(--q-text-secondary);
+  line-height: 1.4;
+}
+
+.qu-link {
+  font-size: 11px;
+  color: var(--q-green);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  font-weight: 600;
+  margin-top: 4px;
 }
 
-.footer-col-list a:hover {
-  color: var(--solana-teal);
-}
-
-.footer-bottom-bar {
+.quantix-footer {
+  border-top: 1px solid var(--q-border-subtle);
+  padding-top: 20px;
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: var(--text-dim);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  padding-top: 16px;
+  color: var(--q-text-dim);
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* ==========================================================================
-   MOBILE NAVIGATION (<640px)
-   ========================================================================== */
-
-.mobile-bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background-color: var(--bg-sidebar);
-  border-top: 1px solid var(--border-subtle);
-  z-index: 200;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: center;
-}
-
-.mobile-nav-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 10px;
-  height: 100%;
-}
-
-.mobile-nav-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.mobile-nav-btn.active {
-  color: var(--solana-teal);
-}
-
-/* ==========================================================================
-   RESPONSIVENESS
+   RESPONSIVENESS (<1024px and <640px)
    ========================================================================== */
 
 @media (max-width: 1024px) {
-  .terminal-split-grid {
+  .quantix-grid-split {
     grid-template-columns: 1fr;
   }
-
-  .quantix-live-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .quantix-three-cards-row {
+    grid-template-columns: 1fr;
   }
-
-  .economic-boxes-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .footer-grid {
+  .coinstax-economic-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .sidebar {
+  .quantix-sidebar {
     display: none;
   }
-
-  .main-terminal {
+  .quantix-main-body {
     margin-left: 0;
-    padding-bottom: 60px;
   }
-
-  .top-nav-bar {
-    padding: 0 16px;
+  .quantix-content-body {
+    padding: 16px 14px;
   }
-
-  .global-search-box input {
-    width: 130px;
-  }
-
-  .nav-action-btn span {
-    display: none;
-  }
-
-  .content-viewport {
-    padding: 16px 14px 40px;
-    gap: 16px;
-  }
-
-  .quantix-live-cards-grid {
+  .coinstax-economic-grid {
     grid-template-columns: 1fr;
-  }
-
-  .ticker-container {
-    padding: 0 14px;
-    overflow-x: auto;
-  }
-
-  .economic-boxes-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .terminal-split-grid {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-
-  .terminal-right-panel {
-    width: 100%;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .mobile-bottom-nav {
-    display: grid;
-  }
-
-  .col-share, .col-slot, .col-chart {
-    display: none;
   }
 }
