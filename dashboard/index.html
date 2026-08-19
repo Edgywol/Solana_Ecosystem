@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solana Ecosystem Intelligence & Health Terminal</title>
+  <meta name="description" content="Institutional-grade, real-time analytics dashboard and automated ecosystem telemetry report for Solana mainnet-beta.">
+  
+  <!-- Favicon / Theme -->
+  <meta name="theme-color" content="#080A0F">
+  <link rel="icon" type="image/svg+xml" href="assets/solana-logo.svg">
+
+  <!-- Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js from CDN (Zero build-step requirement) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+  <!-- SKELETON LOADER OVERLAY (Eliminates Layout Shift) -->
+  <div id="app-loading" class="loading-overlay">
+    <div class="loader-content">
+      <div class="loader-logo-wrap">
+        <img src="assets/solana-logo.svg" alt="Solana Logo" class="loader-logo">
+      </div>
+      <div class="loader-bar"><div class="loader-progress"></div></div>
+      <span class="loader-text">INITIALIZING TELEMETRY PIPELINE...</span>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- LEFT PERSISTENT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <a href="#overview" class="brand-link" aria-label="Solana Radar Home">
+          <div class="brand-logo-glow">
+            <img src="assets/solana-logo.svg" alt="Solana Logo" class="brand-logo">
+          </div>
+          <div class="brand-text-wrap">
+            <span class="brand-title">SOLANA</span>
+            <span class="brand-subtitle">ECOSYSTEM RADAR</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">CORE MODULES</div>
+        <a href="#overview" class="nav-item active" data-section="overview">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Overview</span>
+        </a>
+        <a href="#validators-section" class="nav-item" data-section="validators-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          <span>Validators</span>
+          <span class="nav-badge" id="nav-val-count">687</span>
+        </a>
+        <a href="#economics-section" class="nav-item" data-section="economics-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Economics & DeFi</span>
+        </a>
+        <a href="#alerts-panel" class="nav-item" data-section="alerts-panel">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Anomaly Engine</span>
+          <span class="nav-badge alert-count-badge" id="nav-alert-badge">0</span>
+        </a>
+        <a href="#upgrades-section" class="nav-item" data-section="upgrades-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Upgrades & SIMDs</span>
+        </a>
+
+        <div class="nav-section-label">RESOURCES</div>
+        <a href="../data/report.json" target="_blank" class="nav-item" rel="noopener noreferrer">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Raw JSON Feed</span>
+        </a>
+        <a href="../data/report.md" target="_blank" class="nav-item" rel="noopener noreferrer">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Markdown Doc</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://github.com/chmgx81/solana-ecosystem-dashboard" target="_blank" class="repo-link" rel="noopener noreferrer" aria-label="GitHub Repository">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span>GitHub Repo</span>
+          <span class="version-tag">v1.0.0</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+      <!-- TOP DENSE TICKER STRIP -->
+      <header class="ticker-strip" aria-label="Live Market and Telemetry Ticker">
+        <div class="ticker-container" id="ticker-container">
+          <!-- Ticker items dynamically injected -->
+          <div class="ticker-item">
+            <span class="ticker-label">SOL/USD</span>
+            <span class="ticker-val" id="tick-price">$76.78</span>
+            <span class="delta-badge up" id="tick-price-delta">+1.8%</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="ticker-label">TPS</span>
+            <span class="ticker-val" id="tick-tps">3,850</span>
+            <span class="delta-badge up" id="tick-tps-delta">+2.4%</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="ticker-label">SLOT TIME</span>
+            <span class="ticker-val" id="tick-slot-time">416ms</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="ticker-label">EPOCH</span>
+            <span class="ticker-val" id="tick-epoch">1018 (93.2%)</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="ticker-label">ACTIVE NODES</span>
+            <span class="ticker-val" id="tick-validators">687</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="ticker-label">DEFI TVL</span>
+            <span class="ticker-val" id="tick-tvl">$4.89B</span>
+            <span class="delta-badge up" id="tick-tvl-delta">+0.6%</span>
+          </div>
+          <span class="ticker-dot">•</span>
+          <div class="ticker-item">
+            <span class="status-indicator-pill" id="tick-health-pill">
+              <span class="pulse-dot"></span>
+              <span>CLUSTER: OPERATIONAL</span>
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <main class="content-container">
+        <!-- HERO / STATUS HEADER -->
+        <section class="content-header" id="overview">
+          <div class="header-titles">
+            <div class="header-eyebrow">
+              <span class="live-pulse-badge">
+                <span class="live-dot"></span>
+                <span>MAINNET-BETA TELEMETRY</span>
+              </span>
+              <span class="network-badge">CLUSTER ID: 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d</span>
+            </div>
+            <h1 class="header-main-title">Solana Network Overview</h1>
+          </div>
+
+          <div class="header-actions">
+            <div class="time-refresh-badge">
+              <svg class="time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="last-updated-text">Updated just now</span>
+            </div>
+            <button id="refresh-btn" class="action-btn" aria-label="Refresh Data Feed" title="Fetch latest telemetry">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- LIVE UPDATES 3-CARD ROW -->
+        <section class="live-cards-grid" aria-label="Key Live Metrics">
+          <!-- CARD 1: SOL PRICE -->
+          <article class="metric-card" id="card-sol-price">
+            <div class="card-top">
+              <span class="card-label">SOL / USD PRICE</span>
+              <span class="delta-badge up" id="card-sol-delta">+1.83%</span>
+            </div>
+            <div class="card-hero-num" id="card-sol-val">$76.78</div>
+            <div class="card-sub-meta">
+              <span>MCap: <strong id="card-sol-mcap">$44.75B</strong></span>
+              <span>24h Vol: <strong id="card-sol-vol">$1.41B</strong></span>
+            </div>
+            <div class="sparkline-wrapper">
+              <canvas id="sparkline-price" height="40"></canvas>
+            </div>
+          </article>
+
+          <!-- CARD 2: NETWORK TPS -->
+          <article class="metric-card" id="card-network-tps">
+            <div class="card-top">
+              <span class="card-label">CLUSTER THROUGHPUT</span>
+              <span class="delta-badge up" id="card-tps-delta">+2.4%</span>
+            </div>
+            <div class="card-hero-num" id="card-tps-val">3,851 <span class="unit-sub">TPS</span></div>
+            <div class="card-sub-meta">
+              <span>Non-Vote: <strong id="card-tps-nonvote">2,167 TPS</strong></span>
+              <span>15m Avg: <strong id="card-tps-avg">4,214 TPS</strong></span>
+            </div>
+            <div class="sparkline-wrapper">
+              <canvas id="sparkline-tps" height="40"></canvas>
+            </div>
+          </article>
+
+          <!-- CARD 3: ACTIVE VALIDATORS -->
+          <article class="metric-card" id="card-active-validators">
+            <div class="card-top">
+              <span class="card-label">ACTIVE VALIDATORS</span>
+              <span class="delta-badge neutral" id="card-val-delta">STABLE</span>
+            </div>
+            <div class="card-hero-num" id="card-val-val">687 <span class="unit-sub">NODES</span></div>
+            <div class="card-sub-meta">
+              <span>Delinquent: <strong id="card-val-delinq">8</strong></span>
+              <span>Nakamoto: <strong id="card-val-nakamoto">18</strong></span>
+            </div>
+            <div class="sparkline-wrapper">
+              <canvas id="sparkline-val" height="40"></canvas>
+            </div>
+          </article>
+        </section>
+
+        <!-- DESKTOP 2-COLUMN MAIN CONTENT + RIGHT ACTION PANEL -->
+        <div class="dashboard-split-layout">
+          <!-- LEFT MAIN CONTENT STREAM -->
+          <div class="main-stream">
+            <!-- VALIDATORS LEADERBOARD TABLE -->
+            <section class="panel-card" id="validators-section">
+              <div class="panel-header">
+                <div class="panel-title-wrap">
+                  <h2 class="panel-title">Top Validator Nodes by Stake</h2>
+                  <span class="panel-caption">Live consensus vote accounts & stake concentration</span>
+                </div>
+                <div class="table-controls">
+                  <div class="search-input-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="validator-search" placeholder="Filter validator / pubkey..." aria-label="Filter validators">
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table" id="validators-table">
+                  <thead>
+                    <tr>
+                      <th class="col-rank sortable" data-sort="rank">#</th>
+                      <th class="col-validator sortable" data-sort="name">Validator Entity</th>
+                      <th class="col-stake sortable" data-sort="stake">Active Stake (SOL)</th>
+                      <th class="col-pct sortable" data-sort="pct">Share %</th>
+                      <th class="col-comm sortable" data-sort="commission">Fee %</th>
+                      <th class="col-slot">Last Vote Slot</th>
+                      <th class="col-status">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="validators-tbody">
+                    <!-- Populated dynamically via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- ECONOMIC & DEFI INDICATORS GRID -->
+            <section class="panel-card" id="economics-section">
+              <div class="panel-header">
+                <div class="panel-title-wrap">
+                  <h2 class="panel-title">Economic Velocity & DeFi Capital Flow</h2>
+                  <span class="panel-caption">On-chain TVL, stablecoins, liquidity & fee metrics</span>
+                </div>
+              </div>
+
+              <div class="economic-grid">
+                <div class="econ-stat-box">
+                  <span class="econ-label">DeFi TVL</span>
+                  <div class="econ-value" id="econ-tvl">$4.90B</div>
+                  <div class="econ-sub"><span id="econ-tvl-delta" class="delta-badge up">+0.65%</span> vs 24h</div>
+                </div>
+
+                <div class="econ-stat-box">
+                  <span class="econ-label">24h DEX Volume</span>
+                  <div class="econ-value" id="econ-dex">$1.82B</div>
+                  <div class="econ-sub">Turnover: <strong id="econ-velocity">0.37x</strong></div>
+                </div>
+
+                <div class="econ-stat-box">
+                  <span class="econ-label">Stablecoin Supply</span>
+                  <div class="econ-value" id="econ-stables">$15.36B</div>
+                  <div class="econ-sub">USDC & USDT Circulation</div>
+                </div>
+
+                <div class="econ-stat-box">
+                  <span class="econ-label">Real Economic Value (REV)</span>
+                  <div class="econ-value" id="econ-rev">$756.6K <span class="unit-sub">/ day</span></div>
+                  <div class="econ-sub">Base + Priority + Jito Tips</div>
+                </div>
+
+                <div class="econ-stat-box">
+                  <span class="econ-label">Median Tx Fee</span>
+                  <div class="econ-value" id="econ-fee">0.000028 SOL</div>
+                  <div class="econ-sub">~$0.0021 USD per Tx</div>
+                </div>
+
+                <div class="econ-stat-box">
+                  <span class="econ-label">Staked Supply Share</span>
+                  <div class="econ-value" id="econ-staked">68.8%</div>
+                  <div class="econ-sub">435.3M of 632.4M SOL</div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- RIGHT-HAND ACTION & ALERTS PANEL -->
+          <aside class="right-panel">
+            <!-- ANOMALY & RISK MONITOR -->
+            <section class="panel-card action-card" id="alerts-panel">
+              <div class="panel-header-compact">
+                <div class="alert-title-row">
+                  <h3 class="panel-title-sm">Telemetry & Anomaly Engine</h3>
+                  <span class="status-pill-sub healthy" id="alert-status-pill">ALL NORMAL</span>
+                </div>
+              </div>
+
+              <div class="alerts-body" id="alerts-container">
+                <!-- Populated via JS -->
+                <div class="all-clear-box">
+                  <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <div class="all-clear-text">
+                    <strong>Cluster Operating Within Normal Bounds</strong>
+                    <p>No TPS shock deviations, slot latency spikes, or stake delinquency surges detected.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECONDARY HEADLINE CHART (30D TVL & ACTIVITY) -->
+            <section class="panel-card action-card" id="headline-chart-panel">
+              <div class="panel-header-compact">
+                <h3 class="panel-title-sm">DeFi TVL Trend (Trailing 30 Days)</h3>
+                <span class="chart-tag">DeFiLlama</span>
+              </div>
+              <div class="chart-container-sm">
+                <canvas id="headline-tvl-chart" height="180"></canvas>
+              </div>
+            </section>
+
+            <!-- NETWORK VITAL SIGNS BOX -->
+            <section class="panel-card action-card" id="vitals-panel">
+              <div class="panel-header-compact">
+                <h3 class="panel-title-sm">Network Vitals & Consensus</h3>
+              </div>
+              <div class="vitals-list">
+                <div class="vital-row">
+                  <span class="vital-name">Current Epoch</span>
+                  <span class="vital-val monospace" id="vital-epoch">1018</span>
+                </div>
+                <div class="vital-progress-bar">
+                  <div class="vital-progress-fill" id="vital-epoch-fill" style="width: 93.2%"></div>
+                </div>
+                <div class="vital-sub-row">
+                  <span id="vital-epoch-pct">93.2% Completed</span>
+                  <span id="vital-epoch-remaining">~3.4h remaining</span>
+                </div>
+
+                <div class="vital-row divider-top">
+                  <span class="vital-name">Current Slot</span>
+                  <span class="vital-val monospace" id="vital-slot">440,178,607</span>
+                </div>
+                <div class="vital-row">
+                  <span class="vital-name">Block Height</span>
+                  <span class="vital-val monospace" id="vital-blockheight">418,228,840</span>
+                </div>
+                <div class="vital-row">
+                  <span class="vital-name">Total Transactions</span>
+                  <span class="vital-val monospace" id="vital-totaltx">539.47B</span>
+                </div>
+                <div class="vital-row">
+                  <span class="vital-name">Nakamoto Coefficient</span>
+                  <span class="vital-val highlight-val" id="vital-nakamoto">18 Validators</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <!-- UPCOMING UPGRADES ROADMAP SECTION -->
+        <section class="panel-card" id="upgrades-section">
+          <div class="panel-header">
+            <div class="panel-title-wrap">
+              <h2 class="panel-title">Protocol Roadmap & Ecosystem Upgrades</h2>
+              <span class="panel-caption">Verified core runtime, consensus, and SIMD engineering milestones</span>
+            </div>
+          </div>
+
+          <div class="upgrades-grid" id="upgrades-container">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </section>
+
+        <!-- FOOTER WITH DATA PROVENANCE -->
+        <footer class="dashboard-footer">
+          <div class="footer-grid">
+            <div class="footer-col">
+              <div class="footer-logo-row">
+                <img src="assets/solana-logo.svg" alt="Solana Logo" class="footer-logo">
+                <span class="footer-brand">Solana Ecosystem Dashboard</span>
+              </div>
+              <p class="footer-desc">
+                Automated, zero-dependency, institutional-grade analytics dashboard engineered for the Superteam Canada Bounty.
+              </p>
+            </div>
+
+            <div class="footer-col">
+              <h4 class="footer-heading">Data Ingestion</h4>
+              <ul class="footer-links">
+                <li><span>Solana JSON-RPC (Mainnet-Beta)</span></li>
+                <li><span>DeFiLlama API (TVL, DEX, Stables)</span></li>
+                <li><span>CoinGecko API (Market Data)</span></li>
+                <li><span>SQLite Snapshot Engine</span></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h4 class="footer-heading">Artifact Feeds</h4>
+              <ul class="footer-links">
+                <li><a href="../data/report.json" target="_blank" rel="noopener noreferrer">Download report.json</a></li>
+                <li><a href="../data/report.md" target="_blank" rel="noopener noreferrer">View report.md</a></li>
+                <li><a href="https://github.com/chmgx81/solana-ecosystem-dashboard" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <span>MIT License © 2026 Solana Ecosystem Dashboard Contributors</span>
+            <span>Built with Python stdlib & Vanilla JS (Zero build-step)</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <a href="#overview" class="mobile-nav-btn active" data-section="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Overview</span>
+    </a>
+    <a href="#validators-section" class="mobile-nav-btn" data-section="validators-section">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+      <span>Validators</span>
+    </a>
+    <a href="#economics-section" class="mobile-nav-btn" data-section="economics-section">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>DeFi</span>
+    </a>
+    <a href="#alerts-panel" class="mobile-nav-btn" data-section="alerts-panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <span>Alerts</span>
+    </a>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
