@@ -74,29 +74,23 @@ health, anomaly counts, delta chips, and validator states.
 
 ## 4. Information Architecture
 
-A single-column, scroll-based layout with a **sticky top bar** for persistent
-context:
+A **five-tab, top-bar-driven layout** (Overview / Network / Validators / DeFi /
+Economy) with a **sticky top bar** for persistent context:
 
-1. **Top bar** — brand, section nav (Overview / Trends / Validators / Economy /
-   Roadmap), live cluster health pill, "updated x ago", and CSV / JSON / Refresh
-   actions.
-2. **Hero** — editorial headline, generated-at metadata, and a cluster status
-   card with a live pulse orb.
-3. **KPI grid** — 8 stat cards (SOL price, TPS, slot time, validators, TVL,
-   DEX volume, stablecoin supply, REV) with inline SVG sparklines where data
-   exists. This is the "at a glance" block.
-4. **Epoch / Throughput panel** — progress bar + slot counters, plus TPS
-   throughput detail (15m avg, non-vote TPS, slot time, total txs).
-5. **Trends** — 4 Chart.js charts (throughput, SOL price, 30d TVL, active
+1. **Top bar** — brand, section tabs, live cluster health pill, "updated x ago",
+   and CSV / JSON / Refresh actions. Two hamburger reveals the actions on mobile.
+2. **KPI grid** — stat cards (SOL price, TPS, slot time, validators, TVL) with
+   inline SVG sparklines where data exists. The "at a glance" block.
+3. **Network Performance panel** — epoch, block height, TPS, slot time, plus a
+   live animated gradient **epoch progress bar**.
+4. **Trends** — Chart.js charts (network throughput, SOL price, 30d TVL, active
    validators) from historical snapshots.
-6. **Economic Indicators** — 4 cards: validators & stake, token supply, fees &
-   revenue, and capital flows.
-7. **Top Validator table** — sortable, searchable, filterable (top-10 / Nakamoto
-   set / 0% commission / ≥10% commission), paginated, with CSV export.
-8. **Roadmap** — upgrade cards with impact badges.
-9. **Announcements** — curated ecosystem news.
-10. **Anomaly panel** — rule-driven alert feed with severity.
-11. **Footer** — data sources, provenance, license.
+5. **Economic Indicators** — market cap, 24h volume, supply, median fee & REV.
+6. **Top Validator table** — searchable and filterable (top-10 / Nakamoto set /
+   0% commission / high commission), **paginated**, with CSV export.
+7. **Roadmap** — upgrade cards with impact badges.
+8. **Anomaly panel** — rule-driven alert feed with severity.
+9. **Footer** — data sources, provenance, license.
 
 ---
 

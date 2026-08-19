@@ -1,45 +1,42 @@
 # ⚡ Solana Ecosystem Intelligence & Health Report
 
-**Generated At (UTC):** `2026-08-19T16:42:00.511803+00:00`  
+**Generated At (UTC):** `2026-08-19T18:24:47.149256+00:00`  
 **Cluster Health:** `🟢 Operational`  
-**Current Epoch:** `1019` (`21.72%` complete, ~39.5h remaining)
+**Current Epoch:** `1019` (`25.15%` complete, ~37.5h remaining)
 
 ## 📌 Executive Summary
-Solana mainnet-beta is currently processing **5,744 TPS** (non-vote TPS: ~4,163) with an average slot time of **420.9ms**. SOL is trading at **$81.90** (+6.34% 24h) with total ecosystem TVL of **$5.05B** and 24h DEX volume of **$1.84B**. The network is secured by **685 active validators** with a Nakamoto coefficient of **18**.
+Solana mainnet-beta is currently processing **5,126 TPS** (non-vote TPS: ~3,454) with an average slot time of **417.1ms**. SOL is trading at **$81.60** (+5.73% 24h) with total ecosystem TVL of **$5.06B** and 24h DEX volume of **$1.84B**. The network is secured by **686 active validators** with a Nakamoto coefficient of **18**.
 
 ## 🚨 Anomaly & Risk Telemetry
-> [!WARNING]
-> **1 Active Telemetry Alert(s) Detected:**
->
-> - **🟡 Moderate TPS Surge**: Current throughput (5744 TPS) deviates by +49.8% from trailing baseline. *(Current: `5744 TPS`, Baseline: `3835 TPS (trailing avg)`)*
->
+> [!NOTE]
+> **🟢 All Systems Normal:** No statistical anomalies, slot latency spikes, or validator delinquency surges detected.
 
 ## 📊 Core Ecosystem Indicators
 | Metric | Current Value | 24h / Baseline Delta | Status / Notes |
 |---|---|---|---|
-| **SOL Price** | `$81.90` | `+6.34%` | Market Cap: `$47.17B` |
-| **Network Throughput** | `5,743.6 TPS` | `15m Avg: 5,869 TPS` | True Non-Vote: `4,163 TPS` |
-| **Slot Duration** | `420.9ms` | `Target: 400.0ms` | Current Slot: `440301835` |
-| **DeFi TVL** | `$5.049B` | `+4.12%` | Capital Turnover: `0.36x` |
+| **SOL Price** | `$81.60` | `+5.73%` | Market Cap: `$47.57B` |
+| **Network Throughput** | `5,126.0 TPS` | `15m Avg: 4,933 TPS` | True Non-Vote: `3,454 TPS` |
+| **Slot Duration** | `417.1ms` | `Target: 400.0ms` | Current Slot: `440316669` |
+| **DeFi TVL** | `$5.061B` | `+4.62%` | Capital Turnover: `0.36x` |
 | **24h DEX Volume** | `$1.838B` | — | High on-chain velocity |
-| **Stablecoin Supply** | `$15.385B` | — | USDC/USDT on Solana |
+| **Stablecoin Supply** | `$15.521B` | — | USDC/USDT on Solana |
 | **Real Economic Value (REV)** | `$766,328 / day` | — | Base + Priority + Jito MEV tips |
-| **Active Validators** | `685 nodes` | `Delinquent: 10` | Stake: `434.5M SOL` |
-| **Nakamoto Coefficient** | `18` | `Top 10 Stake: 24.42%` | Min nodes to halt consensus |
+| **Active Validators** | `686 nodes` | `Delinquent: 9` | Stake: `434.8M SOL` |
+| **Nakamoto Coefficient** | `18` | `Top 10 Stake: 24.4%` | Min nodes to halt consensus |
 
 ## 🛡️ Top Validator Nodes by Activated Stake
 | Rank | Validator Entity | Active Stake (SOL) | Stake Share | Commission | Last Vote Slot | Status |
 |---|---|---|---|---|---|---|
-| **#1** | `Validator CcaH..oTN1` | `17,101,527 SOL` | `3.94%` | `7%` | `440301840` | 🟢 Active |
-| **#2** | `Validator he1i..uBtk` | `16,011,570 SOL` | `3.69%` | `0%` | `440301840` | 🟢 Active |
-| **#3** | `Validator Catz..Diqb` | `12,410,378 SOL` | `2.86%` | `5%` | `440301840` | 🟢 Active |
-| **#4** | `Validator 3N7s..iD5g` | `12,198,972 SOL` | `2.81%` | `0%` | `440301840` | 🟢 Active |
-| **#5** | `Validator 26pV..3dJx` | `9,188,631 SOL` | `2.11%` | `7%` | `440301840` | 🟢 Active |
-| **#6** | `Validator 51JB..UNAm` | `8,991,290 SOL` | `2.07%` | `10%` | `440301840` | 🟢 Active |
-| **#7** | `Validator 8Gbw..F8iD` | `8,308,413 SOL` | `1.91%` | `0%` | `440301840` | 🟢 Active |
-| **#8** | `Validator 9QU2..29mF` | `7,991,430 SOL` | `1.84%` | `7%` | `440301840` | 🟢 Active |
-| **#9** | `Validator CvSb..wycB` | `7,344,654 SOL` | `1.69%` | `5%` | `440301840` | 🟢 Active |
-| **#10** | `Validator Dumi..Zk4a` | `6,546,146 SOL` | `1.51%` | `0%` | `440301840` | 🟢 Active |
+| **#1** | `Validator CcaH..oTN1` | `17,101,527 SOL` | `3.93%` | `7%` | `440316674` | 🟢 Active |
+| **#2** | `Validator he1i..uBtk` | `16,011,570 SOL` | `3.68%` | `0%` | `440316674` | 🟢 Active |
+| **#3** | `Validator Catz..Diqb` | `12,410,378 SOL` | `2.85%` | `5%` | `440316674` | 🟢 Active |
+| **#4** | `Validator 3N7s..iD5g` | `12,198,972 SOL` | `2.81%` | `0%` | `440316674` | 🟢 Active |
+| **#5** | `Validator 26pV..3dJx` | `9,188,631 SOL` | `2.11%` | `7%` | `440316674` | 🟢 Active |
+| **#6** | `Validator 51JB..UNAm` | `8,991,290 SOL` | `2.07%` | `10%` | `440316674` | 🟢 Active |
+| **#7** | `Validator 8Gbw..F8iD` | `8,308,413 SOL` | `1.91%` | `0%` | `440316674` | 🟢 Active |
+| **#8** | `Validator 9QU2..29mF` | `7,991,430 SOL` | `1.84%` | `7%` | `440316674` | 🟢 Active |
+| **#9** | `Validator CvSb..wycB` | `7,344,654 SOL` | `1.69%` | `5%` | `440316674` | 🟢 Active |
+| **#10** | `Validator Dumi..Zk4a` | `6,546,146 SOL` | `1.51%` | `0%` | `440316674` | 🟢 Active |
 
 ## 🚀 Key Upcoming Protocol & Runtime Upgrades
 ### Alpenglow Consensus Optimization (Consensus)
@@ -66,6 +63,11 @@ Solana mainnet-beta is currently processing **5,744 TPS** (non-vote TPS: ~4,163)
 - **Status:** `Live` | **Target:** `Current Mainnet Default` | **Impact:** `High`
 - **Summary:** Anza-maintained core validator engine with memory footprint optimizations and enhanced QUIC socket throughput.
 - **Documentation:** [https://github.com/anza-xyz/agave](https://github.com/anza-xyz/agave)
+
+## 📋 Data Coverage & Integrity
+- **Collected live:** on-chain telemetry (TPS, slot time, epoch, block height, validators, stake, supply, health), market and DeFi data (price, TVL, DEX volume, stablecoins), measured median priority fees, the protocol/SIMD roadmap, and anomaly telemetry.
+- **Measured, not estimated:** median transaction fees are derived from live `getRecentPrioritizationFees` RPC samples; unless sampling is unavailable, no fee figure is hard-coded.
+- **Explanatory gaps are honestly declared:** Daily Active Addresses, tokenized-equity volumes, X/Twitter sentiment, and Dune dashboard imports require premium or licensed access — they are explicitly omitted rather than fabricated (see `report.json` → `coverage`).
 
 ## 🔗 Data Provenance & Methodology
 - **Solana JSON-RPC:** Public mainnet-beta endpoint (`getSlot`, `getEpochInfo`, `getRecentPerformanceSamples`, `getVoteAccounts`, `getSupply`)

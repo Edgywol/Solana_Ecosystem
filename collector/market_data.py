@@ -208,19 +208,26 @@ class MarketDataCollector:
         )
 
     def derive_economics(
-        self, price: SolPriceMetrics, defi: DeFiMetrics, est_daily_tx: int = 45000000
+        self, price: SolPriceMetrics, defi: DeFiMetrics, est_daily_tx: int = 45000000,
+        measured_median_fee_sol: Optional[float] = None,
     ) -> EconomicIndicators:
         """Calculate derived economic velocity and Real Economic Value (REV) proxy.
         
         Methodology:
-        - Base tx fee on Solana is 5,000 lamports (0.000005 SOL).
-        - Priority fee median is modeled at ~0.000023 SOL, yielding median fee ~0.000028 SOL (~$0.004-$0.008).
-        - Estimated REV = (Estimated daily non-vote transactions * median fee in USD) + (Estimated daily Jito MEV tips).
+        - Base tx fee on Solana is a protocol constant of 5,000 lamports (0.000005 SOL).
+        - Median priority fee is measured from live ``getRecentPrioritizationFees`` RPC
+          samples when available (preferred); otherwise a conservative model default
+          of ~0.000023 SOL is used as a fallback.
+        - Estimated REV = (Estimated daily non-vote transactions * median fee in USD)
+          + (Estimated daily Jito MEV tips).
         - Capital Velocity = 24h DEX Volume / TVL.
         """
         sol_price = price.price_usd if price.price_usd > 0 else 180.0
         base_fee_sol = 0.000005
-        median_fee_sol = 0.000028
+        if measured_median_fee_sol and measured_median_fee_sol > 0:
+            median_fee_sol = round(base_fee_sol + measured_median_fee_sol, 9)
+        else:
+            median_fee_sol = 0.000028
         median_fee_usd = round(median_fee_sol * sol_price, 4)
 
         # Estimate daily non-vote transactions (~25-35% of total tx)

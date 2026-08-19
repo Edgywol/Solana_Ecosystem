@@ -15,6 +15,9 @@
   let refreshLog = [];
   let activeFilter = 'all';
   let searchQuery = '';
+  let validatorPage = 1;
+  let lastFocusedElement = null;
+  const VALIDATOR_PAGE_SIZE = 5;
 
   const REPORT_PATHS = [
     './data/report.json',
@@ -45,6 +48,8 @@
     netTpsSub: $('net-tps-sub'),
     netSlotTime: $('net-slot-time'),
     netSlotSub: $('net-slot-sub'),
+    epochProgress: $('epoch-progress'),
+    epochProgressFill: $('epoch-progress-fill'),
     chartTps: $('chart-tps'),
     chartPrice: $('chart-price'),
     chartTvl: $('chart-tvl'),
@@ -56,6 +61,10 @@
     valTotal: $('val-total'),
     commissionBar: $('commission-bar'),
     topValidatorsList: $('top-validators-list'),
+    validatorsPager: $('validators-pager'),
+    valPrev: $('val-prev'),
+    valNext: $('val-next'),
+    valPagerInfo: $('val-pager-info'),
     validatorSearch: $('validator-search'),
     roadmapList: $('roadmap-list'),
     defiTbody: $('defi-tbody'),
@@ -155,16 +164,19 @@
      =================================================================== */
   function showModal(title, content) {
     if (!el.modalOverlay || !el.modalTitle || !el.modalBody) return;
+    lastFocusedElement = document.activeElement;
     el.modalTitle.textContent = title;
     el.modalBody.innerHTML = content;
     el.modalOverlay.classList.add('visible');
     document.body.style.overflow = 'hidden';
+    setTimeout(function () { if (el.modalClose) el.modalClose.focus(); }, 10);
   }
 
   function hideModal() {
     if (!el.modalOverlay) return;
     el.modalOverlay.classList.remove('visible');
     document.body.style.overflow = '';
+    if (lastFocusedElement && lastFocusedElement.focus) lastFocusedElement.focus();
   }
 
   /* ===================================================================
@@ -284,6 +296,8 @@
     setText(el.netTpsSub, 'avg 15m: ' + fmtNum(Math.round(n.avg_tps_15m)));
     setText(el.netSlotTime, Math.round(n.avg_slot_time_ms) + 'ms');
     setText(el.netSlotSub, n.avg_slot_time_ms > 450 ? 'above target' : 'on target');
+    if (el.epochProgress) el.epochProgress.setAttribute('aria-valuenow', Math.round(n.epoch_progress_pct || 0));
+    if (el.epochProgressFill) el.epochProgressFill.style.width = (n.epoch_progress_pct || 0).toFixed(1) + '%';
   }
 
   /* ===================================================================
@@ -312,13 +326,39 @@
         '<div class="commission-segment seg-high" style="width:'+(h/t*100)+'%" title="\u226510%: '+h+'"></div>';
     }
 
-    renderTopValidators(validators.slice(0, 5));
+    renderValidatorPager();
   }
 
-  function renderTopValidators(validators) {
+  function clampValidatorPage() {
+    var total = filteredValidators.length;
+    var maxPage = Math.max(1, Math.ceil(total / VALIDATOR_PAGE_SIZE));
+    if (validatorPage > maxPage) validatorPage = maxPage;
+    if (validatorPage < 1) validatorPage = 1;
+  }
+
+  function renderValidatorPager() {
+    if (!el.validatorsPager || !el.valPagerInfo) return;
+    var total = filteredValidators.length;
+    if (total <= VALIDATOR_PAGE_SIZE) {
+      el.validatorsPager.hidden = true;
+      return;
+    }
+    el.validatorsPager.hidden = false;
+    clampValidatorPage();
+    var start = (validatorPage - 1) * VALIDATOR_PAGE_SIZE + 1;
+    var end = Math.min(total, validatorPage * VALIDATOR_PAGE_SIZE);
+    el.valPagerInfo.textContent = start + '\u2013' + end + ' of ' + total;
+    if (el.valPrev) el.valPrev.disabled = validatorPage <= 1;
+    if (el.valNext) el.valNext.disabled = validatorPage >= Math.ceil(total / VALIDATOR_PAGE_SIZE);
+  }
+
+  function renderTopValidators() {
     if (!el.topValidatorsList) return;
+    clampValidatorPage();
+    var validators = filteredValidators.slice((validatorPage - 1) * VALIDATOR_PAGE_SIZE, validatorPage * VALIDATOR_PAGE_SIZE);
     if (!validators.length) {
       el.topValidatorsList.innerHTML = '<p style="color:var(--text-3);padding:8px 0;">No validator data available.</p>';
+      renderValidatorPager();
       return;
     }
     el.topValidatorsList.innerHTML = validators.map(function (x) {
@@ -353,6 +393,8 @@
         }
       });
     });
+
+    renderValidatorPager();
   }
 
   /* ===================================================================
@@ -623,6 +665,29 @@
      =================================================================== */
   function setupTabs() {
     document.querySelectorAll('.section-tab').forEach(function(tab) {
+      tab.addEventListener('keydown', function(e) {
+        var tabs = Array.prototype.slice.call(document.querySelectorAll('.section-tab'));
+        var idx = tabs.indexOf(tab);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          var next = tabs[(idx + 1) % tabs.length];
+          next.focus();
+          next.click();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          var prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+          prev.focus();
+          prev.click();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          tabs[0].focus();
+          tabs[0].click();
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          tabs[tabs.length - 1].focus();
+          tabs[tabs.length - 1].click();
+        }
+      });
       tab.addEventListener('click', function() {
         document.querySelectorAll('.section-tab').forEach(function(t) {
           t.classList.remove('active');
@@ -657,6 +722,14 @@
         applyFilters();
       });
     });
+    if (el.valPrev) el.valPrev.addEventListener('click', function() {
+      if (validatorPage > 1) { validatorPage--; renderTopValidators(); }
+    });
+    if (el.valNext) el.valNext.addEventListener('click', function() {
+      var total = filteredValidators.length;
+      var maxPage = Math.max(1, Math.ceil(total / VALIDATOR_PAGE_SIZE));
+      if (validatorPage < maxPage) { validatorPage++; renderTopValidators(); }
+    });
   }
 
   function applyFilters() {
@@ -676,7 +749,8 @@
     else if (activeFilter === 'high') validators = validators.filter(function(v) { return v.commission >= 10; });
 
     filteredValidators = validators;
-    renderTopValidators(validators.slice(0, 5));
+    validatorPage = 1;
+    renderTopValidators();
   }
 
   /* ===================================================================
@@ -701,8 +775,18 @@
       if (e.target === el.modalOverlay) hideModal();
     });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && el.modalOverlay && el.modalOverlay.classList.contains('visible')) {
+      if (!el.modalOverlay || !el.modalOverlay.classList.contains('visible')) return;
+      if (e.key === 'Escape') {
         hideModal();
+        return;
+      }
+      if (e.key === 'Tab') {
+        var focusables = el.modalOverlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!focusables.length) return;
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     });
   }

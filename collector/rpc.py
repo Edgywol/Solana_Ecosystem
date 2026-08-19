@@ -197,6 +197,21 @@ class SolanaRPCClient:
             logger.error(f"getSupply failed: {e}")
             return {}
 
+    def get_recent_prioritization_fees(self, addresses: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+        """Fetch recent priority fee samples (lamports) to derive a measured median fee.
+
+        Uses the native ``getRecentPrioritizationFees`` RPC call with no API keys;
+        falls back to an empty list so callers can degrade to model defaults.
+        """
+        try:
+            res = self.call("getRecentPrioritizationFees", [addresses or []])
+            if isinstance(res, list):
+                return res
+            return []
+        except Exception as e:
+            logger.warning(f"getRecentPrioritizationFees failed: {e}")
+            return []
+
 
 if __name__ == "__main__":
     client = SolanaRPCClient()

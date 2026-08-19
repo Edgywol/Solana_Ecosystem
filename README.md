@@ -14,7 +14,8 @@
 - **Zero External Dependencies:** Built with **Python 3.11+ Standard Library only** (`urllib`, `json`, `sqlite3`, `datetime`, `dataclasses`). **No `pip install`, no node_modules, no API keys needed.**
 - **Direct On-Chain Telemetry:** JSON-RPC client directly against Solana mainnet-beta with automatic gzip decompression and multi-endpoint failover.
 - **Explainable Anomaly & Risk Engine:** Statistically evaluates current telemetry against trailing SQLite baselines to detect TPS shocks, slot latency delays, validator delinquency jumps, and TVL drawdowns.
-- **Professional, Original UI:** Clean institutional dark design built from scratch — generous whitespace, clear hierarchy, status pill, KPI cards with inline SVG sparklines, four Chart.js trend charts, and a sortable/filterable/paginated validator table with CSV export. No third-party template or skin is copied (see `DESIGN.md`).
+- **Professional, Original UI:** Clean institutional dark design built from scratch — generous whitespace, clear hierarchy, status pill, KPI cards with inline SVG sparklines, four Chart.js trend charts, a live epoch progress bar, and a searchable/filterable/paginated validator table with CSV export. No third-party template or skin is copied (see `DESIGN.md`).
+- **Measured economics, not assumed:** median transaction fees are derived live from `getRecentPrioritizationFees` RPC samples (with an explicit model fallback when sampling is unavailable), and every requested-but-excluded metric (Daily Active Addresses, tokenized-equity volumes, X/Twitter sentiment, Dune imports) is declared in a transparent **data coverage matrix** inside `report.json` rather than fabricated.
 - **Complete Automation Loop:** Scheduled GitHub Action (`refresh.yml`) running every 6 hours and on-demand via `workflow_dispatch`, committing refreshed snapshots and auto-deploying to GitHub Pages.
 
 ---

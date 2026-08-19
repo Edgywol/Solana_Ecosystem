@@ -54,14 +54,15 @@
     </header>
 
     <main class="main" id="main-content" role="main">
+      <h1 class="sr-only">Solana Ecosystem Intelligence Dashboard</h1>
 
       <!-- Section Tabs -->
       <nav class="section-tabs" role="tablist" aria-label="Dashboard sections">
-        <button class="section-tab active" role="tab" aria-selected="true" data-tab="overview" id="tab-overview">Overview</button>
-        <button class="section-tab" role="tab" aria-selected="false" data-tab="network" id="tab-network">Network</button>
-        <button class="section-tab" role="tab" aria-selected="false" data-tab="validators" id="tab-validators">Validators</button>
-        <button class="section-tab" role="tab" aria-selected="false" data-tab="defi" id="tab-defi">DeFi</button>
-        <button class="section-tab" role="tab" aria-selected="false" data-tab="economy" id="tab-economy">Economy</button>
+        <button class="section-tab active" role="tab" aria-selected="true" aria-controls="tab-content-overview" data-tab="overview" id="tab-overview">Overview</button>
+        <button class="section-tab" role="tab" aria-selected="false" aria-controls="tab-content-network" data-tab="network" id="tab-network">Network</button>
+        <button class="section-tab" role="tab" aria-selected="false" aria-controls="tab-content-validators" data-tab="validators" id="tab-validators">Validators</button>
+        <button class="section-tab" role="tab" aria-selected="false" aria-controls="tab-content-defi" data-tab="defi" id="tab-defi">DeFi</button>
+        <button class="section-tab" role="tab" aria-selected="false" aria-controls="tab-content-economy" data-tab="economy" id="tab-economy">Economy</button>
       </nav>
 
       <!-- Tab: Overview -->
@@ -95,16 +96,21 @@
             <div class="network-stat"><span class="network-stat-label">Average TPS</span><strong class="network-stat-value" id="net-tps">—</strong><span class="network-stat-sub" id="net-tps-sub"></span></div>
             <div class="network-stat"><span class="network-stat-label">Slot Time</span><strong class="network-stat-value" id="net-slot-time">—</strong><span class="network-stat-sub" id="net-slot-sub"></span></div>
           </div>
+          <div class="epoch-progress-wrap">
+            <div class="progress-track" role="progressbar" id="epoch-progress" aria-label="Epoch progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-fill" id="epoch-progress-fill"></div>
+            </div>
+          </div>
         </section>
         <section class="section">
           <div class="charts-grid">
             <div class="chart-card">
-              <div class="card-head"><span class="card-title">DEX Volume — Solana (30 Days)</span></div>
-              <div class="chart-wrap"><canvas id="chart-tps" role="img" aria-label="DEX volume chart"></canvas></div>
+              <div class="card-head"><span class="card-title">Network Throughput (TPS)</span></div>
+              <div class="chart-wrap"><canvas id="chart-tps" role="img" aria-label="Network throughput in transactions per second"></canvas></div>
             </div>
             <div class="chart-card">
-              <div class="card-head"><span class="card-title">Network Throughput (TPS)</span></div>
-              <div class="chart-wrap"><canvas id="chart-validators" role="img" aria-label="TPS chart"></canvas></div>
+              <div class="card-head"><span class="card-title">Active Validators (30 Days)</span></div>
+              <div class="chart-wrap"><canvas id="chart-validators" role="img" aria-label="Active validator count over time"></canvas></div>
             </div>
           </div>
         </section>
@@ -145,6 +151,11 @@
             <div class="validators-list">
               <div class="validators-list-title">Top Validators by Stake</div>
               <div id="top-validators-list"></div>
+              <div class="validators-pager" id="validators-pager" hidden>
+                <button class="btn btn-sm" id="val-prev" aria-label="Previous page of validators">‹ Prev</button>
+                <span class="validators-pager-info" id="val-pager-info" aria-live="polite"></span>
+                <button class="btn btn-sm" id="val-next" aria-label="Next page of validators">Next ›</button>
+              </div>
             </div>
           </div>
           <div class="roadmap-panel">

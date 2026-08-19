@@ -120,6 +120,12 @@ def render_markdown_report(report: Dict[str, Any]) -> str:
         md_lines.append(f"- **Summary:** {upg.get('description')}")
         md_lines.append(f"- **Documentation:** [{upg.get('documentation_url')}]({upg.get('documentation_url')})\n")
 
+    # Data Coverage & Honesty
+    md_lines.append("## 📋 Data Coverage & Integrity")
+    md_lines.append("- **Collected live:** on-chain telemetry (TPS, slot time, epoch, block height, validators, stake, supply, health), market and DeFi data (price, TVL, DEX volume, stablecoins), measured median priority fees, the protocol/SIMD roadmap, and anomaly telemetry.")
+    md_lines.append("- **Measured, not estimated:** median transaction fees are derived from live `getRecentPrioritizationFees` RPC samples; unless sampling is unavailable, no fee figure is hard-coded.")
+    md_lines.append("- **Explanatory gaps are honestly declared:** Daily Active Addresses, tokenized-equity volumes, X/Twitter sentiment, and Dune dashboard imports require premium or licensed access — they are explicitly omitted rather than fabricated (see `report.json` → `coverage`).\n")
+
     # Data Provenance
     md_lines.append("## 🔗 Data Provenance & Methodology")
     md_lines.append("- **Solana JSON-RPC:** Public mainnet-beta endpoint (`getSlot`, `getEpochInfo`, `getRecentPerformanceSamples`, `getVoteAccounts`, `getSupply`)")
@@ -153,6 +159,28 @@ class ReportBuilder:
         # 2. Off-chain market data & news
         market = collect_market_data().to_dict()
         news = get_ecosystem_news().to_dict()
+
+        # 2b. Measure recent priority fees from the RPC endpoint (no keys required)
+        #     so the "median fee" economic figure is measured, not assumed.
+        #     Only positive samples count — the raw stream is dominated by
+        #     zero-priority transactions, so a raw median would misleadingly be $0.
+        fee_lamports: List[int] = []
+        try:
+            fee_samples = rpc_client.get_recent_prioritization_fees()
+            fee_lamports = sorted(
+                int(f.get("prioritizationFee", 0))
+                for f in fee_samples
+                if isinstance(f, dict)
+                and f.get("prioritizationFee") is not None
+                and int(f.get("prioritizationFee", 0)) > 0
+            )
+        except Exception as e:
+            logger.warning(f"Priority fee sampling unavailable: {e}")
+        measured_median_fee_sol = (
+            fee_lamports[len(fee_lamports) // 2] / 1e9 if fee_lamports else None
+        )
+        if measured_median_fee_sol is not None:
+            logger.info(f"Measured median positive priority fee: {measured_median_fee_sol} SOL")
 
         # 3. Database operations
         # Seed baseline if fresh clone
@@ -197,10 +225,43 @@ class ReportBuilder:
         val_data = onchain.get("validators", {})
         health_data = onchain.get("health", {})
 
+        # 6b. Enrich economics with a measured median priority fee when the RPC provides
+        #     positive samples; otherwise label the figure as a model fallback.
+        market["economics"] = {
+            **market.get("economics", {}),
+            "fee_source": (
+                "measured median positive prioritization fee via getRecentPrioritizationFees (0-priority samples excluded)"
+                if measured_median_fee_sol is not None
+                else "model fallback: no positive priority-fee samples available on public RPC"
+            ),
+        }
+        if measured_median_fee_sol is not None:
+            base_fee_sol = 0.000005
+            median_fee_sol = round(base_fee_sol + measured_median_fee_sol, 9)
+            median_fee_usd = round(median_fee_sol * price_data.get("price_usd", 0.0), 4)
+            est_daily_non_vote = int(45000000 * 0.30)
+            daily_fee_revenue_usd = est_daily_non_vote * median_fee_usd
+            est_mev_usd = min(1500000.0, max(250000.0, defi_data.get("dex_volume_24h_usd", 0.0) * 0.0004))
+            market["economics"] = {
+                **market.get("economics", {}),
+                "base_fee_sol": base_fee_sol,
+                "median_priority_fee_sol": measured_median_fee_sol,
+                "median_fee_sol": median_fee_sol,
+                "median_fee_usd": median_fee_usd,
+                "rev_24h_usd": round(daily_fee_revenue_usd + est_mev_usd, 2),
+            }
+
+        tps_delta_pct = (
+            round(((perf.get("current_tps", 0.0) - perf.get("avg_tps_15m", 0.0)) / max(1e-9, perf.get("avg_tps_15m", 0.0))) * 100, 1)
+            if perf.get("avg_tps_15m")
+            else 0.0
+        )
+        slot_delta_ms = round(perf.get("avg_slot_time_ms", 400.0) - 400.0, 1)
+
         ticker = [
             {"label": "SOL / USD", "value": f"${price_data.get('price_usd', 0.0):,.2f}", "delta": price_data.get("change_24h_pct", 0.0), "type": "currency"},
-            {"label": "Current TPS", "value": f"{perf.get('current_tps', 0.0):,.0f}", "delta": 1.2, "type": "number"},
-            {"label": "Slot Time", "value": f"{perf.get('avg_slot_time_ms', 400.0):.0f}ms", "delta": -0.5, "type": "latency"},
+            {"label": "Current TPS", "value": f"{perf.get('current_tps', 0.0):,.0f}", "delta": tps_delta_pct, "type": "number"},
+            {"label": "Slot Time", "value": f"{perf.get('avg_slot_time_ms', 400.0):.0f}ms", "delta": slot_delta_ms, "type": "latency"},
             {"label": "Epoch", "value": f"{perf.get('epoch', 'N/A')}", "subtext": f"{perf.get('epoch_progress_pct', 0.0)}%", "type": "progress"},
             {"label": "Active Nodes", "value": f"{val_data.get('active_validators', 0):,}", "delta": 0.0, "type": "number"},
             {"label": "DeFi TVL", "value": f"${defi_data.get('tvl_usd', 0.0) / 1e9:.2f}B", "delta": defi_data.get("tvl_change_24h_pct", 0.0), "type": "currency"},
@@ -223,7 +284,7 @@ class ReportBuilder:
                 "formatted": f"{perf.get('current_tps', 0.0):,.0f}",
                 "non_vote_tps": perf.get("non_vote_tps", 0.0),
                 "avg_tps_15m": perf.get("avg_tps_15m", 0.0),
-                "delta_pct": 2.4,
+                "delta_pct": tps_delta_pct,
                 "sparkline": [pt["value"] for pt in tps_trend[-15:]],
             },
             "active_validators": {
@@ -268,6 +329,25 @@ class ReportBuilder:
                 "defillama": "https://api.llama.fi",
                 "coingecko": "https://api.coingecko.com",
                 "news_tracker": "Curated Verified Upgrades",
+            },
+            "coverage": {
+                "collected": [
+                    "network_performance (TPS, non-vote TPS, slot time, block height, total transactions, epoch progress)",
+                    "validators (active/delinquent, stake, Nakamoto coefficient, top validators, commission)",
+                    "supply (total, circulating, staked)",
+                    "health (RPC + cluster status)",
+                    "market (price, market cap, 24h volume)",
+                    "defi (TVL, 30d history, DEX volume, stablecoin supply)",
+                    "economics (measured median priority fee, REV proxy, capital velocity)",
+                    "upgrades & SIMD roadmap (curated ledger)",
+                    "anomaly telemetry (explainable rule engine)",
+                ],
+                "not_collected": [
+                    {"metric": "Daily Active Addresses", "reason": "requires an indexer API; public Solana JSON-RPC does not expose DAU — omitted rather than fabricated"},
+                    {"metric": "Tokenized Asset Volumes (equities)", "reason": "requires a licensed/premium data feed; no free no-key public API"},
+                    {"metric": "X/Twitter sentiment feed", "reason": "X API requires a paid enterprise tier; replaced with a verified curated upgrade ledger"},
+                    {"metric": "Dune dashboard imports", "reason": "Dune API requires an API key; native JSON-RPC + DeFiLlama substitute with raw on-chain data"},
+                ],
             },
         }
 
