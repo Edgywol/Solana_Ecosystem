@@ -1272,14 +1272,16 @@
     setupModal();
     setupKeyboardNav();
 
+    // failsafe hide loading even if JS stalls
+    setTimeout(function(){ if(el.loading) el.loading.classList.add('hidden'); }, 900);
     fetchReport()
       .then(renderAll)
-      .then(function(){ startLiveTicker(); })
+      .then(function(){ try{ startLiveTicker(); } catch(e){} })
       .catch(function (err) {
         console.error('Load failed:', err);
         setText(el.updatedAt, 'Offline');
         toast('Could not load report data. Check that data/report.json exists.', '\u26A0');
-        startLiveTicker();
+        try{ startLiveTicker(); } catch(e){}
       })
       .then(function () {
         setTimeout(function () {
