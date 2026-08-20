@@ -1,4 +1,6 @@
-# ⚡ Solana Ecosystem Intelligence — Auto-Updating Report & Dark Terminal
+# ⚡ Solana Orbit — Ecosystem Intelligence · Auto-Updating Report & Dark Terminal
+
+> **Brand:** *Solana Orbit* — globe-mark (`dashboard/assets/solana-ecosystem-globe.png`) orbiting the Solana “S”
 
 > **Superteam Canada · 1,000 USDG · Regional (Canada) · 11 submissions · Due Sep 1, 2026**
 > **Bounty:** *Develop Solana Ecosystem Auto-Updating Report & Interactive Dashboard* — comprehensive, automated, original

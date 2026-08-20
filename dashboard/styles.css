@@ -133,7 +133,7 @@ body {
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
 }
 .topbar-brand { display: flex; align-items: center; gap: 10px; }
-.brand-logo { width: 24px; height: 24px; }
+.brand-logo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 .brand-title { font-weight: 700; font-size: 15px; }
 
 .topnav { display: none; }
