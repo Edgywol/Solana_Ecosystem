@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("market_data")
 
-USER_AGENT = "SolanaEcosystemDashboard/1.0 (+https://github.com/chmgx81/solana-ecosystem-dashboard)"
+USER_AGENT = "SolanaEcosystemDashboard/1.0 (+https://github.com/Edgywol/Solana_Ecosystem)"
 REQUEST_TIMEOUT = 12
 
 

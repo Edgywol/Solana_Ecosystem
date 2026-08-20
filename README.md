@@ -1,8 +1,8 @@
 # ⚡ Solana Ecosystem Auto-Updating Intelligence Report & Interactive Terminal
 
 > **Superteam Canada Bounty Submission:** Develop Solana Ecosystem Auto-Updating Report & Interactive Dashboard  
-> **Repository:** [https://github.com/chmgx81/solana-ecosystem-dashboard](https://github.com/chmgx81/solana-ecosystem-dashboard)  
-> **Live Interactive Terminal:** [https://chmgx81.github.io/solana-ecosystem-dashboard/](https://chmgx81.github.io/solana-ecosystem-dashboard/)  
+> **Repository:** [https://github.com/Edgywol/Solana_Ecosystem](https://github.com/Edgywol/Solana_Ecosystem)  
+> **Live Interactive Terminal:** [https://edgywol.github.io/Solana_Ecosystem/](https://edgywol.github.io/Solana_Ecosystem/)  
 > **Generated JSON Feed:** [`data/report.json`](data/report.json)  
 > **Generated Markdown Report:** [`data/report.md`](data/report.md)  
 > **License:** MIT (Open Source)
@@ -128,7 +128,7 @@ The workflow in [`.github/workflows/refresh.yml`](.github/workflows/refresh.yml)
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/chmgx81/solana-ecosystem-dashboard.git
+git clone https://github.com/Edgywol/Solana_Ecosystem.git
 cd solana-ecosystem-dashboard
 ```
 

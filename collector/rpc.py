@@ -31,7 +31,7 @@ FALLBACK_RPC_URLS = [
 ]
 
 DEFAULT_TIMEOUT = 18  # seconds
-USER_AGENT = "SolanaEcosystemDashboard/1.0 (+https://github.com/chmgx81/solana-ecosystem-dashboard)"
+USER_AGENT = "SolanaEcosystemDashboard/1.0 (+https://github.com/Edgywol/Solana_Ecosystem)"
 
 
 class SolanaRPCError(Exception):
