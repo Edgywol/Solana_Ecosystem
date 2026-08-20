@@ -29,7 +29,7 @@ from collector.news import get_ecosystem_news
 from collector.onchain_metrics import collect_onchain_metrics
 from collector.rpc import SolanaRPCClient
 from collector.rpc_orchestrator import RpcOrchestrator
-from collector.twitter_sentiment import collect_solana_sentiment, TwitterSentimentCollector
+from collector.community_sentiment import collect_community_sentiment, CommunitySentimentCollector
 
 logger = logging.getLogger("report_builder")
 
@@ -125,16 +125,16 @@ def render_markdown_report(report: Dict[str, Any]) -> str:
 
     # Data Coverage & Honesty
     md_lines.append("## 📋 Data Coverage & Integrity")
-    md_lines.append("- **Collected live:** on-chain telemetry (TPS, slot time, epoch, block height, validators, stake, supply, health), market and DeFi data (price, TVL, DEX volume, stablecoins), measured median priority fees, the protocol/SIMD roadmap, and anomaly telemetry.")
-    md_lines.append("- **Measured, not estimated:** median transaction fees are derived from live `getRecentPrioritizationFees` RPC samples; unless sampling is unavailable, no fee figure is hard-coded.")
-    md_lines.append("- **Explanatory gaps are honestly declared:** Daily Active Addresses, tokenized-equity volumes, X/Twitter sentiment, and Dune dashboard imports require premium or licensed access — they are explicitly omitted rather than fabricated (see `report.json` → `coverage`).\n")
+    md_lines.append("- **Collected live:** on-chain telemetry (TPS, slot time, epoch, block height, validators, stake, supply, health), market and DeFi data (price, TVL, DEX volume, stablecoins), measured median priority fees, **community sentiment** (CoinGecko crowd vote + SOL momentum, no API key), **daily active addresses** (real RPC fee-payer sample extrapolated to a labeled lower-bound model), the protocol/SIMD roadmap, and anomaly telemetry.")
+    md_lines.append("- **Measured, not estimated:** median transaction fees are derived from live `getRecentPrioritizationFees` RPC samples; DAA is a transparent model with an exposed, tunable assumption (clearly labeled, not ground truth); unless sampling is unavailable, no figure is hard-coded.")
+    md_lines.append("- **Explanatory gaps are honestly declared:** tokenized-equity volumes and Dune dashboard imports require premium or licensed access — they are explicitly omitted rather than fabricated (see `report.json` → `coverage`).\n")
 
     # Data Provenance
     md_lines.append("## 🔗 Data Provenance & Methodology")
-    md_lines.append("- **Solana JSON-RPC:** Public mainnet-beta endpoint (`getSlot`, `getEpochInfo`, `getRecentPerformanceSamples`, `getVoteAccounts`, `getSupply`)")
+    md_lines.append("- **Solana JSON-RPC:** Public mainnet-beta endpoint (`getSlot`, `getEpochInfo`, `getRecentPerformanceSamples`, `getVoteAccounts`, `getSupply`; DAA via `getSignaturesForAddress` + `getTransaction`)")
     md_lines.append("- **DeFi & Liquidity:** DeFiLlama API (Solana TVL, 30d Historical Chain TVL, Stablecoin Supply, DEX Volume)")
-    md_lines.append("- **Price & Market Cap:** CoinGecko Public API (with Binance ticker failover)")
-    md_lines.append("- **Storage & Anomaly Engine:** SQLite persistent snapshot series with explainable statistical thresholds")
+    md_lines.append("- **Price & Sentiment:** CoinGecko Public API (spot price, market cap, and community crowd-sentiment vote; Binance ticker failover for price)")
+    md_lines.append("- **Storage & Anomaly Engine:** SQLite persistent snapshot series with a predictive exponential-smoothing trend baseline (σ-deviation) plus explainable safety thresholds")
     md_lines.append("- **Standard Library Only:** Zero external packages; 100% portable Python 3.11+ stdlib execution.\n")
 
     return "\n".join(md_lines)
@@ -156,7 +156,8 @@ class ReportBuilder:
         logger.info("Starting Solana Ecosystem report compilation...")
 
         # 1. On-chain telemetry with multi-endpoint consensus
-        #    Use RPC orchestrator for resilient 3-endpoint consensus voting
+        #    Use RPC orchestrator for resilient N-of-M consensus voting across
+        #    whatever endpoints are configured and reachable.
         orchestrator = RpcOrchestrator()
         
         # For backward compatibility, still create a single RPC client for regular queries
@@ -178,7 +179,7 @@ class ReportBuilder:
             logger.warning(f"Consensus health check failed, using single-RPC result: {e}")
         
         # 1c. Validate critical metrics via multi-endpoint consensus
-        #     Cross-check slot from 3 endpoints for data integrity
+        #     Cross-check slot across configured endpoints for data integrity
         try:
             consensus_slot = orchestrator.get_slot_with_consensus()
             if consensus_slot is not None:
@@ -193,9 +194,11 @@ class ReportBuilder:
         market = collect_market_data().to_dict()
         news = get_ecosystem_news().to_dict()
 
-        # 2a. Social Sentiment Analysis (Twitter/X ecosystem signals)
-        sentiment_collector = TwitterSentimentCollector()
-        current_sentiment = sentiment_collector.collect_sentiment(time_window_hours=24)
+        # 2a. Community sentiment (real, keyless: CoinGecko community votes + market momentum)
+        sentiment_collector = CommunitySentimentCollector()
+        current_sentiment = sentiment_collector.collect(
+            price_24h_change_pct=market.get("price", {}).get("change_24h_pct", 0.0)
+        )
         sentiment_report = sentiment_collector.to_report_dict()
         
         # Correlate sentiment with on-chain metrics for composite alerts
@@ -389,13 +392,13 @@ class ReportBuilder:
                     "market (price, market cap, 24h volume)",
                     "defi (TVL, 30d history, DEX volume, stablecoin supply)",
                     "economics (measured median priority fee, REV proxy, capital velocity)",
+                    "community sentiment (CoinGecko community bullish vote + SOL 24h momentum, no API key)",
+                    "daily active addresses (real RPC-sampled fee-payer extrapolation, no indexer, no API key)",
                     "upgrades & SIMD roadmap (curated ledger)",
-                    "anomaly telemetry (explainable rule engine)",
+                    "anomaly telemetry (explainable trend + threshold engine)",
                 ],
                 "not_collected": [
-                    {"metric": "Daily Active Addresses", "reason": "requires an indexer API; public Solana JSON-RPC does not expose DAU — omitted rather than fabricated"},
                     {"metric": "Tokenized Asset Volumes (equities)", "reason": "requires a licensed/premium data feed; no free no-key public API"},
-                    {"metric": "X/Twitter sentiment feed", "reason": "X API requires a paid enterprise tier; replaced with a verified curated upgrade ledger"},
                     {"metric": "Dune dashboard imports", "reason": "Dune API requires an API key; native JSON-RPC + DeFiLlama substitute with raw on-chain data"},
                 ],
             },

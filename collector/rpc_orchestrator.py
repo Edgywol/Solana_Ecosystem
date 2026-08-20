@@ -1,9 +1,13 @@
 """
 Multi-endpoint RPC orchestrator for Solana with consensus voting and failover.
 
-Implements 3-endpoint consensus (Helius, Triton, Solana Foundation) with 2/3
-majority voting for critical metrics. Gracefully falls back to 2 endpoints
-if one fails, and tracks endpoint health for observability.
+Queries one or more Solana RPC endpoints and uses majority voting to determine
+authoritative values for critical metrics, tracking endpoint health for
+observability. By default it uses the public mainnet-beta endpoint (no API
+key). To enable genuine N-of-M consensus resilience, add your own keyed
+endpoints (Helius, QuickNode, Triton, Drpc, …) via the ``endpoints`` argument
+or by editing ``DEFAULT_ENDPOINTS`` — every endpoint is optional and the
+orchestrator degrades gracefully to whatever is reachable.
 """
 
 import json
@@ -89,15 +93,15 @@ class RpcOrchestrator:
     one fails, and tracks endpoint health for observability.
     """
     
-    # Default endpoints (can be overridden)
+    # Default endpoints (can be overridden). The public endpoint needs no key;
+    # add your own keyed endpoints below (commented) to enable real N-of-M
+    # consensus voting and failover across providers.
     DEFAULT_ENDPOINTS = [
         ("Solana Foundation", "https://api.mainnet-beta.solana.com/"),
+        # ("Helius", "https://mainnet.helius-rpc.com/?api-key=YOUR_KEY"),
+        # ("QuickNode", "https://your-endpoint.quiknode.pro/YOUR_KEY"),
+        # ("Triton", "https://api.mainnet.solana.rpc.triton.one/YOUR_KEY"),
     ]
-
-    # Users can add paid RPC endpoints for true multi-endpoint consensus:
-    # ("Helius", "https://mainnet.helius-rpc.com/?api-key=YOUR_KEY"),
-    # ("Triton", "https://api.mainnet.solana.rpc.triton.one/YOUR_KEY"),
-    # ("QuickNode", "https://your-endpoint.quiknode.pro/YOUR_KEY"),
     
     # Critical metrics for consensus voting
     CRITICAL_METRICS = {

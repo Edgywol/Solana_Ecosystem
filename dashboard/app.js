@@ -197,6 +197,10 @@
     const n = r.network || {};
     const v = r.validators || {};
     const e = r.economics || {};
+    const s = r.sentiment || {};
+    const d = r.daily_active_addresses || {};
+    const sCur = s.current || {};
+    const dCur = d.current || {};
 
     const primaryCards = [
       {
@@ -254,6 +258,20 @@
         value: fmtUSD(e.rev_24h_usd, true),
         delta: { text: '', cls: '' },
         sub: 'base + priority + tips',
+      },
+      {
+        label: 'Community Sentiment',
+        value: s.sentiment_status === 'available' ? Math.round((sCur.bullish_pct || 0)) + '% Bullish' : '—',
+        delta: { text: sCur.price_momentum_24h_pct != null ? (sCur.price_momentum_24h_pct >= 0 ? '↗ ' : '↘ ') + Math.abs(sCur.price_momentum_24h_pct).toFixed(1) + '%' : '', cls: sCur.price_momentum_24h_pct != null && sCur.price_momentum_24h_pct >= 0 ? 'delta-up' : 'delta-down' },
+        sub: 'CoinGecko crowd vote',
+        detail: '<p><strong>Bullish:</strong> ' + (sCur.bullish_pct || 0).toFixed(1) + '%</p><p><strong>Bearish:</strong> ' + (sCur.bearish_pct || 0).toFixed(1) + '%</p><p><strong>SOL 24h momentum:</strong> ' + (sCur.price_momentum_24h_pct || 0).toFixed(2) + '%</p><p><strong>Telegram:</strong> ' + fmtNum((sCur.social && sCur.social.telegram_users) || 0) + '</p><p><strong>Trending:</strong> ' + (sCur.trending_keywords || []).join(', ') + '</p><p><em>Source: ' + (s.source_type || '') + '</em></p>',
+      },
+      {
+        label: 'Daily Active Addresses',
+        value: d.daa_status === 'available' ? fmtNum(dCur.estimated_daa) : '—',
+        delta: { text: d.daa_status === 'available' ? (dCur.trending_direction || '') : '', cls: 'delta-up' },
+        sub: 'modeled lower bound',
+        detail: '<p><strong>Estimated DAA:</strong> ' + (d.daa_status === 'available' ? fmtNum(dCur.estimated_daa) : 'unavailable this run') + '</p><p><strong>Unique fee payers in sample:</strong> ' + (dCur.unique_signers || 0) + '</p><p><strong>Signatures sampled:</strong> ' + (dCur.signatures_sampled || 0) + '</p><p><strong>Confidence:</strong> ' + (dCur.confidence_pct || 0) + '%</p><p><em>' + (dCur.notes || '') + '</em></p>',
       },
     ];
 

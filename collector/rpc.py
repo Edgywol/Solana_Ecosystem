@@ -197,6 +197,42 @@ class SolanaRPCClient:
             logger.error(f"getSupply failed: {e}")
             return {}
 
+    def get_signatures_for_address(self, address: str, limit: int = 50) -> List[Dict[str, Any]]:
+        """Return recent signatures that touched ``address`` (no API key required).
+
+        Used by the Daily Active Address sampler to gather a real transaction
+        sample that is then resolved to unique fee payers via ``get_transaction``.
+        """
+        try:
+            res = self.call(
+                "getSignaturesForAddress",
+                [address, {"limit": limit, "commitment": "confirmed"}],
+            )
+            return res if isinstance(res, list) else []
+        except Exception as e:
+            logger.warning(f"getSignaturesForAddress failed for {address}: {e}")
+            return []
+
+    def get_transaction(self, signature: str, timeout: int = 10) -> Optional[Dict[str, Any]]:
+        """Fetch a confirmed transaction and return its parsed JSON form (no API key).
+
+        The fee payer (the account that pays and therefore the transacting
+        address we count) is always ``message.accountKeys[0]``.
+        """
+        saved = self.timeout
+        self.timeout = timeout
+        try:
+            res = self.call(
+                "getTransaction",
+                [signature, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}],
+            )
+            return res if isinstance(res, dict) else None
+        except Exception as e:
+            logger.warning(f"getTransaction failed for {signature[:16]}…: {e}")
+            return None
+        finally:
+            self.timeout = saved
+
     def get_recent_prioritization_fees(self, addresses: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """Fetch recent priority fee samples (lamports) to derive a measured median fee.
 

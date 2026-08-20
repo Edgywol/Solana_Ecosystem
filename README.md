@@ -13,9 +13,9 @@
 
 - **Zero External Dependencies:** Built with **Python 3.11+ Standard Library only** (`urllib`, `json`, `sqlite3`, `datetime`, `dataclasses`). **No `pip install`, no node_modules, no API keys needed.**
 - **Direct On-Chain Telemetry:** JSON-RPC client directly against Solana mainnet-beta with automatic gzip decompression and multi-endpoint failover.
-- **Explainable Anomaly & Risk Engine:** Statistically evaluates current telemetry against trailing SQLite baselines to detect TPS shocks, slot latency delays, validator delinquency jumps, and TVL drawdowns.
+- **Explainable Anomaly & Risk Engine:** Predictive statistical engine that fits an exponential-smoothing trend baseline to trailing SQLite snapshots and flags deviations in σ from that trend (TPS shocks, slot latency, SOL price/volatility, TVL drawdowns), plus hardcoded safety checks for cluster health, validator delinquency, and a multi-metric "network stress" composite.
 - **Professional, Original UI:** Clean institutional dark design built from scratch — generous whitespace, clear hierarchy, status pill, KPI cards with inline SVG sparklines, four Chart.js trend charts, a live epoch progress bar, and a searchable/filterable/paginated validator table with CSV export. No third-party template or skin is copied (see `DESIGN.md`).
-- **Measured economics, not assumed:** median transaction fees are derived live from `getRecentPrioritizationFees` RPC samples (with an explicit model fallback when sampling is unavailable), and every requested-but-excluded metric (Daily Active Addresses, tokenized-equity volumes, X/Twitter sentiment, Dune imports) is declared in a transparent **data coverage matrix** inside `report.json` rather than fabricated.
+- **Measured economics & real social signal, not assumed:** median transaction fees are derived live from `getRecentPrioritizationFees` RPC samples (with an explicit model fallback when sampling is unavailable). **Community sentiment** is pulled live from CoinGecko's crowd-sentiment vote and market momentum (no API key), and **Daily Active Addresses** is estimated from a real RPC signature sample rather than invented. The only metrics we still exclude (tokenized-equity volumes, Dune imports) are declared in a transparent **data coverage matrix** inside `report.json` rather than fabricated.
 - **Complete Automation Loop:** Scheduled GitHub Action (`refresh.yml`) running every 6 hours and on-demand via `workflow_dispatch`, committing refreshed snapshots and auto-deploying to GitHub Pages.
 
 ---
@@ -28,7 +28,8 @@
 |                                                                                               |
 |   +-----------------------------+   +---------------------------+   +---------------------+   |
 |   |      Solana JSON-RPC        |   |      DeFiLlama Public     |   |    CoinGecko Free   |   |
-|   |  (TPS, Slots, Stakes, Node) |   |    (TVL, 30d Hist, DEX)   |   |  (Spot Price, 24h)  |   |
+|   |  (TPS, Slots, Stakes, Node, |   |    (TVL, 30d Hist, DEX)   |   | (Spot Price, 24h,   |   |
+|   |        Signatures/DAA)       |   |                           |   |  Crowd Sentiment)   |   |
 |   +--------------+--------------+   +-------------+-------------+   +----------+----------+   |
 +------------------|--------------------------------|----------------------------|--------------+
                    |                                |                            |
@@ -42,9 +43,11 @@
 |   2. collector/onchain_metrics.py   -> Throughput, epoch progress, validator stake & Nakamoto |
 |   3. collector/market_data.py       -> Spot prices, DeFi capital turnover & Real Economic Val |
 |   4. collector/news.py              -> Curated technical upgrade & SIMD roadmap tracker       |
-|   5. collector/anomaly.py           -> Heuristic statistical anomaly detection engine         |
+|   5. collector/anomaly.py           -> Predictive exponential-smoothing anomaly engine        |
 |   6. collector/db.py                -> SQLite persistent timeseries snapshot storage          |
 |   7. collector/report_builder.py    -> Dual-format report compiler (JSON + Markdown)          |
+|   8. collector/community_sentiment.py -> Real crowd sentiment (CoinGecko, no API key)         |
+|   9. collector/daily_active_addresses.py -> Real RPC-sampled DAA estimate (no API key)         |
 +---------------------------------------------+-------------------------------------------------+
                                               |
                        +----------------------+----------------------+
@@ -79,6 +82,8 @@
 | **DeFi & Liquidity** | `api.llama.fi`, `stablecoins.llama.fi` | `/v2/chains`, `/historicalChainTvl/Solana`, `/overview/dexs/solana`, `/stablecoinchains` | Ingests live Solana TVL, trailing 30-day historical TVL series, 24h DEX volume, and USD stablecoin market cap. |
 | **Market Valuation** | `api.coingecko.com` (Binance fallback) | `/simple/price?ids=solana` | Ingests SOL/USD spot price, 24h price percentage change, market cap, and 24h volume. |
 | **Real Economic Value (REV)** | Derived Economic Metric | Calculated in `collector/market_data.py` | Transparent proxy formula: `(Estimated Daily Non-Vote Tx * Median Fee USD) + Daily Jito MEV Tip Flow`. |
+| **Community Sentiment** | `api.coingecko.com` | `/coins/solana?...&community_data=true` | Live crowd-sentiment vote (`sentiment_votes_up_percentage`), community-data counts (Telegram followers), and SOL 24h momentum. **No API key.** Correlated against on-chain momentum in `collector/community_sentiment.py`. |
+| **Daily Active Addresses (DAA)** | `api.mainnet-beta.solana.com` | `getSignaturesForAddress` + `getTransaction` | RPC-sampled fee-payer uniqueness across high-coverage programs, extrapolated to a clearly-labeled **modeled lower bound** from daily non-vote transaction volume. **No API key.** Full methodology in `collector/daily_active_addresses.py`. |
 | **Protocol Roadmap** | Hand-Curated Technical Ledger | `collector/news.py` | Curated technical upgrade ledger covering Alpenglow, Firedancer, SIMD-0096, and SIMD-0123. |
 
 ---
@@ -89,12 +94,16 @@ The anomaly detection engine (`collector/anomaly.py`) uses explainable, determin
 
 ```python
 # Core Anomaly Rules Evaluated on Every Run:
-1. TPS Shock: Flags if current TPS deviates >30% (Warning) or >60% (Critical) from trailing 7-day average.
-2. Slot Duration: Flags if average slot time exceeds 550ms (Warning) or 750ms (Critical) against 400ms target.
-3. Delinquency Spike: Flags if delinquent validator stake exceeds 2.0% of total active stake.
-4. Market Volatility: Flags if 24h SOL price moves >10% (Warning) or >20% (Critical).
-5. TVL Drawdown: Flags if 24h DeFi TVL drops >10%.
-6. Cluster Health: Flags if RPC health status is degraded or node connectivity fails.
+1. Predictive TPS trend: fits an exponential-smoothing trend to trailing snapshots;
+   flags if current TPS deviates >2σ (Warning) or >3.5σ (Critical) from the trend line.
+2. Slot Duration: flags if average slot time exceeds 550ms (Warning) or 750ms (Critical) vs 400ms target.
+3. Delinquency Spike: flags if delinquent validator stake exceeds 2.0% of total active stake.
+4. SOL Price / Volatility: flags >2σ deviation from the smoothed momentum baseline, plus
+   hardcoded >10% (Warning) / >20% (Critical) absolute 24h moves.
+5. TVL Drawdown: flags >10% 24h DeFi TVL drop.
+6. Cluster Health: flags if RPC health status is degraded or connectivity fails.
+7. Network Stress (composite): a WARN/CRITICAL risk index blending recent TPS drop,
+   slot-time rise, and TVL drawdown into one headline stress score.
 ```
 
 Active alerts appear in both `report.json` (as structured alert objects) and `report.md` (as highlighted callout blocks), and render with severity badges in the dashboard's Anomaly Panel.
@@ -147,9 +156,10 @@ python3 -m collector.anomaly
 
 ## ⚠️ Transparent Limitations & Scope
 
-- **X/Twitter Sentiment:** Due to enterprise API paywalls on X/Twitter, social scraping is replaced with a verified, hand-curated technical upgrade tracker (`collector/news.py`).
-- **Dune Analytics:** Dune is treated as optional/best-effort to prevent rate-limiting dependencies on third-party API keys; all core on-chain data is obtained directly from native Solana JSON-RPC endpoints.
-- **Public RPC Rate Limits:** The collector includes multi-endpoint fallback logic (`api.mainnet-beta.solana.com`, `rpc.ankr.com`, `solana.drpc.org`). For high-frequency enterprise querying, custom RPC endpoints can be supplied via `SOLANA_RPC_URL`.
+- **Community Sentiment (real, keyless):** Sourced from CoinGecko's crowd-sentiment vote and SOL market momentum — not X/Twitter. We deliberately avoid X/Twitter because its enterprise API is paywalled; CoinGecko gives a real, key-free proxy (up/down vote split + Telegram community size) with no fabrication.
+- **Daily Active Addresses (real, modeled):** Estimated from a live RPC fee-payer sample, extrapolated to a transparent **lower-bound model** (`daily non-vote txns ÷ assumed tx/active address`). It is clearly labeled a model — authoritative DAA needs an indexer (Dune/Flipside).
+- **Dune Analytics:** Excluded to avoid third-party API-key dependencies; all on-chain data is fetched directly from native Solana JSON-RPC. Tokenized-equity volumes are likewise out of scope.
+- **Public RPC Rate Limits:** The default endpoint is the public `api.mainnet-beta.solana.com`. The client has automatic failover, but free public fallbacks are frequently throttled (403/400), so for production cadence supply your own keyed endpoint via `SOLANA_RPC_URL` (e.g. Helius/QuickNode) for N-of-M consensus.
 
 ---
 

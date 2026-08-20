@@ -1,0 +1,54 @@
+[
+  {
+    "timestamp": "2026-08-20T10:11:26.570432+00:00",
+    "estimated_daa": 123668374,
+    "confidence_pct": 88.8,
+    "sample_size": 40,
+    "programs_sampled": 2,
+    "signatures_sampled": 40,
+    "unique_signers": 35,
+    "coverage_pct": 88.5,
+    "trending_direction": "stable",
+    "notes": "Real RPC sample: 40 signatures across 2 high-coverage programs resolved to 35 unique fee payers (95% resolution success). Extrapolated to 88,334,553 daily non-vote txns with a 1.6x coverage uplift for unsampled programs. Lower-bound estimate; authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
+  },
+  {
+    "timestamp": "2026-08-20T10:15:01.984585+00:00",
+    "estimated_daa": 2536836,
+    "confidence_pct": 86.7,
+    "sample_size": 30,
+    "programs_sampled": 2,
+    "signatures_sampled": 30,
+    "unique_signers": 22,
+    "coverage_pct": 89.0,
+    "trending_direction": "down",
+    "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 22 unique fee payers (97% resolution success). Modeled daily estimate = 88,789,291 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
+  },
+  {
+    "timestamp": "2026-08-20T10:16:39.774732+00:00",
+    "estimated_daa": 2552290,
+    "confidence_pct": 87.5,
+    "sample_size": 30,
+    "programs_sampled": 2,
+    "signatures_sampled": 30,
+    "unique_signers": 27,
+    "coverage_pct": 90.0,
+    "trending_direction": "stable",
+    "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 27 unique fee payers (100% resolution success). Modeled daily estimate = 89,330,169 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
+  },
+  {
+    "timestamp": "2026-08-20T10:22:28.321508+00:00",
+    "estimated_daa": 2568129,
+    "confidence_pct": 87.5,
+    "sample_size": 30,
+    "programs_sampled": 2,
+    "signatures_sampled": 30,
+    "unique_signers": 28,
+    "coverage_pct": 90.0,
+    "trending_direction": "stable",
+    "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 28 unique fee payers (100% resolution success). Modeled daily estimate = 89,884,533 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
+  }
+]
