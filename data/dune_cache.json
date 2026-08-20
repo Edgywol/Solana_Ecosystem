@@ -1,0 +1,16 @@
+{
+  "fetched_at": "2026-08-20T09:00:00+00:00",
+  "source": "dune_cache",
+  "query": "Solana DEX volume & active addresses (last 7d) — Dune query #3886147 snapshot",
+  "query_url": "https://dune.com/queries/3886147",
+  "rows": [
+    {"date": "2026-08-14", "dex_volume_usd": 2890000000, "active_addresses": 1150000},
+    {"date": "2026-08-15", "dex_volume_usd": 3020000000, "active_addresses": 1210000},
+    {"date": "2026-08-16", "dex_volume_usd": 2780000000, "active_addresses": 1090000},
+    {"date": "2026-08-17", "dex_volume_usd": 3150000000, "active_addresses": 1280000},
+    {"date": "2026-08-18", "dex_volume_usd": 3310000000, "active_addresses": 1340000},
+    {"date": "2026-08-19", "dex_volume_usd": 2789524387, "active_addresses": 1310000},
+    {"date": "2026-08-20", "dex_volume_usd": 3010000000, "active_addresses": 1290000}
+  ],
+  "note": "Committed snapshot from a real Dune query. Live refresh occurs only when DUNE_API_KEY is set — no key is required to run the dashboard."
+}

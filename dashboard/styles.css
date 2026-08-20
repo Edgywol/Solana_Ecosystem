@@ -4,7 +4,7 @@
    ========================================================================== */
 
 /* ============ Fonts ============ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
 :root {
   /* Surfaces — 5-level elevation (former OLED palette) */
@@ -44,6 +44,7 @@
 
   /* Type */
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 
   /* Transitions */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -72,7 +73,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
 
-.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .muted { color: var(--text-3); }
 
 /* Screen-reader-only utility (keeps the document outline intact for AT) */
@@ -194,8 +195,20 @@ body {
 .eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); display: block; margin-bottom: 4px; }
 .text-muted { color: var(--text-3); }
 
-/* ============ Hero ============ */
-.hero { display: none; }
+/* ============ Hero Health Pentagon ============ */
+.hero-health { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; overflow: hidden; }
+.hero-health-main { display: grid; grid-template-columns: 1.2fr 200px; gap: 20px; align-items: center; }
+.hero-health-title { font-size: clamp(22px, 3vw, 28px); font-weight: 800; letter-spacing: -0.02em; margin: 6px 0 4px; }
+.hero-health-sub { font-size: 12px; color: var(--text-3); }
+.hero-health-metrics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.hero-health-chip { font-size: 11px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); }
+.hero-health-chip.ok { border-color: rgba(20,241,149,0.35); color: var(--teal); }
+.hero-health-chip.warn { border-color: rgba(255,179,71,0.4); color: var(--warn); }
+.hero-health-viz { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.hero-health-legend { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; font-size: 10px; color: var(--text-3); }
+.hero-health-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.hero-health-legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+@media (max-width: 768px){ .hero-health-main{ grid-template-columns: 1fr; } .hero-health-viz{ order: -1; } }
 
 /* ============ KPI Grid ============ */
 .kpi-grid {
@@ -212,8 +225,9 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: radial-gradient(circle at 100% 0%, rgba(153, 69, 255, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle at 100% 0%, rgba(153, 69, 255, 0.05) 0%, transparent 65%);
   pointer-events: none;
+  opacity: 0.7;
 }
 .kpi-card:hover {
   border-color: var(--accent);
@@ -225,12 +239,16 @@ body {
   display: flex; align-items: center; justify-content: space-between;
 }
 .kpi-label-icon { font-size: 14px; opacity: 0.5; }
-.kpi-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.kpi-value { font-family: var(--font-mono); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .kpi-delta { font-size: 12px; font-weight: 500; }
 .delta-up { color: var(--up); }
 .delta-down { color: var(--down); }
 .kpi-sub { font-size: 11px; color: var(--text-3); }
-.kpi-spark { margin-top: auto; height: 30px; }
+.kpi-spark { margin-top: 8px; height: 28px; width: 100%; display: block; }
+.kpi-spark polyline { fill: none; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; opacity: 0.9; }
+.kpi-spark.up polyline { stroke: var(--teal); }
+.kpi-spark.down polyline { stroke: var(--down); }
+.kpi-spark.neutral polyline { stroke: var(--accent); }
 
 /* ============ Second KPI Row (3 cols) ============ */
 .kpi-grid-secondary {
@@ -660,7 +678,7 @@ body {
   .topnav { display: none; }
   .hamburger { display: flex; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-grid-secondary { grid-template-columns: 1fr; }
+  .kpi-grid-secondary { grid-template-columns: repeat(2, 1fr); }
   .epoch-panel { grid-template-columns: 1fr; }
   .network-stats { grid-template-columns: 1fr 1fr; }
 }
@@ -670,6 +688,8 @@ body {
   .table-tools { flex-direction: column; width: 100%; }
   .input.search { width: 100%; }
   .input.select { width: 100%; }
+  .section-tabs { gap: 2px; padding: 3px; }
+  .section-tab { padding: 8px 10px; font-size: 11px; }
 }
 
 /* ============ Reduced Motion ============ */

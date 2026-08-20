@@ -84,6 +84,8 @@
 | **Real Economic Value (REV)** | Derived Economic Metric | Calculated in `collector/market_data.py` | Transparent proxy formula: `(Estimated Daily Non-Vote Tx * Median Fee USD) + Daily Jito MEV Tip Flow`. |
 | **Community Sentiment** | `api.coingecko.com` | `/coins/solana?...&community_data=true` | Live crowd-sentiment vote (`sentiment_votes_up_percentage`), community-data counts (Telegram followers), and SOL 24h momentum. **No API key.** Correlated against on-chain momentum in `collector/community_sentiment.py`. |
 | **Daily Active Addresses (DAA)** | `api.mainnet-beta.solana.com` | `getSignaturesForAddress` + `getTransaction` | RPC-sampled fee-payer uniqueness across high-coverage programs, extrapolated to a clearly-labeled **modeled lower bound** from daily non-vote transaction volume. **No API key.** Full methodology in `collector/daily_active_addresses.py`. |
+| **Dune Analytics** | `dune.com` + `api.dune.com` | `v1/query/{id}/results` | Cache-first snapshot (`data/dune_cache.json`) with live refresh when `DUNE_API_KEY` set. No key required to run. See `collector/dune.py`. |
+| **Social Ingest (Twitter/X proxy)** | `nitter.net` / `github.com` Atom | `RSS/Atom` | Keyless RSS cascade: tries Nitter RSS, falls back to Solana SIMD GitHub Atom with sentiment tags. Never fabricated; reports `unavailable` if all endpoints 403. See `collector/social_ingest.py`. |
 | **Protocol Roadmap** | Hand-Curated Technical Ledger | `collector/news.py` | Curated technical upgrade ledger covering Alpenglow, Firedancer, SIMD-0096, and SIMD-0123. |
 
 ---

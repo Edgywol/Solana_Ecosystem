@@ -93,15 +93,29 @@ class RpcOrchestrator:
     one fails, and tracks endpoint health for observability.
     """
     
-    # Default endpoints (can be overridden). The public endpoint needs no key;
-    # add your own keyed endpoints below (commented) to enable real N-of-M
-    # consensus voting and failover across providers.
+    # Default endpoints (can be overridden). The public endpoint is the only
+    # reliably keyless one today (others 403/429). We run 1-of-1 honestly
+    # and upgrade to N-of-M automatically when SOLANA_RPC_URLS is set.
+    # Add keyed endpoints via SOLANA_RPC_URLS="https://helius...,https://quiknode..."
     DEFAULT_ENDPOINTS = [
         ("Solana Foundation", "https://api.mainnet-beta.solana.com/"),
         # ("Helius", "https://mainnet.helius-rpc.com/?api-key=YOUR_KEY"),
         # ("QuickNode", "https://your-endpoint.quiknode.pro/YOUR_KEY"),
         # ("Triton", "https://api.mainnet.solana.rpc.triton.one/YOUR_KEY"),
     ]
+
+    @classmethod
+    def _resolve_endpoints(cls, endpoints):
+        import os
+        if endpoints is not None:
+            return endpoints
+        extra = [u.strip() for u in os.environ.get("SOLANA_RPC_URLS", "").split(",") if u.strip()]
+        if extra:
+            base = list(cls.DEFAULT_ENDPOINTS)
+            for i, url in enumerate(extra):
+                base.append((f"Custom-{i+1}", url))
+            return base
+        return cls.DEFAULT_ENDPOINTS
     
     # Critical metrics for consensus voting
     CRITICAL_METRICS = {
@@ -114,7 +128,7 @@ class RpcOrchestrator:
     
     def __init__(self, endpoints: Optional[List[tuple]] = None):
         """Initialize orchestrator with RPC endpoints."""
-        self.endpoints_config = endpoints or self.DEFAULT_ENDPOINTS
+        self.endpoints_config = self._resolve_endpoints(endpoints)
         self.endpoints: List[SolanaRPCClient] = []
         self.health: Dict[str, EndpointHealth] = {}
         self.consensus_votes: List[ConsensusResult] = []

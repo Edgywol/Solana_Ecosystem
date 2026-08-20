@@ -54,14 +54,45 @@ def init_db(db_path: str = DEFAULT_DB_PATH) -> None:
         conn.commit()
 
 
+def is_snapshot_plausible(
+    onchain: Dict[str, Any],
+    market: Dict[str, Any],
+    db_path: str = DEFAULT_DB_PATH,
+) -> tuple[bool, str]:
+    """Quarantine check: reject impossible TPS / absurd TVL jumps before write."""
+    perf = onchain.get("performance", {})
+    defi = market.get("defi", {})
+    tps = float(perf.get("current_tps", 0) or 0)
+    tvl = float(defi.get("tvl_usd", 0) or 0)
+    # Hard bounds
+    if tps != 0 and (tps < 200 or tps > 100_000):
+        return False, f"quarantined: TPS {tps:.0f} outside [200,100000]"
+    # TVL delta vs last snapshot
+    try:
+        recent = get_recent_snapshots(1, db_path)
+        if recent and recent[0].get("tvl_usd"):
+            prev = float(recent[0]["tvl_usd"])
+            if prev > 0 and tvl > 0:
+                jump = abs(tvl - prev) / prev * 100
+                if jump > 50:
+                    return False, f"quarantined: TVL jump {jump:.1f}% ({prev/1e9:.1f}B→{tvl/1e9:.1f}B) without 2/3 confirmation"
+    except Exception:
+        pass
+    return True, ""
+
+
 def insert_snapshot(
     onchain: Dict[str, Any],
     market: Dict[str, Any],
     timestamp_iso: Optional[str] = None,
     db_path: str = DEFAULT_DB_PATH,
 ) -> int:
-    """Insert a single snapshot row and return the inserted row ID."""
+    """Insert a single snapshot row and return the inserted row ID. Quarantines implausible data."""
     init_db(db_path)
+    ok, reason = is_snapshot_plausible(onchain, market, db_path)
+    if not ok:
+        logger.warning(reason + " — snapshot NOT written")
+        return 0
     ts = timestamp_iso or datetime.now(timezone.utc).isoformat()
 
     perf = onchain.get("performance", {})

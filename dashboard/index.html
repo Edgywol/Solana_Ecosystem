@@ -67,6 +67,20 @@
 
       <!-- Tab: Overview -->
       <div class="tab-content active" id="tab-content-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <section class="section hero-health" id="hero-health" aria-label="System Health">
+          <div class="hero-health-main">
+            <div class="hero-health-copy">
+              <span class="eyebrow" style="color:var(--teal)">System Health — Live</span>
+              <h2 class="hero-health-title">Solana is <span id="hero-health-word">Operational</span></h2>
+              <p class="hero-health-sub" id="hero-health-sub">5-dimension health pentagon · updated from mainnet</p>
+              <div class="hero-health-metrics" id="hero-health-metrics"></div>
+            </div>
+            <div class="hero-health-viz">
+              <svg id="health-pentagon" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Health pentagon"></svg>
+              <div class="hero-health-legend" id="hero-health-legend"></div>
+            </div>
+          </div>
+        </section>
         <section class="section kpi-grid" id="kpi-grid"></section>
         <section class="section kpi-grid-secondary" id="kpi-grid-secondary"></section>
 
@@ -96,6 +110,19 @@
               <div class="card-head"><span class="card-title">SOL Price — 30 Days</span></div>
               <div class="chart-wrap"><canvas id="chart-price" role="img" aria-label="SOL price chart"></canvas></div>
             </div>
+          </div>
+        </section>
+
+        <section class="section two-col" id="live-sources">
+          <div class="news-card" id="social-panel" style="padding:16px">
+            <div class="card-head" style="margin-bottom:8px"><span class="card-title">Live Social Ingest — Keyless RSS</span><span class="chip chip-neutral" id="social-chip">—</span></div>
+            <div id="social-list" style="display:grid;gap:8px"></div>
+            <p style="font-size:11px;color:var(--text-3);margin-top:8px" id="social-provenance"></p>
+          </div>
+          <div class="news-card" id="dune-panel" style="padding:16px">
+            <div class="card-head" style="margin-bottom:8px"><span class="card-title">Dune Analytics — Cache-First</span><span class="chip chip-neutral" id="dune-chip">—</span></div>
+            <div id="dune-list" style="display:grid;gap:8px"></div>
+            <p style="font-size:11px;color:var(--text-3);margin-top:8px" id="dune-provenance"></p>
           </div>
         </section>
       </div>

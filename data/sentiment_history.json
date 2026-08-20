@@ -58,5 +58,25 @@
       "Jito (MEV)",
       "DeFi TVL"
     ]
+  },
+  {
+    "timestamp": "2026-08-20T13:53:28.395539+00:00",
+    "bullish_pct": 80.49,
+    "bearish_pct": 19.51,
+    "score": 0.635,
+    "social": {
+      "reddit_subscribers": 0,
+      "reddit_active_48h": 0,
+      "telegram_users": 3125
+    },
+    "price_momentum_24h_pct": 10.4,
+    "trending_keywords": [
+      "Alpenglow",
+      "Firedancer",
+      "SIMD-0256",
+      "Token-2022",
+      "Jito (MEV)",
+      "DeFi TVL"
+    ]
   }
 ]
