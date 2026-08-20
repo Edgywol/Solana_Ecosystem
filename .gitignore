@@ -34,3 +34,4 @@ htmlcov/
 
 # Local data cache/scratch (keep sample snapshots committed)
 data/*.tmp
+.vercel
