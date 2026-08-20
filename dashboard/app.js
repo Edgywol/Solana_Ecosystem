@@ -1230,6 +1230,35 @@
     throw new Error('Could not load report data from any path');
   }
 
+  function startLiveTicker(){
+    async function poll(){
+      try{
+        var res=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true', {cache:'no-store'});
+        if(!res.ok) throw new Error('coingecko '+res.status);
+        var j=await res.json(); var live=j.solana; if(!live) return;
+        var card=document.querySelector('.kpi-card[data-click-title="SOL Price"]');
+        if(card){
+          var valEl=card.querySelector('.kpi-value');
+          var deltaEl=card.querySelector('.kpi-delta');
+          if(valEl) valEl.textContent='$'+Number(live.usd).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+          if(deltaEl){
+            var c=Number(live.usd_24h_change);
+            deltaEl.className='kpi-delta '+(c>=0?'delta-up':'delta-down');
+            deltaEl.innerHTML=(c>=0?'+':'')+c.toFixed(2)+'%<span class="kpi-sub"> · LIVE · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+'</span>';
+          }
+        }
+        var econPrice=document.getElementById('econ-price');
+        if(econPrice) econPrice.textContent='$'+Number(live.usd).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+        var econChange=document.getElementById('econ-change');
+        if(econChange){ var ch=Number(live.usd_24h_change); econChange.textContent=(ch>=0?'+':'')+ch.toFixed(2)+'%'; econChange.style.color=ch>=0?'var(--green)':'var(--red)'; }
+        var badge=document.getElementById('updated-at');
+        if(badge && !badge.dataset.orig) badge.dataset.orig=badge.textContent;
+        if(badge) badge.textContent=(badge.dataset.orig||'')+' · LIVE '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      }catch(e){ console.warn('live ticker', e.message); }
+    }
+    poll(); setInterval(poll, 60000);
+  }
+
   /* ===================================================================
      INIT
      =================================================================== */
@@ -1243,10 +1272,12 @@
 
     fetchReport()
       .then(renderAll)
+      .then(function(){ startLiveTicker(); })
       .catch(function (err) {
         console.error('Load failed:', err);
         setText(el.updatedAt, 'Offline');
         toast('Could not load report data. Check that data/report.json exists.', '\u26A0');
+        startLiveTicker();
       })
       .then(function () {
         setTimeout(function () {
