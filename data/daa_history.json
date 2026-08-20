@@ -63,5 +63,31 @@
     "trending_direction": "up",
     "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 24 unique fee payers (80% resolution success). Modeled daily estimate = 115,170,422 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
     "available": true
+  },
+  {
+    "timestamp": "2026-08-20T19:48:30.968947+00:00",
+    "estimated_daa": 3155284,
+    "confidence_pct": 83.3,
+    "sample_size": 30,
+    "programs_sampled": 2,
+    "signatures_sampled": 30,
+    "unique_signers": 17,
+    "coverage_pct": 85.0,
+    "trending_direction": "down",
+    "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 17 unique fee payers (83% resolution success). Modeled daily estimate = 110,434,960 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
+  },
+  {
+    "timestamp": "2026-08-20T19:51:28.371955+00:00",
+    "estimated_daa": 3155250,
+    "confidence_pct": 83.3,
+    "sample_size": 30,
+    "programs_sampled": 2,
+    "signatures_sampled": 30,
+    "unique_signers": 24,
+    "coverage_pct": 85.0,
+    "trending_direction": "stable",
+    "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 24 unique fee payers (83% resolution success). Modeled daily estimate = 110,433,751 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside).",
+    "available": true
   }
 ]

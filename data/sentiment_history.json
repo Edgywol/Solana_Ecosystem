@@ -78,5 +78,65 @@
       "Jito (MEV)",
       "DeFi TVL"
     ]
+  },
+  {
+    "timestamp": "2026-08-20T19:46:20.541158+00:00",
+    "bullish_pct": 77.11,
+    "bearish_pct": 22.89,
+    "score": 0.507,
+    "social": {
+      "reddit_subscribers": 0,
+      "reddit_active_48h": 0,
+      "telegram_users": 3125
+    },
+    "price_momentum_24h_pct": 6.37,
+    "trending_keywords": [
+      "Alpenglow",
+      "Firedancer",
+      "SIMD-0256",
+      "Token-2022",
+      "Jito (MEV)",
+      "DeFi TVL"
+    ]
+  },
+  {
+    "timestamp": "2026-08-20T19:48:25.987699+00:00",
+    "bullish_pct": 77.11,
+    "bearish_pct": 22.89,
+    "score": 0.504,
+    "social": {
+      "reddit_subscribers": 0,
+      "reddit_active_48h": 0,
+      "telegram_users": 3125
+    },
+    "price_momentum_24h_pct": 6.22,
+    "trending_keywords": [
+      "Alpenglow",
+      "Firedancer",
+      "SIMD-0256",
+      "Token-2022",
+      "Jito (MEV)",
+      "DeFi TVL"
+    ]
+  },
+  {
+    "timestamp": "2026-08-20T19:51:24.171152+00:00",
+    "bullish_pct": 76.25,
+    "bearish_pct": 23.75,
+    "score": 0.487,
+    "social": {
+      "reddit_subscribers": 0,
+      "reddit_active_48h": 0,
+      "telegram_users": 3125
+    },
+    "price_momentum_24h_pct": 6.0,
+    "trending_keywords": [
+      "Alpenglow",
+      "Firedancer",
+      "SIMD-0256",
+      "Token-2022",
+      "Jito (MEV)",
+      "DeFi TVL"
+    ]
   }
 ]

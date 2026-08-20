@@ -49,6 +49,7 @@ class SolPriceMetrics:
     change_24h_pct: float = 0.0
     market_cap_usd: float = 0.0
     volume_24h_usd: float = 0.0
+    ath_usd: float = 0.0
     last_updated_at: Optional[str] = None
 
 
@@ -60,6 +61,7 @@ class DeFiMetrics:
     stablecoin_mcap_usd: float = 0.0
     capital_efficiency_ratio: float = 0.0
     historical_tvl_30d: List[Dict[str, Any]] = field(default_factory=list)
+    top_defi_protocols: List[Dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -98,8 +100,17 @@ class MarketDataCollector:
     """Collects price, DeFi, and derived economic metrics without requiring API keys."""
 
     def fetch_sol_price(self) -> SolPriceMetrics:
-        """Fetch SOL price, 24h change, and volume from CoinGecko with Binance fallback."""
-        # Attempt 1: CoinGecko
+        """Fetch SOL price, 24h change, volume and ATH from CoinGecko with Binance fallback."""
+        ath_usd = 0.0
+        # Pre-fetch ATH from /coins/solana (market_data) — cheap, keyless
+        try:
+            ath_data = _http_get_json(
+                "https://api.coingecko.com/api/v3/coins/solana?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false"
+            )
+            ath_usd = round(float(ath_data.get("market_data", {}).get("ath", {}).get("usd", 0.0)), 2)
+        except Exception:
+            ath_usd = 0.0
+        # Attempt 1: CoinGecko simple price
         cg_url = (
             "https://api.coingecko.com/api/v3/simple/price?"
             "ids=solana&vs_currencies=usd&include_24hr_vol=true&"
@@ -114,6 +125,7 @@ class MarketDataCollector:
                     change_24h_pct=round(float(sol_data.get("usd_24h_change", 0.0)), 2),
                     market_cap_usd=round(float(sol_data.get("usd_market_cap", 0.0)), 2),
                     volume_24h_usd=round(float(sol_data.get("usd_24h_vol", 0.0)), 2),
+                    ath_usd=ath_usd,
                     last_updated_at=datetime.now(timezone.utc).isoformat(),
                 )
         except Exception as e:
@@ -131,12 +143,13 @@ class MarketDataCollector:
                 change_24h_pct=round(change_pct, 2),
                 market_cap_usd=0.0,  # Not returned by Binance ticker
                 volume_24h_usd=round(volume_quote, 2),
+                ath_usd=ath_usd,
                 last_updated_at=datetime.now(timezone.utc).isoformat(),
             )
         except Exception as e:
             logger.error(f"Binance fallback failed: {e}")
 
-        return SolPriceMetrics()
+        return SolPriceMetrics(ath_usd=ath_usd)
 
     def fetch_defi_metrics(self) -> DeFiMetrics:
         """Fetch TVL, DEX volume, and stablecoin metrics from DeFiLlama."""
@@ -198,6 +211,22 @@ class MarketDataCollector:
 
         cap_eff = round(dex_vol / tvl, 3) if tvl > 0 else 0.0
 
+        # 5. Top DeFi protocols on Solana (for dashboard DeFi tab) — Solana-native only
+        top_protocols: List[Dict[str, Any]] = []
+        try:
+            protos = _http_get_json("https://api.llama.fi/protocols")
+            if isinstance(protos, list):
+                sol_protos = [p for p in protos if p.get("chains") == ["Solana"]]
+                sol_protos.sort(key=lambda x: float(x.get("tvl") or 0), reverse=True)
+                for p in sol_protos[:8]:
+                    top_protocols.append({
+                        "name": p.get("name", "Unknown"),
+                        "tvl_usd": round(float(p.get("tvl") or 0), 2),
+                        "type": (p.get("category") or "DeFi"),
+                    })
+        except Exception as e:
+            logger.warning(f"DeFiLlama protocols fetch failed: {e}")
+
         return DeFiMetrics(
             tvl_usd=tvl,
             tvl_change_24h_pct=tvl_change_24h,
@@ -205,6 +234,7 @@ class MarketDataCollector:
             stablecoin_mcap_usd=stables_mcap,
             capital_efficiency_ratio=cap_eff,
             historical_tvl_30d=hist_tvl_30d,
+            top_defi_protocols=top_protocols,
         )
 
     def derive_economics(

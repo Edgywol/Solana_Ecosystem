@@ -1162,7 +1162,9 @@
         el.refreshBtn.textContent = 'Refreshing...';
         const r = await fetchReport();
         renderAll(r);
-        toast('Telemetry refreshed from mainnet');
+        var mins = Math.round((Date.now() - new Date(r.generated_at).getTime())/60000);
+        var nextH = Math.max(0, 6 - Math.floor(mins/60));
+        toast('Backend: '+mins+'m old · next auto-refresh in ~'+nextH+'h · Price is LIVE (60s poll)');
       } catch (e) {
         toast('Failed to refresh: ' + e.message, '\u26A0');
       } finally {
