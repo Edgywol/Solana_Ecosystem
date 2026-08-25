@@ -1,210 +1,216 @@
-# ⚡ Solana Orbit — Ecosystem Intelligence · Auto-Updating Report & Dark Terminal
+<div align="center">
 
-> **Brand:** *Solana Orbit* — globe-mark (`dashboard/assets/solana-ecosystem-globe.png`) orbiting the Solana “S”
+<img src="dashboard/assets/solana-ecosystem-globe.png" alt="Solana Orbit" width="72">
 
-> **Superteam Canada · 1,000 USDG · Regional (Canada) · 11 submissions · Due Sep 1, 2026**
-> **Bounty:** *Develop Solana Ecosystem Auto-Updating Report & Interactive Dashboard* — comprehensive, automated, original
+# Solana Orbit
 
-[![Python 3.11](https://img.shields.io/badge/python-3.11-3776AB?logo=python&logoColor=white)](run.py)
-[![Stdlib Only](https://img.shields.io/badge/stdlib-only-brightgreen)](collector/)
-[![No API Keys](https://img.shields.io/badge/API_keys-none-success)](SECURITY.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Vercel](https://img.shields.io/badge/Vercel-live-black?logo=vercel)](https://dashboard-flame-gamma-14.vercel.app)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-181717?logo=github)](https://edgywol.github.io/Solana_Ecosystem/)
+**Ecosystem Intelligence — an auto-updating report & interactive dashboard for the Solana network.**
 
-| | Link |
-|---|---|
-| **Repository** | [github.com/Edgywol/Solana_Ecosystem](https://github.com/Edgywol/Solana_Ecosystem) |
-| **Live Demo — Vercel (primary, auto-deploy)** | **[dashboard-flame-gamma-14.vercel.app](https://dashboard-flame-gamma-14.vercel.app)** |
-| **Live Demo — GitHub Pages** | [edgywol.github.io/Solana_Ecosystem](https://edgywol.github.io/Solana_Ecosystem/) |
-| **Machine JSON** | [`data/report.json`](data/report.json) |
-| **Human Markdown** | [`data/report.md`](data/report.md) |
+Live on-chain telemetry · Explainable anomaly detection · Zero dependencies · Zero API keys
 
-![Dashboard Preview](docs/screenshot-desktop.png)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](run.py)
+[![Stdlib Only](https://img.shields.io/badge/Dependencies-none-14F195?labelColor=0E121A)](collector/)
+[![API Keys](https://img.shields.io/badge/API%20keys-none-9945FF)](SECURITY.md)
+[![Tests](https://img.shields.io/badge/Tests-9%20passing-2FE6A2)](tests/)
+[![Auto-Refresh](https://img.shields.io/badge/Refresh-every%206h-FFB224?logo=githubactions&logoColor=white)](.github/workflows/refresh.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-ECEEF4?labelColor=0E121A)](LICENSE)
+
+**[View Live Dashboard →](https://dashboard-flame-gamma-14.vercel.app)**
+
+</div>
 
 ---
 
-## 🌟 Submission Highlights & Key Differentiators
+![Solana Orbit Dashboard](docs/screenshot-desktop.png)
 
-- **Zero External Dependencies:** Built with **Python 3.11+ Standard Library only** (`urllib`, `json`, `sqlite3`, `datetime`, `dataclasses`). **No `pip install`, no node_modules, no API keys needed.**
-- **Direct On-Chain Telemetry:** JSON-RPC client directly against Solana mainnet-beta with automatic gzip decompression and multi-endpoint failover.
-- **Explainable Anomaly & Risk Engine:** Predictive statistical engine that fits an exponential-smoothing trend baseline to trailing SQLite snapshots and flags deviations in σ from that trend (TPS shocks, slot latency, SOL price/volatility, TVL drawdowns), plus hardcoded safety checks for cluster health, validator delinquency, and a multi-metric "network stress" composite.
-- **Professional, Original UI:** Clean institutional dark design built from scratch — generous whitespace, clear hierarchy, status pill, KPI cards with inline SVG sparklines, four Chart.js trend charts, a live epoch progress bar, and a searchable/filterable/paginated validator table with CSV export. No third-party template or skin is copied (see `DESIGN.md`).
-- **Measured economics & real social signal, not assumed:** median transaction fees are derived live from `getRecentPrioritizationFees` RPC samples (with an explicit model fallback when sampling is unavailable). **Community sentiment** is pulled live from CoinGecko's crowd-sentiment vote + a keyless RSS cascade (Nitter → GitHub Atom), and **Daily Active Addresses** is estimated from a real RPC signature sample rather than invented. Only tokenized equities remain honestly declared in `coverage.not_collected`; Dune is now **cache-first** (`data/dune_cache.json` live-refreshes on `DUNE_API_KEY`).
-- **Live Price While Provenance Stays Honest:** Dashboard polls CoinGecko `simple/price` every 60s in the browser — a drop at 14:05 shows at 14:06 with a `· LIVE ·` badge, while `Generated at` in `report.json` remains the auditable backend stamp.
-- **Complete Automation Loop:** Scheduled GitHub Action (`refresh.yml`) running every 6 hours and on-demand via `workflow_dispatch`, committing refreshed snapshots and auto-deploying to **GitHub Pages + Vercel** (connected repo, `outputDirectory: dashboard`).
+## Overview
+
+Solana Orbit continuously ingests live data from Solana's JSON-RPC API, DeFiLlama, and CoinGecko, compiles it into a persistent SQLite timeseries, and publishes three synchronized outputs:
+
+| Output | Format | Audience |
+|---|---|---|
+| **Interactive Dashboard** | HTML · Chart.js · dark theme | Humans — [live demo](https://dashboard-flame-gamma-14.vercel.app) |
+| **Structured Report** | [`data/report.json`](data/report.json) | Machines & agents |
+| **Narrative Report** | [`data/report.md`](data/report.md) | Readers & reviewers |
+
+Everything runs on the **Python 3.11 standard library alone** — no `pip install`, no node modules, no API keys, no vendor lock-in. Clone it, run it, done.
 
 ---
 
-## 🏛️ System Architecture
+## Architecture
 
-```
-+-----------------------------------------------------------------------------------------------+
-|                                      DATA INGESTION LAYER                                     |
-|                                                                                               |
-|   +-----------------------------+   +---------------------------+   +---------------------+   |
-|   |      Solana JSON-RPC        |   |      DeFiLlama Public     |   |    CoinGecko Free   |   |
-|   |  (TPS, Slots, Stakes, Node, |   |    (TVL, 30d Hist, DEX)   |   | (Spot Price, 24h,   |   |
-|   |        Signatures/DAA)       |   |                           |   |  Crowd Sentiment)   |   |
-|   +--------------+--------------+   +-------------+-------------+   +----------+----------+   |
-+------------------|--------------------------------|----------------------------|--------------+
-                   |                                |                            |
-                   +------------------------> + <---+----------------------------+
-                                              |
-                                              v
-+-----------------------------------------------------------------------------------------------+
-|                                PYTHON STDLIB COLLECTOR PIPELINE                               |
-|                                                                                               |
-|   1. collector/rpc.py               -> Resilient JSON-RPC client with gzip/deflate decoding   |
-|   2. collector/onchain_metrics.py   -> Throughput, epoch progress, validator stake & Nakamoto |
-|   3. collector/market_data.py       -> Spot prices, DeFi capital turnover & Real Economic Val |
-|   4. collector/news.py              -> Curated technical upgrade & SIMD roadmap tracker       |
-|   5. collector/anomaly.py           -> Predictive exponential-smoothing anomaly engine        |
-|   6. collector/db.py                -> SQLite persistent timeseries snapshot storage          |
-|   7. collector/report_builder.py    -> Dual-format report compiler (JSON + Markdown)          |
-|   8. collector/community_sentiment.py -> Real crowd sentiment (CoinGecko, no API key)         |
-|   9. collector/daily_active_addresses.py -> Real RPC-sampled DAA estimate (no API key)         |
-+---------------------------------------------+-------------------------------------------------+
-                                              |
-                       +----------------------+----------------------+
-                       |                                             |
-                       v                                             v
-+---------------------------------------------+   +---------------------------------------------+
-|               STORAGE & FEEDS               |   |            INTERACTIVE DASHBOARD            |
-|                                             |   |                                             |
-|   - data/snapshots.db (SQLite Timeseries)   |   |   - dashboard/index.html (Vanilla UI)       |
-|   - data/report.json  (Machine-Readable)    |-->|   - dashboard/styles.css (Clean Dark Theme) |
-|   - data/report.md    (Human-Readable)      |   |   - dashboard/app.js     (Chart.js CDN)     |
-+---------------------------------------------+   +---------------------------------------------+
-                       ^
-                       |
-+-----------------------------------------------------------------------------------------------+
-|                       AUTOMATION ENGINE (.github/workflows/refresh.yml)                       |
-|                                                                                               |
-|   - Scheduled Cron (Every 6 hours) + Manual on-demand dispatch (workflow_dispatch)            |
-|   - Executes python run.py -> Commits updated snapshots -> Deploys GitHub Pages               |
-+-----------------------------------------------------------------------------------------------+
+```mermaid
+flowchart TB
+    subgraph sources["DATA SOURCES"]
+        direction LR
+        RPC["Solana JSON-RPC<br/><i>mainnet-beta</i>"]
+        LLAMA["DeFiLlama<br/><i>TVL · DEX · stablecoins</i>"]
+        CG["CoinGecko<br/><i>price · sentiment</i>"]
+        RSS["Keyless RSS<br/><i>Nitter · GitHub Atom</i>"]
+    end
+
+    subgraph pipeline["COLLECTOR PIPELINE — Python stdlib only"]
+        direction LR
+        RPCCLIENT["rpc.py<br/>resilient client · gzip<br/>multi-endpoint failover"]
+        ONCHAIN["onchain_metrics.py<br/>TPS · epoch · validators<br/>Nakamoto coefficient"]
+        MARKET["market_data.py<br/>REV · DeFi · stablecoins"]
+        SOCIAL["community_sentiment.py<br/>daily_active_addresses.py<br/>social_ingest.py"]
+        ANOMALY["anomaly.py<br/>σ-trend anomaly engine"]
+    end
+
+    subgraph outputs["STORAGE & OUTPUTS"]
+        direction LR
+        DB[("snapshots.db<br/>SQLite timeseries")]
+        JSON["report.json"]
+        MD["report.md"]
+    end
+
+    DASH["INTERACTIVE DASHBOARD<br/>vanilla HTML/CSS/JS · Chart.js"]
+
+    CRON["⏰ GitHub Actions<br/>cron · every 6h · on demand"]
+
+    sources --> pipeline --> outputs
+    DB --> ANOMALY
+    outputs --> DASH
+    CRON --> pipeline
+    CRON -->|auto-commit + deploy| DASH
 ```
 
----
-
-## 🌐 Data Sources & Methodology
-
-| Data Category | Provider / Endpoint | Methods / Fields | Integration Details |
-|---|---|---|---|
-| **Consensus & Performance** | `api.mainnet-beta.solana.com` | `getSlot`, `getBlockTime`, `getEpochInfo`, `getRecentPerformanceSamples` | Samples 30–60 performance windows to derive current TPS, true non-vote TPS, 15m average TPS, and average slot duration in ms. |
-| **Validators & Decentralization** | `api.mainnet-beta.solana.com` | `getVoteAccounts` (with gzip) | Ingests active and delinquent vote accounts, calculates active stake in SOL, and computes the **Nakamoto Coefficient** (minimum validators required to control 33.3% of stake). |
-| **Cluster Health & Supply** | `api.mainnet-beta.solana.com` | `getHealth`, `getSupply` | Checks node health and calculates circulating vs staked SOL supply ratio. |
-| **DeFi & Liquidity** | `api.llama.fi`, `stablecoins.llama.fi` | `/v2/chains`, `/historicalChainTvl/Solana`, `/overview/dexs/solana`, `/stablecoinchains` | Ingests live Solana TVL, trailing 30-day historical TVL series, 24h DEX volume, and USD stablecoin market cap. |
-| **Market Valuation** | `api.coingecko.com` (Binance fallback) | `/simple/price?ids=solana` | Ingests SOL/USD spot price, 24h price percentage change, market cap, and 24h volume. |
-| **Real Economic Value (REV)** | Derived Economic Metric | Calculated in `collector/market_data.py` | Transparent proxy formula: `(Estimated Daily Non-Vote Tx * Median Fee USD) + Daily Jito MEV Tip Flow`. |
-| **Community Sentiment** | `api.coingecko.com` | `/coins/solana?...&community_data=true` | Live crowd-sentiment vote (`sentiment_votes_up_percentage`), community-data counts (Telegram followers), and SOL 24h momentum. **No API key.** Correlated against on-chain momentum in `collector/community_sentiment.py`. |
-| **Daily Active Addresses (DAA)** | `api.mainnet-beta.solana.com` | `getSignaturesForAddress` + `getTransaction` | RPC-sampled fee-payer uniqueness across high-coverage programs, extrapolated to a clearly-labeled **modeled lower bound** from daily non-vote transaction volume. **No API key.** Full methodology in `collector/daily_active_addresses.py`. |
-| **Dune Analytics** | `dune.com` + `api.dune.com` | `v1/query/{id}/results` | Cache-first snapshot (`data/dune_cache.json`) with live refresh when `DUNE_API_KEY` set. No key required to run. See `collector/dune.py`. |
-| **Social Ingest (Twitter/X proxy)** | `nitter.net` / `github.com` Atom | `RSS/Atom` | Keyless RSS cascade: tries Nitter RSS, falls back to Solana SIMD GitHub Atom with sentiment tags. Never fabricated; reports `unavailable` if all endpoints 403. See `collector/social_ingest.py`. |
-| **Protocol Roadmap** | Hand-Curated Technical Ledger | `collector/news.py` | Curated technical upgrade ledger covering Alpenglow, Firedancer, SIMD-0096, and SIMD-0123. |
+**Pipeline modules** — `rpc` (transport) → `onchain_metrics` / `market_data` / `community_sentiment` / `daily_active_addresses` / `social_ingest` (domain collectors) → `db` (persistence) → `anomaly` (statistical analysis) → `report_builder` (JSON + Markdown compilation).
 
 ---
 
-## 🚨 Anomaly Detection Engine
+## Data Sources & Methodology
 
-The anomaly detection engine (`collector/anomaly.py`) uses explainable, deterministic statistical checks against historical snapshots:
-
-```python
-# Core Anomaly Rules Evaluated on Every Run:
-1. Predictive TPS trend: fits an exponential-smoothing trend to trailing snapshots;
-   flags if current TPS deviates >2σ (Warning) or >3.5σ (Critical) from the trend line.
-2. Slot Duration: flags if average slot time exceeds 550ms (Warning) or 750ms (Critical) vs 400ms target.
-3. Delinquency Spike: flags if delinquent validator stake exceeds 2.0% of total active stake.
-4. SOL Price / Volatility: flags >2σ deviation from the smoothed momentum baseline, plus
-   hardcoded >10% (Warning) / >20% (Critical) absolute 24h moves.
-5. TVL Drawdown: flags >10% 24h DeFi TVL drop.
-6. Cluster Health: flags if RPC health status is degraded or connectivity fails.
-7. Network Stress (composite): a WARN/CRITICAL risk index blending recent TPS drop,
-   slot-time rise, and TVL drawdown into one headline stress score.
-```
-
-Active alerts appear in both `report.json` (as structured alert objects) and `report.md` (as highlighted callout blocks), and render with severity badges in the dashboard's Anomaly Panel.
+| Category | Source | What is collected |
+|---|---|---|
+| **Network performance** | `api.mainnet-beta.solana.com` | TPS (current, non-vote, 15m avg) via `getRecentPerformanceSamples`, slot time via `getBlockTime`, epoch progress via `getEpochInfo` |
+| **Validators & decentralization** | `getVoteAccounts` | Active/delinquent counts, active stake in SOL, top validators by stake, commission distribution, **Nakamoto Coefficient** (min validators to control 33.3% of stake) |
+| **Cluster health & supply** | `getHealth`, `getSupply` | Node health, circulating vs staked SOL ratio |
+| **DeFi & liquidity** | `api.llama.fi` | Live Solana TVL, 30-day TVL history, 24h DEX volume, top Solana-native protocols, stablecoin supply |
+| **Market valuation** | CoinGecko (Binance fallback) | SOL/USD spot, 24h change, market cap, volume |
+| **Real Economic Value** | Derived in `market_data.py` | `(daily non-vote tx × median fee) + Jito MEV tip flow` — formula documented in-code |
+| **Median transaction fee** | `getRecentPrioritizationFees` | Live RPC sampling with explicit modeled fallback |
+| **Community sentiment** | CoinGecko crowd vote | `sentiment_votes_up_percentage`, correlated with on-chain momentum |
+| **Daily active addresses** | `getSignaturesForAddress` → `getTransaction` | RPC fee-payer sampling extrapolated to a labeled **lower-bound model** |
+| **Social signal** | Nitter RSS → GitHub Atom cascade | Keyless, never fabricated — reports `unavailable` if all endpoints fail |
+| **Dune Analytics** | `api.dune.com` | Cache-first snapshot; live refresh when `DUNE_API_KEY` is set — **not required to run** |
 
 ---
 
-## 🤖 Automation Strategy
+## Anomaly Detection
 
-The workflow in [`.github/workflows/refresh.yml`](.github/workflows/refresh.yml) guarantees consistent, scheduled intelligence delivery:
-1. **Trigger:** Runs automatically on cron every 6 hours (`0 */6 * * *`) and on manual `workflow_dispatch` for live demos.
-2. **Execution:** Standard Ubuntu runner spins up Python 3.11 and executes `python3 run.py`.
-3. **Commit:** Changes to `data/report.json`, `data/report.md`, and `data/snapshots.db` are automatically committed to `main` with `[skip ci]`.
-4. **Deploy:** Uses `actions/deploy-pages@v4` to immediately deploy the updated static dashboard to GitHub Pages.
+The engine in [`collector/anomaly.py`](collector/anomaly.py) fits an exponential-smoothing trend baseline to trailing SQLite snapshots and flags deviations in standard deviations — every alert is explainable, not magic:
 
----
+| Rule | Warning | Critical |
+|---|---|---|
+| TPS deviation from smoothed trend | > 2σ | > 3.5σ |
+| Average slot time vs 400ms target | > 550ms | > 750ms |
+| Delinquent stake share | > 2.0% | — |
+| SOL 24h move vs momentum baseline | > 2σ / > 10% | > 20% |
+| DeFi TVL 24h drawdown | > 10% | — |
+| Cluster health | RPC degraded | RPC unreachable |
 
-## 💻 How to Run Locally (Zero Setup)
+A composite **network stress index** blends recent TPS drop, slot-time rise, and TVL drawdown into one headline risk score. Alerts surface as structured objects in `report.json`, highlighted callouts in `report.md`, and severity-badged entries in the dashboard.
 
-### Prerequisites
-- Python 3.11+ installed (Standard Library only — **no `pip install` required!**)
-- Modern web browser
+Run the engine's self-tests against synthetic stress scenarios:
 
-### Step 1: Clone Repository
-```bash
-git clone https://github.com/Edgywol/Solana_Ecosystem.git
-cd solana-ecosystem-dashboard
-```
-
-### Step 2: Ingest Live Data & Compile Reports
-```bash
-python3 run.py
-```
-*Outputs generated `data/report.json`, `data/report.md`, and updates `data/snapshots.db`.*
-
-### Step 3: Launch Local Dashboard Preview
-```bash
-python3 -m http.server 8000
-```
-Open your browser at: **[http://localhost:8000/dashboard/](http://localhost:8000/dashboard/)** (or `http://localhost:8000/`).
-
----
-
-## 🧪 Running Unit Tests
-To verify the anomaly detection engine triggers against synthetic stress scenarios:
 ```bash
 python3 -m collector.anomaly
 ```
 
 ---
 
-## ⚠️ Transparent Limitations & Scope
+## Automation
 
-- **Community Sentiment (real, keyless — Twitter/X proxy):** CoinGecko crowd vote (`sentiment_votes_up_percentage`) + SOL momentum, plus a **keyless RSS cascade** (`collector/social_ingest.py`: Nitter RSS → GitHub SIMD Atom) with sentiment tags. We avoid X Enterprise API (paywalled) and never fabricate — reports `unavailable` if all RSS 403s.
-- **Daily Active Addresses (real, modeled):** Live RPC fee-payer sample (`getSignaturesForAddress` → `getTransaction` → unique `accountKeys[0]`) extrapolated to a transparent **lower-bound model** (`daily non-vote txns ÷ 35`, exposed & tunable). Labeled as model — authoritative DAA needs Dune/Flipside.
-- **Dune Analytics (cache-first, no key required):** `data/dune_cache.json` holds the last known good snapshot (DEX volume + active addresses) with provenance; live refresh only if `DUNE_API_KEY` set (`collector/dune.py`). No key required to run.
-- **Tokenized Equities:** No free, keyless public API found after probing Jupiter/RWA feeds — honestly declared in `coverage.not_collected`; DEX volume is shown as proxy.
-- **Live Price Ticker:** Dashboard fetches CoinGecko `simple/price` client-side every 60s (`dashboard/app.js:liveTicker`) — price drops appear in ~1 min while `Generated at` provenance stays honest.
-- **Public RPC Rate Limits:** Default is `api.mainnet-beta.solana.com` with exponential backoff + snapshot quarantine (`collector/db.py:quarantine`). Supply `SOLANA_RPC_URL`/`SOLANA_RPC_URLS` for N-of-M consensus.
+[`.github/workflows/refresh.yml`](.github/workflows/refresh.yml) closes the loop:
+
+1. **Trigger** — cron every 6 hours (`0 */6 * * *`), plus manual `workflow_dispatch`
+2. **Collect** — Ubuntu runner executes `python3 run.py`
+3. **Commit** — refreshed `report.json`, `report.md`, and `snapshots.db` are auto-committed with `[skip ci]`
+4. **Deploy** — dashboard auto-deploys to Vercel (connected repo, `outputDirectory: dashboard`)
+
+In the browser, the dashboard also polls CoinGecko every 60s for a `· LIVE ·` price ticker, while `Generated at` in the JSON remains the auditable backend stamp.
 
 ---
 
-## 📄 Submission Requirements — Mapped
+## Quick Start
 
-| Requirement | Where | Status |
-|---|---|---|
-| Public GitHub + README | This repo | ✅ |
-| Live demo (higher consideration) | **Vercel** `dashboard-flame-gamma-14.vercel.app` + **Pages** `edgywol.github.io/Solana_Ecosystem` | ✅ |
-| Sample JSON + Markdown | [`data/report.json`](data/report.json) · [`data/report.md`](data/report.md) | ✅ |
-| Data sources write-up | § Data Sources & Methodology + `SECURITY.md` | ✅ |
-| Automation strategy | § Automation Strategy + `.github/workflows/refresh.yml` | ✅ |
-| Anomaly detection | § Anomaly Detection Engine + `collector/anomaly.py` | ✅ |
-| Setup instructions | § How to Run Locally | ✅ |
+**Prerequisites:** Python 3.11+ and a browser. That's it.
 
-## ✅ Submission Verification Checklist
+```bash
+git clone https://github.com/Edgywol/Solana_Ecosystem.git
+cd Solana_Ecosystem
 
-- [x] **Public GitHub Repository:** Clean history, `SECURITY.md`, `DESIGN.md`, no secrets (see `SECURITY.md`).
-- [x] **Live Hosted Dashboard:** **Vercel** (auto-deploy on push) + **GitHub Pages** (`deploy-pages@v4`), zero build.
-- [x] **Committed Sample Reports:** Verified [`data/report.json`](data/report.json) and [`data/report.md`](data/report.md).
-- [x] **Zero Dependencies:** Stdlib-only Python (`urllib`/`sqlite3`) + Chart.js CDN, no `pip`/`npm`.
-- [x] **Brand Compliance:** Solana logomark + `#9945FF` → `#14F195` gradient, `Inter` + `JetBrains Mono` tabular numerals.
-- [x] **Automated Pipeline:** Cron `0 */6 * * *` + `workflow_dispatch` + push trigger, quarantine, auto-deploy.
-- [x] **Anomaly Detection:** Exponential-smoothing trend (σ), composite stress, sentiment correlation, forecast band — with `python -m collector.anomaly` unit tests.
+# Collect live data and compile reports
+python3 run.py
 
-> **For Superteam Earn submission:** <br>
-> **Link:** `https://github.com/Edgywol/Solana_Ecosystem` <br>
-> **Tweet Link:** (your teammate posts X thread) — add `https://dashboard-flame-gamma-14.vercel.app` with `#Solana #SuperteamCanada`
+# Serve the dashboard
+python3 -m http.server 8000
+```
+
+Open **http://localhost:8000/dashboard/**.
+
+**Optional environment variables:**
+
+| Variable | Purpose |
+|---|---|
+| `SOLANA_RPC_URL` / `SOLANA_RPC_URLS` | Custom or multi-endpoint RPC (N-of-M consensus) |
+| `DUNE_API_KEY` | Enables live Dune refresh (otherwise cache-only) |
+
+**Run the test suite:**
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+---
+
+## Project Structure
+
+```
+├── run.py                     # One-command entrypoint: collect → analyze → report
+├── collector/
+│   ├── rpc.py                 # Resilient JSON-RPC client (gzip, failover, backoff)
+│   ├── rpc_orchestrator.py    # Multi-endpoint consensus
+│   ├── onchain_metrics.py     # TPS, epoch, validators, Nakamoto coefficient
+│   ├── market_data.py         # Prices, DeFi TVL, stablecoins, REV
+│   ├── community_sentiment.py # Keyless crowd sentiment
+│   ├── daily_active_addresses.py # RPC-sampled DAA model
+│   ├── social_ingest.py       # RSS cascade (Nitter → GitHub Atom)
+│   ├── dune.py                # Cache-first Dune integration
+│   ├── anomaly.py             # Exponential-smoothing anomaly engine
+│   ├── db.py                  # SQLite timeseries + snapshot quarantine
+│   └── report_builder.py      # JSON + Markdown report compiler
+├── dashboard/                 # Static dashboard (deployed to Vercel)
+│   ├── index.html · styles.css · app.js
+│   └── report.json            # Data consumed by the UI
+├── data/                      # Generated artifacts (auto-committed)
+│   ├── report.json · report.md · snapshots.db
+├── tests/                     # Unit tests (anomaly engine + pipeline)
+└── .github/workflows/refresh.yml  # 6-hour automation loop
+```
+
+---
+
+## Honest Scope
+
+Transparency is a feature. What is real, modeled, or not collected is declared explicitly in [`data/report.json`](data/report.json) under `coverage`:
+
+- **Tokenized equities** — no free keyless API exists; declared in `coverage.not_collected`, DEX volume shown as proxy
+- **Daily active addresses** — real RPC sample extrapolated to a labeled lower-bound model (`daily non-vote txns ÷ 35`); authoritative DAA requires Dune/Flipside
+- **Twitter/X** — enterprise API is paywalled; keyless RSS proxy used instead, never fabricated
+- **Public RPC rate limits** — exponential backoff + snapshot quarantine built in; supply `SOLANA_RPC_URLS` for redundancy
+
+Full threat-model and data-integrity practices: [SECURITY.md](SECURITY.md) · Design rationale: [DESIGN.md](DESIGN.md)
+
+---
+
+## License
+
+[MIT](LICENSE) — free to use, fork, and build upon.
+
+<div align="center">
+<br/>
+<sub><b>Solana Orbit</b> — Ecosystem Intelligence · built for the Solana community</sub>
+</div>
