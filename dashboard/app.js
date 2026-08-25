@@ -57,7 +57,7 @@
     valActive: $('val-active'),
     valDelinquent: $('val-delinquent'),
     valDelinqPct: $('val-delinq-pct'),
-    valStakePct: $('val-stake-pct'),
+    valStake: $('val-stake'),
     valTotal: $('val-total'),
     commissionBar: $('commission-bar'),
     topValidatorsList: $('top-validators-list'),
@@ -380,7 +380,7 @@
     setText(el.valDelinquent, fmtNum(v.delinquent_validators));
     const total = v.active_validators + v.delinquent_validators;
     setText(el.valDelinqPct, total > 0 ? ((v.delinquent_validators / total) * 100).toFixed(1) : '0');
-    setText(el.valStakePct, (v.stake_concentration_pct != null ? v.stake_concentration_pct.toFixed(1) : '\u2014') + '%');
+    setText(el.valStake, (v.total_active_stake_sol != null ? fmtSOL(v.total_active_stake_sol) : '\u2014') + ' SOL');
     setText(el.valTotal, fmtNum(total));
 
     const validators = Array.isArray(v.top_validators) ? v.top_validators : [];
@@ -505,7 +505,7 @@
     }
     el.defiTbody.innerHTML = protocols.map(function (p, i) {
       return '<tr data-protocol="' + (p.name || '') + '">'
-        + '<td class="num">' + (i + 1) + '</td>'
+        + '<td>' + (i + 1) + '.</td>'
         + '<td>' + (p.name || '\u2014') + '</td>'
         + '<td class="num">' + fmtUSD(p.tvl_usd, true) + '</td>'
         + '</tr>';
