@@ -41,12 +41,6 @@ Everything runs on the **Python 3.11 standard library alone** — no `pip instal
 
 ```mermaid
 flowchart TB
-    sources --> pipeline --> outputs
-    DB --> ANOMALY
-    outputs --> DASH
-    CRON --> pipeline
-    CRON -->|auto-commit + deploy| DASH
-
     subgraph sources["DATA SOURCES"]
         RPC["Solana JSON-RPC<br/><i>mainnet-beta</i>"]
         LLAMA["DeFiLlama<br/><i>TVL · DEX · stablecoins</i>"]
@@ -70,7 +64,18 @@ flowchart TB
 
     DASH["INTERACTIVE DASHBOARD<br/>vanilla HTML/CSS/JS · Chart.js"]
     CRON["⏰ GitHub Actions<br/>cron · every 6h"]
+
+    sources --> pipeline --> outputs
+    DB --> ANOMALY
+    outputs --> DASH
+    CRON --> pipeline
+    CRON -->|auto-commit + deploy| DASH
 ```
+
+<picture>
+  <source media="(max-width: 600px)" srcset="docs/architecture.svg">
+  <img src="docs/architecture.svg" alt="Solana Orbit architecture — data sources through collector pipeline to storage and dashboard" width="100%" style="max-width:800px; display:block; margin: 16px auto 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.07);">
+</picture>
 
 **Pipeline modules** — `rpc` (transport) → `onchain_metrics` / `market_data` / `community_sentiment` / `daily_active_addresses` / `social_ingest` (domain collectors) → `db` (persistence) → `anomaly` (statistical analysis) → `report_builder` (JSON + Markdown compilation).
 

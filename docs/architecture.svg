@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="980" viewBox="0 0 800 980" role="img" aria-labelledby="title desc">
+<title id="title">Solana Orbit — Architecture</title>
+<desc id="desc">Data sources flow into collector pipeline, then storage and dashboard, triggered by GitHub Actions cron</desc>
+<style>
+  .bg { fill: #07090D; }
+  .card { fill: #0E121A; stroke: rgba(255,255,255,0.08); stroke-width: 1.2; rx: 10; }
+  .sub { fill: #0E121A; stroke: rgba(255,255,255,0.07); stroke-width: 1; rx: 12; }
+  .t { font-family: Inter, system-ui, sans-serif; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; fill: #67728A; }
+  .stitle { font-size: 13px; font-weight: 700; fill: #ECEEF4; }
+  .node { fill: #141925; stroke: rgba(255,255,255,0.08); rx: 8; }
+  .nodeText { font-family: Inter, system-ui, sans-serif; font-size: 12.5px; font-weight: 600; fill: #ECEEF4; text-anchor: middle; }
+  .nodeSub { font-size: 11px; font-weight: 400; fill: #9AA4B6; text-anchor: middle; font-style: italic; }
+  .db { fill: #141925; stroke: rgba(20,241,149,0.25); rx: 8; }
+  .dash { fill: #9945FF; fill-opacity: 0.14; stroke: rgba(153,69,255,0.35); rx: 10; }
+  .cron { fill: #111720; stroke: rgba(255,179,71,0.25); rx: 10; }
+  .arrow { stroke: #67728A; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+  .arrHead { fill: #67728A; }
+</style>
+<rect class="bg" width="800" height="980" rx="14"/>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="arrHead"/></marker>
+  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9945FF"/><stop offset="100%" stop-color="#14F195"/></linearGradient>
+</defs>
+
+<!-- Title -->
+<text x="20" y="34" class="t" font-size="13" font-weight="700" fill="#ECEEF4" letter-spacing="-0.02em">ARCHITECTURE</text>
+<text x="20" y="50" class="t eyebrow">DATA SOURCE → COLLECTOR PIPELINE → STORAGE → DASHBOARD</text>
+
+<!-- Cron -->
+<rect x="20" y="68" width="760" height="52" class="cron" />
+<text x="400" y="88" class="nodeText">⏰ GitHub Actions — cron every 6h · workflow_dispatch</text>
+<text x="400" y="104" class="nodeSub">auto-commit + deploy to Vercel → dashboard</text>
+
+<!-- DATA SOURCES -->
+<rect x="20" y="138" width="760" height="168" class="sub"/>
+<text x="32" y="160" class="t stitle">DATA SOURCES</text>
+<rect x="36" y="172" width="177" height="64" class="node"/><text x="124.5" y="196" class="nodeText">Solana JSON-RPC</text><text x="124.5" y="212" class="nodeSub">mainnet-beta</text>
+<rect x="221" y="172" width="177" height="64" class="node"/><text x="309.5" y="196" class="nodeText">DeFiLlama</text><text x="309.5" y="212" class="nodeSub">TVL · DEX · stablecoins</text>
+<rect x="406" y="172" width="177" height="64" class="node"/><text x="494.5" y="196" class="nodeText">CoinGecko</text><text x="494.5" y="212" class="nodeSub">price · sentiment</text>
+<rect x="591" y="172" width="177" height="64" class="node"/><text x="679.5" y="196" class="nodeText">Keyless RSS</text><text x="679.5" y="212" class="nodeSub">Nitter · GitHub Atom</text>
+
+<!-- Down arrow 1 -->
+<path d="M 400 306 L 400 334" class="arrow"/>
+
+<!-- PIPELINE -->
+<rect x="20" y="334" width="760" height="308" class="sub"/>
+<text x="32" y="356" class="t stitle">COLLECTOR PIPELINE — Python stdlib only</text>
+<rect x="36" y="368" width="232" height="62" class="node"/><text x="152" y="392" class="nodeText">rpc.py</text><text x="152" y="408" class="nodeSub">resilient client</text>
+<rect x="284" y="368" width="232" height="62" class="node"/><text x="400" y="392" class="nodeText">onchain_metrics.py</text><text x="400" y="408" class="nodeSub">TPS · validators · Nakamoto</text>
+<rect x="532" y="368" width="236" height="62" class="node"/><text x="650" y="392" class="nodeText">market_data.py</text><text x="650" y="408" class="nodeSub">REV · DeFi · stablecoins</text>
+<rect x="36" y="444" width="232" height="62" class="node"/><text x="152" y="468" class="nodeText">social_ingest.py</text><text x="152" y="484" class="nodeSub">community · DAA</text>
+<rect x="284" y="444" width="232" height="62" class="node"/><text x="400" y="468" class="nodeText">anomaly.py</text><text x="400" y="484" class="nodeSub">σ-trend engine</text>
+<rect x="532" y="444" width="236" height="62" class="node"/><text x="650" y="462" class="nodeText">db.py</text><text x="650" y="478" class="nodeSub">SQLite timeseries</text>
+<text x="400" y="534" class="t" font-size="11" fill="#67728A" text-anchor="middle">all collectors → <tspan fill="#ECEEF4" font-weight="600">report_builder.py</tspan> → JSON + Markdown</text>
+<rect x="220" y="548" width="360" height="36" rx="18" fill="none" stroke="url(#grad)" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.9"/>
+<text x="400" y="570" class="t" font-size="11" font-weight="600" fill="#9AA4B6" text-anchor="middle">report_builder.py</text>
+
+<!-- Down arrow 2 -->
+<path d="M 400 642 L 400 670" class="arrow"/>
+
+<!-- STORAGE -->
+<rect x="20" y="670" width="760" height="110" class="sub"/>
+<text x="32" y="692" class="t stitle">STORAGE &amp; OUTPUTS</text>
+<rect x="36" y="704" width="232" height="56" class="db"/><text x="152" y="728" class="nodeText">snapshots.db</text><text x="152" y="744" class="nodeSub">SQLite timeseries</text>
+<rect x="284" y="704" width="232" height="56" class="node"/><text x="400" y="728" class="nodeText">report.json</text><text x="400" y="744" class="nodeSub">machines &amp; dashboard</text>
+<rect x="532" y="704" width="236" height="56" class="node"/><text x="650" y="728" class="nodeText">report.md</text><text x="650" y="744" class="nodeSub">narrative</text>
+
+<!-- Down arrow 3 -->
+<path d="M 400 780 L 400 808" class="arrow"/>
+
+<!-- DASHBOARD -->
+<rect x="20" y="808" width="760" height="76" class="dash"/>
+<text x="400" y="838" class="t" font-size="14" font-weight="700" fill="#ECEEF4" text-anchor="middle">INTERACTIVE DASHBOARD</text>
+<text x="400" y="858" class="t" font-size="11" fill="#9AA4B6" text-anchor="middle">vanilla HTML / CSS / JS · Chart.js · /dashboard</text>
+
+<!-- Side annotation for cron -> pipeline -->
+<path d="M 740 94 C 760 94, 760 200, 760 368 L 760 400 L 620 400" class="arrow" stroke-dasharray="5 5" opacity="0.6"/>
+<text x="768" y="240" class="t" font-size="10" fill="#9AA4B6" text-anchor="middle" transform="rotate(90 768 240)">triggers</text>
+</svg>
