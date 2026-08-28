@@ -206,6 +206,31 @@ Full threat-model and data-integrity practices: [SECURITY.md](SECURITY.md) · De
 
 ---
 
+## Submission Requirements Mapping
+
+Each item from the Superteam Canada listing is mapped to the artifact that satisfies it, so reviewers can verify coverage in one pass.
+
+| # | Listing requirement | Where it lives |
+|---|---|---|
+| 1 | **Public GitHub repository** with all code, setup, and a clear `README.md` | This repo — `README.md` (you are reading it), [`run.py`](run.py), [`collector/`](collector/) |
+| 2 | **Live demo or hosted version** of the interactive dashboard | [dashboard-flame-gamma-14.vercel.app](https://dashboard-flame-gamma-14.vercel.app) · auto-deployed by [`vercel.json`](vercel.json) + the GitHub Actions workflow |
+| 3 | **Sample generated Markdown report** | [`data/report.md`](data/report.md) — narrative report committed on every refresh |
+| 4 | **Sample generated JSON report** | [`data/report.json`](data/report.json) — structured report consumed by the dashboard |
+| 5 | **Write-up: data sources & integration** | [Data Sources & Methodology](#data-sources--methodology) above · [DESIGN.md](DESIGN.md) |
+| 6 | **Write-up: automation strategy** | [Automation](#automation) above (cron, `workflow_dispatch`, auto-commit, auto-deploy) |
+| 7 | **Write-up: anomaly detection** | [Anomaly Detection](#anomaly-detection) above · implementation in [`collector/anomaly.py`](collector/anomaly.py) |
+| 8 | **Write-up: setup & run instructions** | [Quick Start](#quick-start) above (`git clone` → `python3 run.py` → serve `dashboard/`) |
+
+**Bonus requirements from the listing that are also satisfied:**
+
+- **Dune Analytics integration** — [`collector/dune.py`](collector/dune.py) (cache-first; live when `DUNE_API_KEY` is set, optional)
+- **Keyless Twitter/X coverage** — [`collector/social_ingest.py`](collector/social_ingest.py) (Nitter RSS → GitHub Atom cascade; reports `unavailable` instead of fabricating)
+- **Nakamoto coefficient** — derived in [`collector/onchain_metrics.py`](collector/onchain_metrics.py)
+- **Tokenized equity proxy** — DEX volume from DeFiLlama used as proxy (declared in `coverage.not_collected`; see [Honest Scope](#honest-scope))
+- **Composite network stress index** — built in [`collector/anomaly.py`](collector/anomaly.py), surfaced as headline risk score in the dashboard
+
+---
+
 ## License
 
 [MIT](LICENSE) — free to use, fork, and build upon.
