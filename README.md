@@ -41,8 +41,13 @@ Everything runs on the **Python 3.11 standard library alone** — no `pip instal
 
 ```mermaid
 flowchart TB
+    sources --> pipeline --> outputs
+    DB --> ANOMALY
+    outputs --> DASH
+    CRON --> pipeline
+    CRON -->|auto-commit + deploy| DASH
+
     subgraph sources["DATA SOURCES"]
-        direction LR
         RPC["Solana JSON-RPC<br/><i>mainnet-beta</i>"]
         LLAMA["DeFiLlama<br/><i>TVL · DEX · stablecoins</i>"]
         CG["CoinGecko<br/><i>price · sentiment</i>"]
@@ -50,30 +55,21 @@ flowchart TB
     end
 
     subgraph pipeline["COLLECTOR PIPELINE — Python stdlib only"]
-        direction LR
-        RPCCLIENT["rpc.py<br/>resilient client · gzip<br/>multi-endpoint failover"]
-        ONCHAIN["onchain_metrics.py<br/>TPS · epoch · validators<br/>Nakamoto coefficient"]
+        RPCCLIENT["rpc.py<br/>resilient client"]
+        ONCHAIN["onchain_metrics.py<br/>TPS · validators · Nakamoto"]
         MARKET["market_data.py<br/>REV · DeFi · stablecoins"]
-        SOCIAL["community_sentiment.py<br/>daily_active_addresses.py<br/>social_ingest.py"]
-        ANOMALY["anomaly.py<br/>σ-trend anomaly engine"]
+        SOCIAL["social_ingest.py<br/>community · DAA"]
+        ANOMALY["anomaly.py<br/>σ-trend engine"]
     end
 
     subgraph outputs["STORAGE & OUTPUTS"]
-        direction LR
         DB[("snapshots.db<br/>SQLite timeseries")]
         JSON["report.json"]
         MD["report.md"]
     end
 
     DASH["INTERACTIVE DASHBOARD<br/>vanilla HTML/CSS/JS · Chart.js"]
-
-    CRON["⏰ GitHub Actions<br/>cron · every 6h · on demand"]
-
-    sources --> pipeline --> outputs
-    DB --> ANOMALY
-    outputs --> DASH
-    CRON --> pipeline
-    CRON -->|auto-commit + deploy| DASH
+    CRON["⏰ GitHub Actions<br/>cron · every 6h"]
 ```
 
 **Pipeline modules** — `rpc` (transport) → `onchain_metrics` / `market_data` / `community_sentiment` / `daily_active_addresses` / `social_ingest` (domain collectors) → `db` (persistence) → `anomaly` (statistical analysis) → `report_builder` (JSON + Markdown compilation).
