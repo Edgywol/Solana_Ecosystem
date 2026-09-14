@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T17:36:56.116495+00:00",
+  "generated_at": "2026-09-14T21:25:26.890663+00:00",
   "generator_version": "1.0.0",
   "status": "success",
   "health": {
@@ -14,7 +14,7 @@
       "Solana Foundation": {
         "name": "Solana Foundation",
         "healthy": true,
-        "last_success": 1789407424.0038328,
+        "last_success": 1789421134.289666,
         "last_error": null,
         "consecutive_failures": 0,
         "success_count": 2,
@@ -33,36 +33,28 @@
           "consensus_achieved": true,
           "healthy_endpoints": 1,
           "required_endpoints": 1,
-          "timestamp": 1789407423.8964317
+          "timestamp": 1789421134.1569214
         },
         {
           "metric": "getSlot",
-          "agreed_value": 447035186,
+          "agreed_value": 447078449,
           "consensus_achieved": true,
           "healthy_endpoints": 1,
           "required_endpoints": 1,
-          "timestamp": 1789407424.0038507
+          "timestamp": 1789421134.2896733
         }
       ]
     },
-    "timestamp": "2026-09-14T17:37:50.619515Z"
+    "timestamp": "2026-09-14T21:26:20.971882Z"
   },
   "alerts": [],
-  "sentiment_correlations": [
-    {
-      "type": "positive_sentiment_with_high_tps",
-      "severity": "info",
-      "description": "Positive community sentiment (0.45) with strong TPS (4446). Healthy ecosystem signals.",
-      "sentiment_score": 0.448,
-      "tps": 4445.5
-    }
-  ],
+  "sentiment_correlations": [],
   "tps_forecast": {
-    "forecast": 4042.6,
-    "lower": 3650.4,
-    "upper": 4434.7,
-    "sigma": 392.2,
-    "baseline": 3968.4
+    "forecast": 4208.2,
+    "lower": 3803.7,
+    "upper": 4612.8,
+    "sigma": 404.6,
+    "baseline": 4092.9
   },
   "social_feed": {
     "ingest_status": "live",
@@ -148,7 +140,7 @@
       "bearish": 0,
       "neutral": 19
     },
-    "fetched_at": "2026-09-14T17:37:05.910298+00:00"
+    "fetched_at": "2026-09-14T21:25:36.701354+00:00"
   },
   "dune": {
     "dune_status": "cached",
@@ -197,38 +189,38 @@
   "ticker": [
     {
       "label": "SOL / USD",
-      "value": "$102.78",
-      "delta": 1.87,
+      "value": "$103.78",
+      "delta": 2.3,
       "type": "currency"
     },
     {
       "label": "Current TPS",
-      "value": "4,446",
-      "delta": 5.4,
+      "value": "4,261",
+      "delta": 0.1,
       "type": "number"
     },
     {
       "label": "Slot Time",
-      "value": "316ms",
-      "delta": -84.1,
+      "value": "317ms",
+      "delta": -83.4,
       "type": "latency"
     },
     {
       "label": "Epoch",
       "value": "1034",
-      "subtext": "80.37%",
+      "subtext": "90.38%",
       "type": "progress"
     },
     {
       "label": "Active Nodes",
-      "value": "679",
+      "value": "678",
       "delta": 0.0,
       "type": "number"
     },
     {
       "label": "DeFi TVL",
-      "value": "$5.90B",
-      "delta": -0.16,
+      "value": "$5.96B",
+      "delta": 0.89,
       "type": "currency"
     },
     {
@@ -240,13 +232,12 @@
   "live_cards": {
     "sol_price": {
       "title": "SOL Price",
-      "value": 102.78,
-      "formatted": "$102.78",
-      "delta_24h_pct": 1.87,
-      "market_cap_usd": 60263058146.45,
-      "volume_24h_usd": 2933798793.32,
+      "value": 103.78,
+      "formatted": "$103.78",
+      "delta_24h_pct": 2.3,
+      "market_cap_usd": 60904439651.55,
+      "volume_24h_usd": 3533640236.69,
       "sparkline": [
-        99.38,
         99.39,
         103.35,
         102.62,
@@ -260,18 +251,18 @@
         101.05,
         101.13,
         101.51,
-        102.78
+        102.78,
+        103.78
       ]
     },
     "network_tps": {
       "title": "Network TPS",
-      "value": 4445.5,
-      "formatted": "4,446",
-      "non_vote_tps": 2262.2,
-      "avg_tps_15m": 4216.6,
-      "delta_pct": 5.4,
+      "value": 4261.1,
+      "formatted": "4,261",
+      "non_vote_tps": 2099.2,
+      "avg_tps_15m": 4256.1,
+      "delta_pct": 0.1,
       "sparkline": [
-        4273.5,
         3848.7,
         4553.1,
         4242.4,
@@ -285,18 +276,18 @@
         3966.8,
         3958.0,
         3878.7,
-        4445.5
+        4445.5,
+        4261.1
       ]
     },
     "active_validators": {
       "title": "Active Validators",
-      "value": 679,
-      "formatted": "679",
-      "delinquent_count": 11,
+      "value": 678,
+      "formatted": "678",
+      "delinquent_count": 12,
       "nakamoto_coefficient": 18,
       "delta_pct": 0.0,
       "sparkline": [
-        676,
         676,
         671,
         677,
@@ -310,33 +301,34 @@
         677,
         679,
         675,
-        679
+        679,
+        678
       ]
     }
   },
   "network": {
-    "current_tps": 4445.5,
-    "non_vote_tps": 2262.2,
-    "avg_tps_15m": 4216.6,
-    "avg_slot_time_ms": 315.9,
-    "current_slot": 447035194,
-    "block_height": 425077593,
-    "total_transactions": 548430059081,
+    "current_tps": 4261.1,
+    "non_vote_tps": 2099.2,
+    "avg_tps_15m": 4256.1,
+    "avg_slot_time_ms": 316.6,
+    "current_slot": 447078459,
+    "block_height": 425120809,
+    "total_transactions": 548487698287,
     "epoch": 1034,
-    "epoch_slot_index": 347194,
+    "epoch_slot_index": 390459,
     "epoch_slots_total": 432000,
-    "epoch_progress_pct": 80.37,
-    "epoch_time_remaining_hours": 7.4
+    "epoch_progress_pct": 90.38,
+    "epoch_time_remaining_hours": 3.7
   },
   "validators": {
-    "active_validators": 679,
-    "delinquent_validators": 11,
+    "active_validators": 678,
+    "delinquent_validators": 12,
     "total_validators": 690,
-    "total_active_stake_sol": 438390588.82,
-    "total_delinquent_stake_sol": 349778.27,
-    "delinquent_stake_pct": 0.08,
+    "total_active_stake_sol": 438502249.42,
+    "total_delinquent_stake_sol": 238117.66,
+    "delinquent_stake_pct": 0.05,
     "nakamoto_coefficient": 18,
-    "top_10_stake_pct": 24.31,
+    "top_10_stake_pct": 24.3,
     "top_validators": [
       {
         "rank": 1,
@@ -346,7 +338,7 @@
         "activated_stake_sol": 17568188.64,
         "stake_percentage": 4.01,
         "commission": 7,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -357,7 +349,7 @@
         "activated_stake_sol": 16361599.42,
         "stake_percentage": 3.73,
         "commission": 0,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -368,7 +360,7 @@
         "activated_stake_sol": 12501348.7,
         "stake_percentage": 2.85,
         "commission": 0,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -379,7 +371,7 @@
         "activated_stake_sol": 11372390.6,
         "stake_percentage": 2.59,
         "commission": 5,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -390,7 +382,7 @@
         "activated_stake_sol": 9619665.2,
         "stake_percentage": 2.19,
         "commission": 0,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -401,7 +393,7 @@
         "activated_stake_sol": 9252711.97,
         "stake_percentage": 2.11,
         "commission": 7,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -412,7 +404,7 @@
         "activated_stake_sol": 9025174.9,
         "stake_percentage": 2.06,
         "commission": 10,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -423,7 +415,7 @@
         "activated_stake_sol": 7367885.16,
         "stake_percentage": 1.68,
         "commission": 7,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -434,7 +426,7 @@
         "activated_stake_sol": 6943003.36,
         "stake_percentage": 1.58,
         "commission": 5,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -445,7 +437,7 @@
         "activated_stake_sol": 6552506.03,
         "stake_percentage": 1.49,
         "commission": 0,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -456,7 +448,7 @@
         "activated_stake_sol": 6122616.98,
         "stake_percentage": 1.4,
         "commission": 100,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -467,7 +459,7 @@
         "activated_stake_sol": 5964450.61,
         "stake_percentage": 1.36,
         "commission": 5,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -478,7 +470,7 @@
         "activated_stake_sol": 5876473.11,
         "stake_percentage": 1.34,
         "commission": 0,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -489,7 +481,7 @@
         "activated_stake_sol": 5630480.35,
         "stake_percentage": 1.28,
         "commission": 100,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       },
       {
@@ -500,35 +492,35 @@
         "activated_stake_sol": 4834121.2,
         "stake_percentage": 1.1,
         "commission": 7,
-        "last_vote": 447035193,
+        "last_vote": 447078459,
         "status": "active"
       }
     ]
   },
   "supply": {
-    "total_sol": 634017304.48,
-    "circulating_sol": 586892559.75,
-    "non_circulating_sol": 47124744.73,
-    "staked_sol": 438390588.82,
-    "staked_pct": 69.14
+    "total_sol": 634017152.03,
+    "circulating_sol": 586892406.66,
+    "non_circulating_sol": 47124745.37,
+    "staked_sol": 438502249.42,
+    "staked_pct": 69.16
   },
   "price": {
-    "price_usd": 102.78,
-    "change_24h_pct": 1.87,
-    "market_cap_usd": 60263058146.45,
-    "volume_24h_usd": 2933798793.32,
+    "price_usd": 103.78,
+    "change_24h_pct": 2.3,
+    "market_cap_usd": 60904439651.55,
+    "volume_24h_usd": 3533640236.69,
     "ath_usd": 293.31,
-    "last_updated_at": "2026-09-14T17:37:04.180509+00:00"
+    "last_updated_at": "2026-09-14T21:25:34.582990+00:00"
   },
   "sentiment": {
     "sentiment_status": "available",
     "source_type": "CoinGecko community votes + market momentum (no API key)",
     "current": {
-      "timestamp": "2026-09-14T17:37:04.790604+00:00",
-      "score": 0.448,
-      "bullish_pct": 79.31,
-      "bearish_pct": 20.69,
-      "price_momentum_24h_pct": 1.87,
+      "timestamp": "2026-09-14T21:25:35.691716+00:00",
+      "score": 0.386,
+      "bullish_pct": 74.29,
+      "bearish_pct": 25.71,
+      "price_momentum_24h_pct": 2.3,
       "social": {
         "reddit_subscribers": null,
         "reddit_active_48h": null,
@@ -544,9 +536,9 @@
       ]
     },
     "trend_24h": {
-      "avg_sentiment_score": 0.448,
-      "min_sentiment_score": 0.448,
-      "max_sentiment_score": 0.448,
+      "avg_sentiment_score": 0.386,
+      "min_sentiment_score": 0.386,
+      "max_sentiment_score": 0.386,
       "samples": 1
     }
   },
@@ -591,174 +583,174 @@
     "median_fee_usd": 0.0029,
     "rev_24h_usd": 755547.88,
     "rev_methodology": "Proxy calculated from estimated daily non-vote transactions * (base fee + median priority fee) + estimated Jito MEV tips.",
-    "velocity_ratio": 0.304,
+    "velocity_ratio": 0.301,
     "fee_source": "model fallback: no positive priority-fee samples available on public RPC",
-    "tvl_usd": 5897760887.08,
-    "tvl_change_24h_pct": -0.16,
+    "tvl_usd": 5958986796.68,
+    "tvl_change_24h_pct": 0.89,
     "dex_volume_24h_usd": 1790994711.97,
-    "stablecoin_mcap_usd": 15889679835.21,
-    "capital_efficiency_ratio": 0.304,
+    "stablecoin_mcap_usd": 16025058615.01,
+    "capital_efficiency_ratio": 0.301,
     "historical_tvl_30d": [
       {
         "date": "2026-08-16",
-        "tvl": 4820392976.0
+        "tvl": 4820393272.0
       },
       {
         "date": "2026-08-17",
-        "tvl": 4788574422.0
+        "tvl": 4788574718.0
       },
       {
         "date": "2026-08-18",
-        "tvl": 4861288401.0
+        "tvl": 4861288697.0
       },
       {
         "date": "2026-08-19",
-        "tvl": 4908451617.0
+        "tvl": 4908451913.0
       },
       {
         "date": "2026-08-20",
-        "tvl": 5238108461.0
+        "tvl": 5238108757.0
       },
       {
         "date": "2026-08-21",
-        "tvl": 5344198817.0
+        "tvl": 5344199113.0
       },
       {
         "date": "2026-08-22",
-        "tvl": 5564324969.0
+        "tvl": 5564325266.0
       },
       {
         "date": "2026-08-23",
-        "tvl": 5570066019.0
+        "tvl": 5570066316.0
       },
       {
         "date": "2026-08-24",
-        "tvl": 5573960501.0
+        "tvl": 5573960798.0
       },
       {
         "date": "2026-08-25",
-        "tvl": 5749915182.0
+        "tvl": 5749915478.0
       },
       {
         "date": "2026-08-26",
-        "tvl": 5619007502.0
+        "tvl": 5619007799.0
       },
       {
         "date": "2026-08-27",
-        "tvl": 5786523095.0
+        "tvl": 5786523392.0
       },
       {
         "date": "2026-08-28",
-        "tvl": 6026083654.0
+        "tvl": 6026083950.0
       },
       {
         "date": "2026-08-29",
-        "tvl": 5882475000.0
+        "tvl": 5882475309.0
       },
       {
         "date": "2026-08-30",
-        "tvl": 5923984685.0
+        "tvl": 5923984993.0
       },
       {
         "date": "2026-08-31",
-        "tvl": 5800414817.0
+        "tvl": 5800415126.0
       },
       {
         "date": "2026-09-01",
-        "tvl": 5997312351.0
+        "tvl": 5997312660.0
       },
       {
         "date": "2026-09-02",
-        "tvl": 5660443630.0
+        "tvl": 5660443939.0
       },
       {
         "date": "2026-09-03",
-        "tvl": 5713724274.0
+        "tvl": 5713724583.0
       },
       {
         "date": "2026-09-04",
-        "tvl": 5931956233.0
+        "tvl": 5931956542.0
       },
       {
         "date": "2026-09-05",
-        "tvl": 5872166584.0
+        "tvl": 5872166893.0
       },
       {
         "date": "2026-09-06",
-        "tvl": 5919220883.0
+        "tvl": 5919221192.0
       },
       {
         "date": "2026-09-07",
-        "tvl": 6005631599.0
+        "tvl": 6005631908.0
       },
       {
         "date": "2026-09-08",
-        "tvl": 5924360120.0
+        "tvl": 5924360429.0
       },
       {
         "date": "2026-09-09",
-        "tvl": 5954412801.0
+        "tvl": 5954413110.0
       },
       {
         "date": "2026-09-10",
-        "tvl": 5857036014.0
+        "tvl": 5857036323.0
       },
       {
         "date": "2026-09-11",
-        "tvl": 5751314336.0
+        "tvl": 5751314645.0
       },
       {
         "date": "2026-09-12",
-        "tvl": 5899901962.0
+        "tvl": 5899902271.0
       },
       {
         "date": "2026-09-13",
-        "tvl": 5906911441.0
+        "tvl": 5906911750.0
       },
       {
         "date": "2026-09-14",
-        "tvl": 5897732996.0
+        "tvl": 5959195845.0
       }
     ],
     "top_defi_protocols": [
       {
         "name": "Sanctum Validator LSTs",
-        "tvl_usd": 1558982144.05,
+        "tvl_usd": 1579520617.32,
         "type": "Liquid Staking"
       },
       {
         "name": "Kamino Lend",
-        "tvl_usd": 1354295899.65,
+        "tvl_usd": 1363273049.55,
         "type": "Lending"
       },
       {
         "name": "Raydium AMM",
-        "tvl_usd": 1131182558.42,
+        "tvl_usd": 1151203175.0,
         "type": "Dexs"
       },
       {
         "name": "Jupiter Lend",
-        "tvl_usd": 1103179801.08,
+        "tvl_usd": 1109959791.63,
         "type": "Lending"
       },
       {
         "name": "Binance Staked SOL",
-        "tvl_usd": 1058365390.44,
+        "tvl_usd": 1070666594.87,
         "type": "Liquid Staking"
       },
       {
         "name": "Jito Liquid Staking",
-        "tvl_usd": 1049394668.43,
+        "tvl_usd": 1060794080.06,
         "type": "Liquid Staking"
       },
       {
         "name": "Jupiter Perpetual Exchange",
-        "tvl_usd": 753962132.45,
+        "tvl_usd": 766864659.35,
         "type": "Derivatives"
       },
       {
         "name": "Jupiter Staked SOL",
-        "tvl_usd": 526537556.08,
+        "tvl_usd": 534300716.75,
         "type": "Liquid Staking"
       }
     ]
@@ -842,10 +834,6 @@
   },
   "historical_trends": {
     "tps": [
-      {
-        "timestamp": "2026-09-07T11:30:04.140107+00:00",
-        "value": 3407.9
-      },
       {
         "timestamp": "2026-09-07T17:10:29.177093+00:00",
         "value": 3899.6
@@ -961,13 +949,13 @@
       {
         "timestamp": "2026-09-14T17:36:56.116495+00:00",
         "value": 4445.5
+      },
+      {
+        "timestamp": "2026-09-14T21:25:26.890663+00:00",
+        "value": 4261.1
       }
     ],
     "sol_price": [
-      {
-        "timestamp": "2026-09-07T11:30:04.140107+00:00",
-        "value": 104.85
-      },
       {
         "timestamp": "2026-09-07T17:10:29.177093+00:00",
         "value": 103.93
@@ -1083,13 +1071,13 @@
       {
         "timestamp": "2026-09-14T17:36:56.116495+00:00",
         "value": 102.78
+      },
+      {
+        "timestamp": "2026-09-14T21:25:26.890663+00:00",
+        "value": 103.78
       }
     ],
     "tvl": [
-      {
-        "timestamp": "2026-09-07T11:30:04.140107+00:00",
-        "value": 5924761772.53
-      },
       {
         "timestamp": "2026-09-07T17:10:29.177093+00:00",
         "value": 5929488747.68
@@ -1205,13 +1193,13 @@
       {
         "timestamp": "2026-09-14T17:36:56.116495+00:00",
         "value": 5897760887.08
+      },
+      {
+        "timestamp": "2026-09-14T21:25:26.890663+00:00",
+        "value": 5958986796.68
       }
     ],
     "validators": [
-      {
-        "timestamp": "2026-09-07T11:30:04.140107+00:00",
-        "value": 675
-      },
       {
         "timestamp": "2026-09-07T17:10:29.177093+00:00",
         "value": 675
@@ -1327,128 +1315,132 @@
       {
         "timestamp": "2026-09-14T17:36:56.116495+00:00",
         "value": 679
+      },
+      {
+        "timestamp": "2026-09-14T21:25:26.890663+00:00",
+        "value": 678
       }
     ],
     "historical_tvl_30d": [
       {
         "date": "2026-08-16",
-        "tvl": 4820392976.0
+        "tvl": 4820393272.0
       },
       {
         "date": "2026-08-17",
-        "tvl": 4788574422.0
+        "tvl": 4788574718.0
       },
       {
         "date": "2026-08-18",
-        "tvl": 4861288401.0
+        "tvl": 4861288697.0
       },
       {
         "date": "2026-08-19",
-        "tvl": 4908451617.0
+        "tvl": 4908451913.0
       },
       {
         "date": "2026-08-20",
-        "tvl": 5238108461.0
+        "tvl": 5238108757.0
       },
       {
         "date": "2026-08-21",
-        "tvl": 5344198817.0
+        "tvl": 5344199113.0
       },
       {
         "date": "2026-08-22",
-        "tvl": 5564324969.0
+        "tvl": 5564325266.0
       },
       {
         "date": "2026-08-23",
-        "tvl": 5570066019.0
+        "tvl": 5570066316.0
       },
       {
         "date": "2026-08-24",
-        "tvl": 5573960501.0
+        "tvl": 5573960798.0
       },
       {
         "date": "2026-08-25",
-        "tvl": 5749915182.0
+        "tvl": 5749915478.0
       },
       {
         "date": "2026-08-26",
-        "tvl": 5619007502.0
+        "tvl": 5619007799.0
       },
       {
         "date": "2026-08-27",
-        "tvl": 5786523095.0
+        "tvl": 5786523392.0
       },
       {
         "date": "2026-08-28",
-        "tvl": 6026083654.0
+        "tvl": 6026083950.0
       },
       {
         "date": "2026-08-29",
-        "tvl": 5882475000.0
+        "tvl": 5882475309.0
       },
       {
         "date": "2026-08-30",
-        "tvl": 5923984685.0
+        "tvl": 5923984993.0
       },
       {
         "date": "2026-08-31",
-        "tvl": 5800414817.0
+        "tvl": 5800415126.0
       },
       {
         "date": "2026-09-01",
-        "tvl": 5997312351.0
+        "tvl": 5997312660.0
       },
       {
         "date": "2026-09-02",
-        "tvl": 5660443630.0
+        "tvl": 5660443939.0
       },
       {
         "date": "2026-09-03",
-        "tvl": 5713724274.0
+        "tvl": 5713724583.0
       },
       {
         "date": "2026-09-04",
-        "tvl": 5931956233.0
+        "tvl": 5931956542.0
       },
       {
         "date": "2026-09-05",
-        "tvl": 5872166584.0
+        "tvl": 5872166893.0
       },
       {
         "date": "2026-09-06",
-        "tvl": 5919220883.0
+        "tvl": 5919221192.0
       },
       {
         "date": "2026-09-07",
-        "tvl": 6005631599.0
+        "tvl": 6005631908.0
       },
       {
         "date": "2026-09-08",
-        "tvl": 5924360120.0
+        "tvl": 5924360429.0
       },
       {
         "date": "2026-09-09",
-        "tvl": 5954412801.0
+        "tvl": 5954413110.0
       },
       {
         "date": "2026-09-10",
-        "tvl": 5857036014.0
+        "tvl": 5857036323.0
       },
       {
         "date": "2026-09-11",
-        "tvl": 5751314336.0
+        "tvl": 5751314645.0
       },
       {
         "date": "2026-09-12",
-        "tvl": 5899901962.0
+        "tvl": 5899902271.0
       },
       {
         "date": "2026-09-13",
-        "tvl": 5906911441.0
+        "tvl": 5906911750.0
       },
       {
         "date": "2026-09-14",
-        "tvl": 5897732996.0
+        "tvl": 5959195845.0
       }
     ]
   },
