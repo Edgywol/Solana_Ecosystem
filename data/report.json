@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23T03:10:00.564203+00:00",
+  "generated_at": "2026-09-23T10:43:01.812743+00:00",
   "generator_version": "1.0.0",
   "status": "success",
   "health": {
@@ -14,7 +14,7 @@
       "Solana Foundation": {
         "name": "Solana Foundation",
         "healthy": true,
-        "last_success": 1790133010.34798,
+        "last_success": 1790160189.435305,
         "last_error": null,
         "consecutive_failures": 0,
         "success_count": 2,
@@ -33,36 +33,36 @@
           "consensus_achieved": true,
           "healthy_endpoints": 1,
           "required_endpoints": 1,
-          "timestamp": 1790133009.9915524
+          "timestamp": 1790160189.2120607
         },
         {
           "metric": "getSlot",
-          "agreed_value": 449576938,
+          "agreed_value": 449679551,
           "consensus_achieved": true,
           "healthy_endpoints": 1,
           "required_endpoints": 1,
-          "timestamp": 1790133010.3479965
+          "timestamp": 1790160189.4353142
         }
       ]
     },
-    "timestamp": "2026-09-23T03:11:09.146443Z"
+    "timestamp": "2026-09-23T10:43:53.243528Z"
   },
   "alerts": [],
   "sentiment_correlations": [
     {
       "type": "positive_sentiment_with_high_tps",
       "severity": "info",
-      "description": "Positive community sentiment (0.51) with strong TPS (4191). Healthy ecosystem signals.",
-      "sentiment_score": 0.514,
-      "tps": 4190.7
+      "description": "Positive community sentiment (0.53) with strong TPS (4265). Healthy ecosystem signals.",
+      "sentiment_score": 0.528,
+      "tps": 4265.3
     }
   ],
   "tps_forecast": {
-    "forecast": 4478.5,
-    "lower": 4073.1,
-    "upper": 4883.9,
-    "sigma": 405.4,
-    "baseline": 4473.0
+    "forecast": 4398.1,
+    "lower": 3995.0,
+    "upper": 4801.2,
+    "sigma": 403.1,
+    "baseline": 4419.3
   },
   "social_feed": {
     "ingest_status": "live",
@@ -148,7 +148,7 @@
       "bearish": 0,
       "neutral": 20
     },
-    "fetched_at": "2026-09-23T03:10:22.156948+00:00"
+    "fetched_at": "2026-09-23T10:43:11.560579+00:00"
   },
   "dune": {
     "dune_status": "cached",
@@ -197,38 +197,38 @@
   "ticker": [
     {
       "label": "SOL / USD",
-      "value": "$118.31",
-      "delta": 1.47,
+      "value": "$117.48",
+      "delta": 0.63,
       "type": "currency"
     },
     {
       "label": "Current TPS",
-      "value": "4,191",
-      "delta": -2.8,
+      "value": "4,265",
+      "delta": 7.3,
       "type": "number"
     },
     {
       "label": "Slot Time",
       "value": "264ms",
-      "delta": -135.5,
+      "delta": -136.3,
       "type": "latency"
     },
     {
       "label": "Epoch",
       "value": "1040",
-      "subtext": "68.74%",
+      "subtext": "92.49%",
       "type": "progress"
     },
     {
       "label": "Active Nodes",
-      "value": "677",
+      "value": "676",
       "delta": 0.0,
       "type": "number"
     },
     {
       "label": "DeFi TVL",
-      "value": "$6.52B",
-      "delta": 0.53,
+      "value": "$6.51B",
+      "delta": 0.81,
       "type": "currency"
     },
     {
@@ -240,13 +240,12 @@
   "live_cards": {
     "sol_price": {
       "title": "SOL Price",
-      "value": 118.31,
-      "formatted": "$118.31",
-      "delta_24h_pct": 1.47,
-      "market_cap_usd": 69505454969.81,
-      "volume_24h_usd": 4313859982.94,
+      "value": 117.48,
+      "formatted": "$117.48",
+      "delta_24h_pct": 0.63,
+      "market_cap_usd": 69014338430.72,
+      "volume_24h_usd": 4306465139.99,
       "sparkline": [
-        111.94,
         111.13,
         108.19,
         108.2,
@@ -260,18 +259,18 @@
         116.79,
         117.03,
         118.1,
-        118.31
+        118.31,
+        117.48
       ]
     },
     "network_tps": {
       "title": "Network TPS",
-      "value": 4190.7,
-      "formatted": "4,191",
-      "non_vote_tps": 1719.9,
-      "avg_tps_15m": 4310.6,
-      "delta_pct": -2.8,
+      "value": 4265.3,
+      "formatted": "4,265",
+      "non_vote_tps": 1697.7,
+      "avg_tps_15m": 3975.5,
+      "delta_pct": 7.3,
       "sparkline": [
-        4708.4,
         4667.0,
         4409.1,
         3879.1,
@@ -285,19 +284,19 @@
         3766.3,
         4928.5,
         4737.7,
-        4190.7
+        4190.7,
+        4265.3
       ]
     },
     "active_validators": {
       "title": "Active Validators",
-      "value": 677,
-      "formatted": "677",
+      "value": 676,
+      "formatted": "676",
       "delinquent_count": 12,
       "nakamoto_coefficient": 18,
       "delta_pct": 0.0,
       "sparkline": [
         677,
-        677,
         678,
         678,
         677,
@@ -310,28 +309,29 @@
         676,
         677,
         677,
-        677
+        677,
+        676
       ]
     }
   },
   "network": {
-    "current_tps": 4190.7,
-    "non_vote_tps": 1719.9,
-    "avg_tps_15m": 4310.6,
-    "avg_slot_time_ms": 264.5,
-    "current_slot": 449576938,
-    "block_height": 427617225,
-    "total_transactions": 551561895876,
+    "current_tps": 4265.3,
+    "non_vote_tps": 1697.7,
+    "avg_tps_15m": 3975.5,
+    "avg_slot_time_ms": 263.7,
+    "current_slot": 449679555,
+    "block_height": 427719834,
+    "total_transactions": 551673383632,
     "epoch": 1040,
-    "epoch_slot_index": 296938,
+    "epoch_slot_index": 399555,
     "epoch_slots_total": 432000,
-    "epoch_progress_pct": 68.74,
-    "epoch_time_remaining_hours": 9.9
+    "epoch_progress_pct": 92.49,
+    "epoch_time_remaining_hours": 2.4
   },
   "validators": {
-    "active_validators": 677,
+    "active_validators": 676,
     "delinquent_validators": 12,
-    "total_validators": 689,
+    "total_validators": 688,
     "total_active_stake_sol": 439661998.29,
     "total_delinquent_stake_sol": 199750.97,
     "delinquent_stake_pct": 0.05,
@@ -346,7 +346,7 @@
         "activated_stake_sol": 17826722.02,
         "stake_percentage": 4.05,
         "commission": 7,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -357,7 +357,7 @@
         "activated_stake_sol": 15840698.17,
         "stake_percentage": 3.6,
         "commission": 0,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -368,7 +368,7 @@
         "activated_stake_sol": 12354353.49,
         "stake_percentage": 2.81,
         "commission": 0,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -379,7 +379,7 @@
         "activated_stake_sol": 11265428.99,
         "stake_percentage": 2.56,
         "commission": 5,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -390,7 +390,7 @@
         "activated_stake_sol": 10210832.24,
         "stake_percentage": 2.32,
         "commission": 0,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -401,7 +401,7 @@
         "activated_stake_sol": 9211355.88,
         "stake_percentage": 2.1,
         "commission": 7,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -412,7 +412,7 @@
         "activated_stake_sol": 9144102.43,
         "stake_percentage": 2.08,
         "commission": 10,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -423,7 +423,7 @@
         "activated_stake_sol": 7458789.03,
         "stake_percentage": 1.7,
         "commission": 7,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -434,7 +434,7 @@
         "activated_stake_sol": 7089341.68,
         "stake_percentage": 1.61,
         "commission": 5,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -445,7 +445,7 @@
         "activated_stake_sol": 6555721.55,
         "stake_percentage": 1.49,
         "commission": 0,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -456,7 +456,7 @@
         "activated_stake_sol": 6252951.11,
         "stake_percentage": 1.42,
         "commission": 100,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -467,7 +467,7 @@
         "activated_stake_sol": 6227067.41,
         "stake_percentage": 1.42,
         "commission": 0,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -478,7 +478,7 @@
         "activated_stake_sol": 5935316.16,
         "stake_percentage": 1.35,
         "commission": 5,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -489,7 +489,7 @@
         "activated_stake_sol": 5622980.16,
         "stake_percentage": 1.28,
         "commission": 100,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       },
       {
@@ -500,35 +500,35 @@
         "activated_stake_sol": 4828843.43,
         "stake_percentage": 1.1,
         "commission": 7,
-        "last_vote": 449576941,
+        "last_vote": 449679556,
         "status": "active"
       }
     ]
   },
   "supply": {
-    "total_sol": 634530764.74,
-    "circulating_sol": 587507137.18,
-    "non_circulating_sol": 47023627.56,
+    "total_sol": 634530472.76,
+    "circulating_sol": 587506845.17,
+    "non_circulating_sol": 47023627.58,
     "staked_sol": 439661998.29,
     "staked_pct": 69.29
   },
   "price": {
-    "price_usd": 118.31,
-    "change_24h_pct": 1.47,
-    "market_cap_usd": 69505454969.81,
-    "volume_24h_usd": 4313859982.94,
+    "price_usd": 117.48,
+    "change_24h_pct": 0.63,
+    "market_cap_usd": 69014338430.72,
+    "volume_24h_usd": 4306465139.99,
     "ath_usd": 293.31,
-    "last_updated_at": "2026-09-23T03:10:10.655443+00:00"
+    "last_updated_at": "2026-09-23T10:43:09.650617+00:00"
   },
   "sentiment": {
     "sentiment_status": "available",
     "source_type": "CoinGecko community votes + market momentum (no API key)",
     "current": {
-      "timestamp": "2026-09-23T03:10:11.504673+00:00",
-      "score": 0.514,
-      "bullish_pct": 84.62,
-      "bearish_pct": 15.38,
-      "price_momentum_24h_pct": 1.47,
+      "timestamp": "2026-09-23T10:43:10.402140+00:00",
+      "score": 0.528,
+      "bullish_pct": 86.79,
+      "bearish_pct": 13.21,
+      "price_momentum_24h_pct": 0.63,
       "social": {
         "reddit_subscribers": null,
         "reddit_active_48h": null,
@@ -544,9 +544,9 @@
       ]
     },
     "trend_24h": {
-      "avg_sentiment_score": 0.514,
-      "min_sentiment_score": 0.514,
-      "max_sentiment_score": 0.514,
+      "avg_sentiment_score": 0.528,
+      "min_sentiment_score": 0.528,
+      "max_sentiment_score": 0.528,
       "samples": 1
     }
   },
@@ -554,34 +554,34 @@
     "daa_status": "available",
     "method": "real RPC-sampled fee-payer extrapolation (no indexer, no API key)",
     "current": {
-      "timestamp": "2026-09-23T03:10:22.157178+00:00",
-      "estimated_daa": 3264158,
-      "confidence_pct": 75.8,
+      "timestamp": "2026-08-20T19:51:28.371955+00:00",
+      "estimated_daa": 3155250,
+      "confidence_pct": 83.3,
       "sample_size": 30,
       "signatures_sampled": 30,
-      "unique_signers": 13,
+      "unique_signers": 24,
       "programs_sampled": 2,
-      "coverage_pct": 76.0,
-      "trending": "up",
-      "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 13 unique fee payers (53% resolution success). Modeled daily estimate = 114,245,553 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside)."
+      "coverage_pct": 85.0,
+      "trending": "stable",
+      "notes": "Live RPC sample: 30 signatures across 2 high-coverage programs resolved to 24 unique fee payers (83% resolution success). Modeled daily estimate = 110,433,751 daily non-vote txns \u00f7 35 assumed tx/active address (exposed, tunable). LOWER-BOUND MODEL \u2014 authoritative DAA requires an indexer (Dune/Flipside)."
     },
     "trend_7d": {
-      "current_daa": 3264158,
-      "avg_daa": 2931790,
+      "current_daa": 3155250,
+      "avg_daa": 20132392,
       "min_daa": 2536836,
-      "max_daa": 3290583,
-      "trend": "up",
-      "confidence_pct": 75.8,
+      "max_daa": 123668374,
+      "trend": "stable",
+      "confidence_pct": 83.3,
       "days_analyzed": 7
     },
     "trend_30d": {
-      "current_daa": 3264158,
-      "avg_daa": 18023863,
+      "current_daa": 3155250,
+      "avg_daa": 20132392,
       "min_daa": 2536836,
       "max_daa": 123668374,
-      "trend": "up",
-      "confidence_pct": 75.8,
-      "days_analyzed": 8
+      "trend": "stable",
+      "confidence_pct": 83.3,
+      "days_analyzed": 7
     },
     "methodology": "Real lower-bound estimate. Recent transactions on the System and Token programs are resolved to unique fee payers via getTransaction, then linearly extrapolated to the network's daily non-vote transaction volume (from getRecentPerformanceSamples) with a transparent coverage uplift for unsampled programs. Authoritative DAA requires an indexer such as Dune or Flipside."
   },
@@ -589,15 +589,15 @@
     "base_fee_sol": 5e-06,
     "median_fee_sol": 2.8e-05,
     "median_fee_usd": 0.0033,
-    "rev_24h_usd": 1424212.82,
+    "rev_24h_usd": 1424211.15,
     "rev_methodology": "Proxy calculated from estimated daily non-vote transactions * (base fee + median priority fee) + estimated Jito MEV tips.",
-    "velocity_ratio": 0.529,
+    "velocity_ratio": 0.53,
     "fee_source": "model fallback: no positive priority-fee samples available on public RPC",
-    "tvl_usd": 6521921031.13,
-    "tvl_change_24h_pct": 0.53,
-    "dex_volume_24h_usd": 3449157053.76,
-    "stablecoin_mcap_usd": 16092961972.5,
-    "capital_efficiency_ratio": 0.529,
+    "tvl_usd": 6511296759.43,
+    "tvl_change_24h_pct": 0.81,
+    "dex_volume_24h_usd": 3449152862.76,
+    "stablecoin_mcap_usd": 16041636318.69,
+    "capital_efficiency_ratio": 0.53,
     "historical_tvl_30d": [
       {
         "date": "2026-08-25",
@@ -713,52 +713,52 @@
       },
       {
         "date": "2026-09-22",
-        "tvl": 6490586796.0
+        "tvl": 6458969114.0
       },
       {
         "date": "2026-09-23",
-        "tvl": 6524745433.0
+        "tvl": 6511260140.0
       }
     ],
     "top_defi_protocols": [
       {
         "name": "Sanctum Validator LSTs",
-        "tvl_usd": 1887192770.47,
+        "tvl_usd": 1867716587.84,
         "type": "Liquid Staking"
       },
       {
         "name": "Kamino Lend",
-        "tvl_usd": 1428644112.93,
+        "tvl_usd": 1419354040.85,
         "type": "Lending"
       },
       {
         "name": "Raydium AMM",
-        "tvl_usd": 1336743765.96,
+        "tvl_usd": 1343966383.16,
         "type": "Dexs"
       },
       {
         "name": "Jito Liquid Staking",
-        "tvl_usd": 1228187564.82,
+        "tvl_usd": 1216089781.22,
         "type": "Liquid Staking"
       },
       {
         "name": "Binance Staked SOL",
-        "tvl_usd": 1212317274.92,
+        "tvl_usd": 1200384169.71,
         "type": "Liquid Staking"
       },
       {
         "name": "Jupiter Lend",
-        "tvl_usd": 1190795573.59,
+        "tvl_usd": 1182772142.99,
         "type": "Lending"
       },
       {
         "name": "Jupiter Perpetual Exchange",
-        "tvl_usd": 824980327.65,
+        "tvl_usd": 815732125.41,
         "type": "Derivatives"
       },
       {
         "name": "Jupiter Staked SOL",
-        "tvl_usd": 615000193.62,
+        "tvl_usd": 607259147.24,
         "type": "Liquid Staking"
       }
     ]
@@ -842,10 +842,6 @@
   },
   "historical_trends": {
     "tps": [
-      {
-        "timestamp": "2026-09-15T20:49:58.516882+00:00",
-        "value": 4079.5
-      },
       {
         "timestamp": "2026-09-16T03:12:00.384440+00:00",
         "value": 3679.3
@@ -961,13 +957,13 @@
       {
         "timestamp": "2026-09-23T03:10:00.564203+00:00",
         "value": 4190.7
+      },
+      {
+        "timestamp": "2026-09-23T10:43:01.812743+00:00",
+        "value": 4265.3
       }
     ],
     "sol_price": [
-      {
-        "timestamp": "2026-09-15T20:49:58.516882+00:00",
-        "value": 97.33
-      },
       {
         "timestamp": "2026-09-16T03:12:00.384440+00:00",
         "value": 97.11
@@ -1083,13 +1079,13 @@
       {
         "timestamp": "2026-09-23T03:10:00.564203+00:00",
         "value": 118.31
+      },
+      {
+        "timestamp": "2026-09-23T10:43:01.812743+00:00",
+        "value": 117.48
       }
     ],
     "tvl": [
-      {
-        "timestamp": "2026-09-15T20:49:58.516882+00:00",
-        "value": 5792729127.37
-      },
       {
         "timestamp": "2026-09-16T03:12:00.384440+00:00",
         "value": 5727900112.64
@@ -1205,13 +1201,13 @@
       {
         "timestamp": "2026-09-23T03:10:00.564203+00:00",
         "value": 6521921031.13
+      },
+      {
+        "timestamp": "2026-09-23T10:43:01.812743+00:00",
+        "value": 6511296759.43
       }
     ],
     "validators": [
-      {
-        "timestamp": "2026-09-15T20:49:58.516882+00:00",
-        "value": 678
-      },
       {
         "timestamp": "2026-09-16T03:12:00.384440+00:00",
         "value": 679
@@ -1327,6 +1323,10 @@
       {
         "timestamp": "2026-09-23T03:10:00.564203+00:00",
         "value": 677
+      },
+      {
+        "timestamp": "2026-09-23T10:43:01.812743+00:00",
+        "value": 676
       }
     ],
     "historical_tvl_30d": [
@@ -1444,11 +1444,11 @@
       },
       {
         "date": "2026-09-22",
-        "tvl": 6490586796.0
+        "tvl": 6458969114.0
       },
       {
         "date": "2026-09-23",
-        "tvl": 6524745433.0
+        "tvl": 6511260140.0
       }
     ]
   },
