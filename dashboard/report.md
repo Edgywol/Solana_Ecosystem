@@ -1,11 +1,11 @@
 # ⚡ Solana Ecosystem Intelligence & Health Report
 
-**Generated At (UTC):** `2026-10-11T12:03:05.886469+00:00`  
+**Generated At (UTC):** `2026-10-11T21:26:10.378600+00:00`  
 **Cluster Health:** `🟢 Operational`  
-**Current Epoch:** `1054` (`73.21%` complete, ~7.0h remaining)
+**Current Epoch:** `1055` (`8.97%` complete, ~24.0h remaining)
 
 ## 📌 Executive Summary
-Solana mainnet-beta is currently processing **4,463 TPS** (non-vote TPS: ~1,427) with an average slot time of **218.7ms**. SOL is trading at **$109.59** (-0.08% 24h) with total ecosystem TVL of **$6.20B** and 24h DEX volume of **$1.29B**. The network is secured by **673 active validators** with a Nakamoto coefficient of **18**.
+Solana mainnet-beta is currently processing **4,927 TPS** (non-vote TPS: ~1,855) with an average slot time of **220.1ms**. SOL is trading at **$110.11** (-0.10% 24h) with total ecosystem TVL of **$6.27B** and 24h DEX volume of **$1.29B**. The network is secured by **671 active validators** with a Nakamoto coefficient of **18**.
 
 ## 🚨 Anomaly & Risk Telemetry
 > [!NOTE]
@@ -14,29 +14,29 @@ Solana mainnet-beta is currently processing **4,463 TPS** (non-vote TPS: ~1,427)
 ## 📊 Core Ecosystem Indicators
 | Metric | Current Value | 24h / Baseline Delta | Status / Notes |
 |---|---|---|---|
-| **SOL Price** | `$109.59` | `-0.08%` | Market Cap: `$64.55B` |
-| **Network Throughput** | `4,462.6 TPS` | `15m Avg: 4,585 TPS` | True Non-Vote: `1,427 TPS` |
-| **Slot Duration** | `218.7ms` | `Target: 400.0ms` | Current Slot: `455644261` |
-| **DeFi TVL** | `$6.196B` | `+0.02%` | Capital Turnover: `0.21x` |
+| **SOL Price** | `$110.11` | `-0.10%` | Market Cap: `$64.89B` |
+| **Network Throughput** | `4,926.7 TPS` | `15m Avg: 5,206 TPS` | True Non-Vote: `1,855 TPS` |
+| **Slot Duration** | `220.1ms` | `Target: 400.0ms` | Current Slot: `455798734` |
+| **DeFi TVL** | `$6.265B` | `+0.95%` | Capital Turnover: `0.20x` |
 | **24h DEX Volume** | `$1.286B` | — | High on-chain velocity |
-| **Stablecoin Supply** | `$16.025B` | — | USDC/USDT on Solana |
+| **Stablecoin Supply** | `$16.007B` | — | USDC/USDT on Solana |
 | **Real Economic Value (REV)** | `$556,377 / day` | — | Base + Priority + Jito MEV tips |
-| **Active Validators** | `673 nodes` | `Delinquent: 7` | Stake: `438.4M SOL` |
-| **Nakamoto Coefficient** | `18` | `Top 10 Stake: 24.49%` | Min nodes to halt consensus |
+| **Active Validators** | `671 nodes` | `Delinquent: 10` | Stake: `438.4M SOL` |
+| **Nakamoto Coefficient** | `18` | `Top 10 Stake: 24.5%` | Min nodes to halt consensus |
 
 ## 🛡️ Top Validator Nodes by Activated Stake
 | Rank | Validator Entity | Active Stake (SOL) | Stake Share | Commission | Last Vote Slot | Status |
 |---|---|---|---|---|---|---|
-| **#1** | `Validator CcaH..oTN1` | `17,775,444 SOL` | `4.05%` | `7%` | `455644261` | 🟢 Active |
-| **#2** | `Validator he1i..uBtk` | `15,954,957 SOL` | `3.64%` | `0%` | `455644261` | 🟢 Active |
-| **#3** | `Validator 3N7s..iD5g` | `12,313,356 SOL` | `2.81%` | `0%` | `455644261` | 🟢 Active |
-| **#4** | `Validator 8Gbw..F8iD` | `11,145,934 SOL` | `2.54%` | `0%` | `455644261` | 🟢 Active |
-| **#5** | `Validator Catz..Diqb` | `10,754,664 SOL` | `2.45%` | `5%` | `455644261` | 🟢 Active |
-| **#6** | `Validator 51JB..UNAm` | `9,328,689 SOL` | `2.13%` | `10%` | `455644261` | 🟢 Active |
-| **#7** | `Validator 26pV..3dJx` | `9,240,266 SOL` | `2.11%` | `7%` | `455644261` | 🟢 Active |
-| **#8** | `Validator 9QU2..29mF` | `7,603,786 SOL` | `1.73%` | `7%` | `455644261` | 🟢 Active |
-| **#9** | `Validator CvSb..wycB` | `6,810,142 SOL` | `1.55%` | `5%` | `455644261` | 🟢 Active |
-| **#10** | `Validator 3JD3..FrXf` | `6,421,774 SOL` | `1.46%` | `0%` | `455644261` | 🟢 Active |
+| **#1** | `Validator CcaH..oTN1` | `17,781,885 SOL` | `4.06%` | `7%` | `455798735` | 🟢 Active |
+| **#2** | `Validator he1i..uBtk` | `15,956,122 SOL` | `3.64%` | `0%` | `455798735` | 🟢 Active |
+| **#3** | `Validator 3N7s..iD5g` | `12,320,023 SOL` | `2.81%` | `0%` | `455798735` | 🟢 Active |
+| **#4** | `Validator 8Gbw..F8iD` | `11,147,729 SOL` | `2.54%` | `0%` | `455798735` | 🟢 Active |
+| **#5** | `Validator Catz..Diqb` | `10,755,463 SOL` | `2.45%` | `5%` | `455798735` | 🟢 Active |
+| **#6** | `Validator 51JB..UNAm` | `9,332,199 SOL` | `2.13%` | `10%` | `455798735` | 🟢 Active |
+| **#7** | `Validator 26pV..3dJx` | `9,248,710 SOL` | `2.11%` | `7%` | `455798735` | 🟢 Active |
+| **#8** | `Validator 9QU2..29mF` | `7,607,284 SOL` | `1.74%` | `7%` | `455798735` | 🟢 Active |
+| **#9** | `Validator CvSb..wycB` | `6,811,094 SOL` | `1.55%` | `5%` | `455798735` | 🟢 Active |
+| **#10** | `Validator 3JD3..FrXf` | `6,422,658 SOL` | `1.47%` | `0%` | `455798735` | 🟢 Active |
 
 ## 🚀 Key Upcoming Protocol & Runtime Upgrades
 ### Alpenglow Consensus Optimization (Consensus)
